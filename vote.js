@@ -12,6 +12,19 @@ const storageKey = "version-x-paper-choice";
 let selectedChoice = null;
 let inFlight = false;
 let active = null;
+let paperEngine = null;
+let paperLoading = null;
+let settling = false;
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+function preparePaper() {
+  if (reducedMotion.matches || paperLoading) return;
+  paperLoading = import("./paper.js").then(({ createPaperEngine }) => {
+    paperEngine = createPaperEngine();
+  }).catch(() => {});
+}
+if ("requestIdleCallback" in window) requestIdleCallback(preparePaper, { timeout: 900 });
+else setTimeout(preparePaper, 150);
 
 
 try {
@@ -57,33 +70,65 @@ for (const option of config.options) {
   button.append(label, arrow);
   picks.append(button);
 
+  let suppressClick = false;
   button.addEventListener("pointerdown", event => {
-    if (selectedChoice || inFlight || active || event.button !== 0) return;
-    active = { id: event.pointerId, y: event.clientY, button, distance: 0 };
+    if (selectedChoice || inFlight || active || settling || event.button !== 0) return;
+    preparePaper();
+    suppressClick = false;
+    const engine = reducedMotion.matches ? null : paperEngine;
+    const base = button.getBoundingClientRect();
+    active = { id: event.pointerId, x: event.clientX, y: event.clientY, button, base, distance: 0, engine };
     button.setPointerCapture(event.pointerId);
     button.classList.add("dragging");
+    if (engine) {
+      engine.begin(base, option.label);
+      button.classList.add("paper-rendered");
+    }
   });
+
   button.addEventListener("pointermove", event => {
     if (active?.id !== event.pointerId || active.button !== button) return;
-    active.distance = Math.max(0, event.clientY - active.y);
-    const pull = Math.min(57, active.distance * .76);
-    button.style.setProperty("--pull", pull + "px");
-    button.style.setProperty("--curl", -Math.min(42, pull * .7) + "deg");
+    const dx = event.clientX - active.x;
+    const dy = event.clientY - active.y;
+    active.distance = Math.max(0, dy);
+    if (Math.hypot(dx, dy) > 9) suppressClick = true;
+    if (active.engine) {
+      active.engine.pull(dx, dy);
+    } else {
+      const pull = Math.min(57, active.distance * .76);
+      button.style.setProperty("--pull", pull + "px");
+      button.style.setProperty("--curl", -Math.min(42, pull * .7) + "deg");
+    }
   });
-  function finishPointer(event, release) {
+
+  function finishPointer(event, released) {
     if (active?.id !== event.pointerId || active.button !== button) return;
-    const distance = active.distance;
-    const visual = button.getBoundingClientRect();
+    const gesture = active;
+    const visual = gesture.engine ? gesture.base : button.getBoundingClientRect();
     active = null;
     button.classList.remove("dragging");
     button.style.removeProperty("--pull");
     button.style.removeProperty("--curl");
-    if (release && distance >= 36) tear(button, visual);
+    if (released && (gesture.distance >= 36 || !suppressClick)) {
+      suppressClick = true;
+      tear(button, visual, gesture.engine);
+      return;
+    }
+    if (gesture.engine) {
+      settling = true;
+      gesture.engine.cancel(() => {
+        button.classList.remove("paper-rendered");
+        settling = false;
+      });
+    }
   }
   button.addEventListener("pointerup", event => finishPointer(event, true));
   button.addEventListener("pointercancel", event => finishPointer(event, false));
   button.addEventListener("lostpointercapture", event => finishPointer(event, false));
-  button.addEventListener("click", () => tear(button, button.getBoundingClientRect()));
+  button.addEventListener("click", event => {
+    if (suppressClick && event.detail > 0) return;
+    tear(button, button.getBoundingClientRect());
+  });
 }
 
 function markChoice() {
@@ -94,38 +139,57 @@ function markChoice() {
     button.disabled = true;
   }
   const poster = byId("poster");
-  poster.style.setProperty("--tear-left", (100 * choiceIndex / tabs.length) + "%");
-  poster.style.setProperty("--tear-width", (100 / tabs.length) + "%");
+  const left = 100 * choiceIndex / tabs.length;
+  const width = 100 / tabs.length;
+  const seam = ["0 0", "100% 0", "100% 100%"];
+  for (let i = 24; i >= 0; i--) {
+    const x = left + width * i / 24;
+    const height = Math.max(.18, 1.1 + Math.sin(i * 4.86) * .88 + Math.sin(i * 1.71) * .58);
+    seam.push(x + "% calc(100% - " + height + "px)");
+  }
+  seam.push("0 100%");
+  poster.style.setProperty("--torn-edge", seam.join(", "));
   poster.classList.add("has-vote");
   picks.classList.add("voted");
   reopen.hidden = false;
 }
 
-async function tear(button, origin) {
-  if (inFlight || selectedChoice) return;
+function tear(button, origin, attachedEngine) {
+  if (inFlight || selectedChoice || settling) return;
   inFlight = true;
   const choice = button.dataset.choice;
-  let animation;
-
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    animation = button.animate(
-      [{ transform: "translateY(0) rotateX(-9deg)" }, { transform: "translateY(18px) rotateX(-23deg) rotateZ(-5deg)" }],
-      { duration: 165, fill: "forwards", easing: "cubic-bezier(.29,.72,.35,1)" }
-    );
-    await animation.finished.catch(() => {});
-    origin = button.getBoundingClientRect();
+  const engine = attachedEngine || (reducedMotion.matches ? null : paperEngine);
+  function complete(finishedAt) {
+    selectedChoice = choice;
+    try {
+      localStorage.setItem(storageKey, choice);
+    } catch {
+      // Remember the choice until the current page is closed.
+    }
+    markChoice();
+    button.classList.remove("paper-rendered");
+    inFlight = false;
+    showReceipt(finishedAt);
   }
-
-  selectedChoice = choice;
-  try {
-    localStorage.setItem(storageKey, choice);
-  } catch {
-    // Remember the choice until the current page is closed.
+  if (engine) {
+    if (!attachedEngine) engine.begin(origin, lookup.get(choice).label);
+    button.classList.add("paper-rendered");
+    engine.release(complete);
+    return;
   }
-  markChoice();
-  animation?.cancel();
-  inFlight = false;
-  showReceipt(origin);
+  if (reducedMotion.matches) {
+    complete(origin);
+    return;
+  }
+  const animation = button.animate(
+    [{ transform: "translateY(0) rotateX(-9deg)" }, { transform: "translateY(18px) rotateX(-23deg) rotateZ(-5deg)" }],
+    { duration: 165, fill: "forwards", easing: "cubic-bezier(.29,.72,.35,1)" }
+  );
+  animation.finished.catch(() => {}).then(() => {
+    const lastPose = button.getBoundingClientRect();
+    complete(lastPose);
+    animation.cancel();
+  });
 }
 
 function showReceipt(origin) {
@@ -133,7 +197,7 @@ function showReceipt(origin) {
   byId("front-label").textContent = option.label;
   byId("your-choice").textContent = option.label;
   dialog.showModal();
-  if (!origin || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (!origin || reducedMotion.matches) {
     paper.style.transform = "rotateY(180deg)";
     byId("close").focus();
     return;
