@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0e2034">
+<meta name="description" content="撕下一张 VERSION X 便签，收下展览邀请。">
+<title>VERSION X · 撕下你的选择</title>
+<link rel="stylesheet" href="./style.css">
+<script type="module" src="./vote.js"></script>
+</head>
+<body>
+<main class="stage">
+  <header class="masthead"><span>X-Lab <b>2026</b></span><span>展前互动</span></header>
+  <div class="poster" id="poster">
+    <div class="print">
+      <img class="glass" src="./dot-wall.webp" alt="" width="1280" height="714" fetchpriority="high">
+      <div class="grid" aria-hidden="true"></div>
+      <div class="identity"><p class="wordmark" aria-label="VERSION X"><span aria-hidden="true">VER <i>/</i><br>SION X</span></p>
+      <p class="exhibit-title">版本之外，问题之间</p></div>
+      <div class="question">
+        <h1 id="question">好创意能落地，什么最关键？</h1>
+        <p id="instruction">选一张纸条，向下撕，看看背面。</p>
+      </div>
+    </div>
+    <div id="choices" class="choices" aria-label="撕纸选项"></div>
+  </div>
+
+  <button id="reopen" type="button" class="reopen" hidden>再看我的邀请函 <span aria-hidden="true">↗</span></button>
+  <noscript>请开启 JavaScript 后体验撕纸。</noscript>
+</main>
+<dialog id="receipt" aria-labelledby="invite-title">
+  <div class="lift" id="lift">
+    <div class="paper" id="paper">
+      <div class="front" aria-hidden="true"><span>VER / SION X</span><strong id="front-label"></strong></div>
+      <section class="back">
+        <header><span>X-Lab 2026</span><button id="close" type="button" aria-label="关闭邀请函">×</button></header>
+        <div class="result"><p>你的选择</p><h2 id="your-choice"></h2></div>
+        <div class="invite">
+          <div class="invite-copy"><p>VERSION X · 展览邀请</p><h2 id="invite-title"></h2><p id="venue"></p><p id="time" hidden></p><a id="invite-link" hidden>查看展览信息 ↗</a></div>
+          <div class="qr-slot"><img id="qr" alt="展览邀请二维码" hidden><span id="qr-placeholder">展览二维码<br>待公布</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</dialog>
+</body>
+</html>
