@@ -1,0 +1,334 @@
+import { installTeamHotspots } from './team-hotspots.js?v=4';
+
+const model = document.querySelector('#model');
+const status = document.querySelector('#status');
+const stage = document.querySelector('#stage');
+const expand = document.querySelector('#expand');
+const opening = document.querySelector('#opening');
+const enter = document.querySelector('#open-gallery');
+const openingStatus = document.querySelector('#opening-status');
+const skip = document.querySelector('#tour-skip');
+const siteChrome = [document.querySelector('.mast'), document.querySelector('main')];
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const defaultLimits = [model.getAttribute('min-camera-orbit'), model.getAttribute('max-camera-orbit')];
+
+const views = {
+  'rack-design': { target: [0, 1.33, -6.36], orbit: [9, 60, 5.5], fov: 39, fitByFov: true },
+  'rack-software': { target: [0, 1.33, 6.36], orbit: [188, 60, 5.5], fov: 39, fitByFov: true },
+  'rack-hardware': { target: [7.57, 1.33, 0], orbit: [-82, 67, 5.8], fov: 39, fitByFov: true },
+  'rack-operations': { target: [-7.57, 1.33, 0], orbit: [82, 67, 5.8], fov: 39, fitByFov: true },
+  overview: { target: [0, .35, 0], orbit: [24, 58, 37], fov: 42 },
+  top: { target: [0, 0, 0], orbit: [0, 3, 40], fov: 42 },
+  sculpture: { target: [0, 5.99, 0], orbit: [0, .1, 7], fov: 32 },
+  facade: { target: [-6.32, .94, 9.11], orbit: [12, 85, 6.5], fov: 36 },
+};
+const presetButtons = [...document.querySelectorAll('[data-view]')];
+
+let phase = 'opening';
+let requestedEntry = false;
+let canEnterWithoutModel = false;
+let viewerError = false;
+let loadWait;
+let tourFrame;
+let settleAnimation;
+let tourImage;
+
+installTeamHotspots(model, stage);
+
+function units(values, suffix) {
+  return values.map(value => value.toFixed(3) + suffix).join(' ');
+}
+
+function applyCamera({ target, orbit: [azimuth, elevation, radius], fov }, immediate = false) {
+  model.setAttribute('camera-target', units(target, 'm'));
+  model.setAttribute('camera-orbit', units([azimuth, elevation], 'deg') + ' ' + radius.toFixed(3) + 'm');
+  model.setAttribute('field-of-view', fov.toFixed(2) + 'deg');
+  if (immediate) model.jumpCameraToGoal?.();
+}
+
+function fittedView(view, { width, height }) {
+  const multiplier = height > 0 && width > 0 ? Math.max(1, 1.40 * height / width) : 1;
+  if (view.fitByFov) {
+    const fov = Math.atan(multiplier * Math.tan(view.fov * Math.PI / 360)) * 360 / Math.PI;
+    return { ...view, fov };
+  }
+  return { ...view, orbit: [...view.orbit.slice(0, 2), Math.round(view.orbit[2] * multiplier)] };
+}
+
+function setView(name, immediate = false) {
+  const view = views[name];
+  if (view.fitByFov) model.setAttribute('max-field-of-view', '80deg');
+  else model.removeAttribute('max-field-of-view');
+  applyCamera(fittedView(view, model.getBoundingClientRect()), immediate);
+  for (const button of presetButtons) {
+    button.setAttribute('aria-pressed', String(button.dataset.view === name));
+  }
+}
+
+for (const button of presetButtons) button.addEventListener('click', () => setView(button.dataset.view));
+document.querySelector('#reset').addEventListener('click', () => setView('overview', true));
+model.addEventListener('camera-change', (event) => {
+  if (phase !== 'gallery' || event.detail.source !== 'user-interaction') return;
+  for (const button of presetButtons) button.setAttribute('aria-pressed', 'false');
+});
+
+function setExpanded(show) {
+  stage.classList.toggle('expanded', show);
+  document.body.classList.toggle('with-expanded-stage', show);
+  expand.setAttribute('aria-pressed', String(show));
+  expand.setAttribute('aria-label', show ? '退出放大预览' : '放大预览');
+  expand.querySelector('.expand-text').textContent = show ? '退出放大' : '放大';
+}
+expand.addEventListener('click', () => setExpanded(!stage.classList.contains('expanded')));
+window.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  if (phase === 'tour') finishTour();
+  else if (stage.classList.contains('expanded')) setExpanded(false);
+});
+
+function hideOpening() {
+  opening.hidden = true;
+  document.body.classList.remove('opening-active');
+  for (const element of siteChrome) element.inert = false;
+}
+
+function enterGallery() {
+  phase = 'gallery';
+  hideOpening();
+  document.body.classList.add('gallery-ready');
+  setView('overview', true);
+  presetButtons[0].focus({ preventScroll: true });
+}
+
+function finishTour() {
+  if (phase !== 'tour') return;
+  cancelAnimationFrame(tourFrame);
+  hideOpening();
+  phase = 'gallery';
+  skip.hidden = true;
+  model.inert = false;
+  model.setAttribute('min-camera-orbit', defaultLimits[0]);
+  model.setAttribute('max-camera-orbit', defaultLimits[1]);
+  model.setAttribute('camera-controls', '');
+  stage.classList.remove('entering', 'waiting-for-tour');
+  const image = tourImage;
+  const settled = image && settleAnimation?.playState === 'finished';
+  if (settled) image.style.transform = getComputedStyle(image).transform;
+  settleAnimation?.cancel();
+  tourImage = undefined;
+  if (image) {
+    const removeImage = () => {
+      URL.revokeObjectURL(image.src);
+      image.remove();
+    };
+    if (settled) {
+      // Reveal a canvas that has already rendered at its final size.
+      requestAnimationFrame(() => {
+        image.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }).onfinish = removeImage;
+      });
+    } else {
+      removeImage();
+    }
+  }
+  settleAnimation = undefined;
+  window.removeEventListener('resize', finishTour);
+  document.body.classList.remove('tour-settling');
+  document.body.classList.remove('camera-tour');
+  document.body.classList.add('gallery-revealed', 'gallery-ready');
+  setView('overview', true);
+  presetButtons[0].focus({ preventScroll: true });
+}
+skip.addEventListener('click', finishTour);
+
+const lerp = (from, to, progress) => from + (to - from) * progress;
+const smooth = progress => progress * progress * (3 - 2 * progress);
+const clamp = value => Math.max(0, Math.min(1, value));
+const radians = degrees => degrees * Math.PI / 180;
+const fadeTime = 560;
+const facadeHold = 320;
+const retreatTime = 1380;
+const settleTime = 880;
+const settleEase = "cubic-bezier(.35, 0, .25, 1)";
+
+function getFacadeView() {
+  const aspect = Math.max(.24, model.clientWidth / Math.max(model.clientHeight, 1));
+  const portrait = aspect < 1;
+  const facade = views.facade;
+  const frontFov = 36;
+  const frameHalfWidth = 1.53;
+  const frameHalfHeight = .94;
+  const closeDistance = Math.max(
+    frameHalfWidth / (.91 * aspect),
+    frameHalfHeight / (portrait ? .8 : .84),
+  ) / Math.tan(radians(frontFov / 2)) * Math.min(1.05, .20 + .91 * aspect);
+  return { ...facade, fov: frontFov, orbit: [4, 88, closeDistance] };
+}
+
+function measureGalleryScreen() {
+  stage.classList.remove("entering");
+  document.body.classList.remove("camera-tour");
+  const rect = model.getBoundingClientRect();
+  document.body.classList.add("camera-tour");
+  stage.classList.add("entering");
+  return rect;
+}
+
+async function settleGallery(rect) {
+  const full = model.getBoundingClientRect();
+  const idealAspect = model.getIdealAspect?.() || 1;
+  const projectedHeight = ({ width, height }) => Math.min(height, width / idealAspect);
+  const scale = projectedHeight(rect) / projectedHeight(full);
+  const x = rect.left + rect.width / 2 - (full.left + full.width / 2);
+  const y = rect.top + rect.height / 2 - (full.top + full.height / 2);
+  skip.hidden = true;
+  let frame = stage;
+  let image;
+  try {
+    const blob = await model.toBlob({ mimeType: 'image/png' });
+    if (blob && phase === 'tour') {
+      image = new Image();
+      image.alt = '';
+      image.className = 'tour-snapshot';
+      image.src = URL.createObjectURL(blob);
+      await image.decode();
+    }
+  } catch {
+    if (image) URL.revokeObjectURL(image.src);
+    image = undefined;
+  }
+  if (phase !== 'tour') {
+    if (image) URL.revokeObjectURL(image.src);
+    return;
+  }
+  document.body.classList.add('tour-settling');
+  if (image) {
+    Object.assign(image.style, {
+      left: full.left + 'px', top: full.top + 'px',
+      width: full.width + 'px', height: full.height + 'px',
+    });
+    document.body.append(image);
+    frame = tourImage = image;
+    stage.classList.add('waiting-for-tour');
+    stage.classList.remove('entering');
+    setView('overview', true);
+  }
+  settleAnimation = frame.animate([
+    { transform: "translate(0px, 0px) scale(1)" },
+    { transform: "translate(" + x + "px, " + y + "px) scale(" + scale + ")" },
+  ], { duration: settleTime, easing: settleEase, fill: "forwards" });
+  settleAnimation.onfinish = finishTour;
+}
+
+function playTour() {
+  if (reducedMotion.matches) {
+    enterGallery();
+    return;
+  }
+
+  phase = 'tour';
+  stage.classList.add('entering');
+  document.body.classList.add('camera-tour');
+  model.inert = true;
+  model.removeAttribute('camera-controls');
+  model.setAttribute('min-camera-orbit', 'auto auto 2m');
+  model.setAttribute('max-camera-orbit', 'auto auto 190m');
+  window.addEventListener("resize", finishTour, { once: true });
+  const screenRect = measureGalleryScreen();
+  const close = getFacadeView();
+  const full = fittedView(views.overview, screenRect);
+  applyCamera(close, true);
+
+  let started;
+  let revealed = false;
+  tourFrame = requestAnimationFrame(() => {
+    tourFrame = requestAnimationFrame(function draw(now) {
+      if (phase !== 'tour') return;
+      started ??= now;
+      const elapsed = now - started;
+      if (!revealed) {
+        revealed = true;
+        opening.classList.add('leaving');
+      }
+      if (elapsed >= fadeTime && !opening.hidden) {
+        hideOpening();
+        skip.hidden = false;
+        skip.focus({ preventScroll: true });
+      }
+      const retreat = smooth(clamp((elapsed - fadeTime - facadeHold) / retreatTime));
+      const distanceProgress = 1 - (1 - retreat) ** 1.8;
+      applyCamera({
+        target: close.target.map((value, i) => lerp(value, full.target[i], retreat)),
+        orbit: [
+          lerp(close.orbit[0], full.orbit[0], retreat),
+          lerp(close.orbit[1], full.orbit[1], retreat),
+          lerp(close.orbit[2], full.orbit[2], distanceProgress),
+        ],
+        fov: lerp(close.fov, full.fov, retreat),
+      }, true);
+      tourFrame = requestAnimationFrame(retreat === 1 ? () => settleGallery(screenRect) : draw);
+    });
+  });
+}
+
+function showEntryFallback(message) {
+  canEnterWithoutModel = true;
+  enter.removeAttribute('aria-disabled');
+  openingStatus.textContent = message;
+}
+function onLoaded() {
+  window.clearTimeout(loadWait);
+  status.hidden = true;
+  model.classList.add('model-loaded');
+  viewerError = false;
+  if (phase === 'opening' && requestedEntry) playTour();
+}
+function loadingError() {
+  window.clearTimeout(loadWait);
+  viewerError = true;
+  model.classList.remove('model-loaded');
+  status.hidden = false;
+  status.replaceChildren('三维预览加载失败。', document.createTextNode(' '));
+  const link = document.createElement('a');
+  link.href = model.getAttribute('src');
+  link.download = '';
+  link.textContent = '下载 GLB ↗';
+  status.append(link);
+  if (phase === 'opening') showEntryFallback('模型暂时无法加载，可以先进入展馆。');
+}
+model.addEventListener('load', onLoaded);
+model.addEventListener('error', loadingError);
+if (model.loaded) onLoaded();
+window.setTimeout(() => {
+  if (!customElements.get('model-viewer') && !viewerError) loadingError();
+}, 12000);
+
+enter.addEventListener('click', () => {
+  if (phase !== 'opening') return;
+  if (model.loaded && !viewerError) {
+    playTour();
+    return;
+  }
+  if (canEnterWithoutModel) {
+    requestedEntry = false;
+    enterGallery();
+    return;
+  }
+  if (requestedEntry) return;
+  requestedEntry = true;
+  enter.setAttribute('aria-disabled', 'true');
+  openingStatus.textContent = '正在加载三维展馆…';
+  loadWait = window.setTimeout(() => showEntryFallback('模型仍在加载，可以先进入展馆。'), 20000);
+});
+
+if (document.documentElement.classList.contains('direct-gallery')) {
+  enterGallery();
+} else {
+  for (const element of siteChrome) element.inert = true;
+  opening.focus({ preventScroll: true });
+  setView('overview', true);
+}
+new ResizeObserver(() => {
+  if (phase === 'tour') return;
+  const selected = presetButtons.find(button => button.getAttribute('aria-pressed') === 'true');
+  if (selected) setView(selected.dataset.view, phase === 'opening');
+}).observe(model);
