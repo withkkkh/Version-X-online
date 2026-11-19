@@ -61,6 +61,34 @@
     const el=document.createElementNS(ns,tag);
     Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));parent.append(el);return el;
   }
+  const compact = matchMedia('(max-width:1000px)');
+  const pinGroup = document.createElement('div');
+  pinGroup.className = 'mobile-pins';
+  pinGroup.setAttribute('role','group');
+  pinGroup.setAttribute('aria-label','选择要阅读的要素');
+  const pins = notes.map((note,i)=>{
+    note.id = 'question-'+(i+1);
+    const pin = document.createElement('button');
+    pin.type='button'; pin.className='pin pin-'+(i+1);
+    pin.setAttribute('aria-controls',note.id);
+    const ordinal = note.querySelector('.ordinal').cloneNode(true);
+    const label = Array.from(note.querySelector('h2').childNodes).find(n=>n.nodeType===3).textContent;
+    pin.append(ordinal,document.createTextNode(label));
+    pin.addEventListener('click',()=>selectQuestion(i));
+    pinGroup.append(pin);
+    return pin;
+  });
+  function selectQuestion(index){
+    notes.forEach((note,i)=>{
+      note.classList.toggle('selected',i===index);
+      pins[i].setAttribute('aria-pressed',String(i===index));
+    });
+  }
+  document.querySelector('.specimen').append(pinGroup);
+  stage.classList.add('has-pins');
+  selectQuestion(0);
+  const frost=document.querySelector('.frost');
+  let pointer=null;
   const leaders=notes.map(note=>{
     const group=vector('g',{},svg);
     const path=vector('path',{fill:'none',stroke:'#61717f','stroke-width':1},group);
@@ -72,7 +100,7 @@
     return {path,marker,note};
   });
   let bounds, anchors, width,height,scale,frame=0,last=0,heading=.27,pitch=-.43;
-  let aimX=0,aimY=0,easeX=0,easeY=0,drag=null,paused=preference.matches, visible=true;
+  let paused=preference.matches,visible=true,step=-1,clock=0;
   function measure(){
     const board=stage.getBoundingClientRect(), box=canvas.getBoundingClientRect();
     width=box.width;height=box.height;
@@ -81,16 +109,16 @@
     ctx.setTransform(ratio,0,0,ratio,0,0);
     scale=Math.min(width,height)*.43/radius;
     bounds={x:box.left-board.left+width/2,y:box.top-board.top+height/2};
-    anchors=notes.map(note=>{
+    anchors=(compact.matches?pins:notes).map(note=>{
       const b=note.getBoundingClientRect();
       const x=b.left-board.left,y=b.top-board.top;
       return {x:bounds.x < x?x:bounds.x > x+b.width?x+b.width:Math.max(x+10,Math.min(x+b.width-10,bounds.x)),
         y:bounds.y < y?y:bounds.y > y+b.height?y+b.height:y+b.height*.6};
     });
-    draw();schedule();
+    step=-1;draw();schedule();
   }
   function draw(){
-    const yaw=heading+easeX,tilt=pitch+easeY,cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(tilt),sp=Math.sin(tilt);
+    const yaw=heading,tilt=pitch,cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(tilt),sp=Math.sin(tilt);
     const points=vertices.map(([x,y,z])=>{
       const xx=x*cy-z*sy,zz=x*sy+z*cy;
       return [xx,y*cp-zz*sp,y*sp+zz*cp];
@@ -98,68 +126,73 @@
     ctx.clearRect(0,0,width,height);
     const ordered=mesh.map((ids,i)=>({ids,i,z:ids.reduce((d,id)=>d+points[id][2],0)/ids.length})).sort((a,b)=>a.z-b.z);
     const project=p=>[width/2+p[0]*scale,height/2-p[1]*scale];
+    const screen = points.map(project);
+    let overSurface = false;
     for(const {ids,i} of ordered){
       const p=points[ids[0]], normal=normalize(cross(minus(points[ids[1]],p),minus(points[ids[2]],p)));
       const sign=normal[2]<0?-1:1, light=.24+.69*Math.max(0,sign*(-normal[0]*.42+normal[1]*.64+normal[2]*.58));
       const rgb=palette.map(n=>Math.round(n+(239-n)*light));
       ctx.fillStyle='rgb('+rgb.join(',')+')';ctx.strokeStyle='rgba(39,57,73,.36)';ctx.lineWidth=.55;
-      ctx.beginPath();ids.forEach((id,k)=>{const [x,y]=project(points[id]);k?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+      ctx.beginPath();ids.forEach((id,k)=>{const [x,y]=screen[id];k?ctx.lineTo(x,y):ctx.moveTo(x,y);});
       ctx.closePath();ctx.fill();ctx.stroke();
+      if(pointer&&!overSurface){
+        const ratio=canvas.width/width;
+        overSurface=ctx.isPointInPath(pointer.x*ratio,pointer.y*ratio);
+      }
       if(i%11===0 && normal[2]*sign>.5 && width>230){
         const [x,y]=project(p);ctx.fillStyle='#30465895';ctx.font='6px monospace';ctx.fillText(i%2?'·':'+',x,y);
       }
     }
+    frost.classList.toggle('lit',overSurface);
+    if(overSurface){
+      frost.style.left=Math.round(pointer.x/8)*8+'px';
+      frost.style.top=Math.round(pointer.y/8)*8+'px';
+    }
+    const tickIndex=Math.floor(clock/195);
+    if(tickIndex===step)return;
+    step=tickIndex;
     leaders.forEach(({path,marker},i)=>{
       const end=anchors[i], dx=end.x-bounds.x, dy=end.y-bounds.y;
-      const mag=Math.hypot(dx,dy)||1,ux=dx/mag,uy=dy/mag;
-      // Four persistent surface vertices stay attached as the object turns.
-      if(!leaders[i].vertex){
-        let best=-Infinity, index=0;
-        points.forEach((p,j)=>{const score=p[0]*ux-p[1]*uy+.32*p[2];if(score>best){best=score;index=j;}});
-        leaders[i].vertex={index};
-      }
-      const p=points[leaders[i].vertex.index];
-      const x=bounds.x+p[0]*scale,y=bounds.y-p[1]*scale;
-      const elbow=x+(end.x-x)*.42;
+      const mag=Math.hypot(dx,dy)||1, reach=Math.min(width,height)*.34;
+      const burst=(step+i*3)%11;
+      const jitter=!paused && burst<3;
+      const x=Math.round(bounds.x+dx/mag*reach+(jitter?[3,-4,2][burst]:0));
+      const y=Math.round(bounds.y+dy/mag*reach+(jitter?[-3,2,4][burst]:0));
+      const elbow=Math.round(x+(end.x-x)*.42);
       path.setAttribute('d','M'+x+' '+y+' H'+elbow+' L'+end.x+' '+end.y);
       marker.setAttribute('transform','translate('+x+' '+y+')');
+      path.setAttribute('opacity',jitter&&burst===1?'.48':'.91');
+      marker.setAttribute('opacity',jitter&&burst===0?'.42':'1');
     });
   }
   function tick(now){
     frame=0;if(!visible||document.hidden)return;
     if(now-last>32){
-      if(!paused&&!drag)heading+=Math.min(now-last,70)*.00013;
-      easeX+=(aimX-easeX)*.18;easeY+=(aimY-easeY)*.18;
+      if(!paused){
+        const delta=Math.min(now-last,70);
+        heading+=delta*.00018;clock+=delta;
+      }
       draw();last=now;
     }
-    if(!paused||Math.abs(easeX-aimX)+Math.abs(easeY-aimY)>.001)schedule();
+    if(!paused)schedule();
   }
   function schedule(){if(!frame&&visible&&!document.hidden)frame=requestAnimationFrame(tick);}
-  function resetAim(){aimX=0;aimY=0;schedule();}
-  stage.addEventListener('pointermove',e=>{
-    if(drag||paused||e.pointerType!=='mouse')return;
-    const b=stage.getBoundingClientRect();
-    aimX=((e.clientX-b.left)/b.width-.5)*.34;aimY=((e.clientY-b.top)/b.height-.5)*.18;schedule();
-  });
-  stage.addEventListener('pointerleave',resetAim);
-  canvas.addEventListener('pointerdown',e=>{
-    if(e.button!==0)return;
-    drag={id:e.pointerId,x:e.clientX,y:e.clientY,a:heading,b:pitch};
-    canvas.setPointerCapture(e.pointerId);
-  });
   canvas.addEventListener('pointermove',e=>{
-    if(drag?.id!==e.pointerId)return;
-    heading=drag.a+(e.clientX-drag.x)*.012;pitch=drag.b+(e.clientY-drag.y)*.009;draw();
+    if(e.pointerType!=='mouse' || preference.matches)return;
+    const b=canvas.getBoundingClientRect();
+    pointer={x:e.clientX-b.left,y:e.clientY-b.top};
+    if(paused)draw();
   });
-  canvas.addEventListener('lostpointercapture',()=>{drag=null;schedule();});
+  canvas.addEventListener('pointerleave',()=>{pointer=null;frost.classList.remove('lit');});
   function updateMotion(){
     motion.hidden=false;motion.textContent=paused?'▷':'Ⅱ';
-    motion.setAttribute('aria-label',motion.title=paused?'继续旋转':'暂停旋转');resetAim();
+    motion.setAttribute('aria-label',motion.title=paused?'继续旋转':'暂停旋转');step=-1;draw();schedule();
   }
   motion.addEventListener('click',()=>{paused=!paused;updateMotion();});
-  preference.addEventListener('change',()=>{paused=preference.matches;updateMotion();});
+  preference.addEventListener('change',()=>{paused=preference.matches;pointer=null;updateMotion();});
   document.addEventListener('visibilitychange',()=>{last=0;schedule();});
   const observer=new ResizeObserver(measure);observer.observe(stage);observer.observe(canvas);notes.forEach(n=>observer.observe(n));
   new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(visible)schedule();}).observe(stage);
+  compact.addEventListener('change', measure);
   measure();updateMotion();
 })();

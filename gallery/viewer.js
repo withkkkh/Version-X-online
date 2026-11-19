@@ -2,6 +2,11 @@ import { startModel } from './gallery-runtime.js?v=31';
 import { installTeamHotspots } from './team-hotspots.js?v=30';
 
 const model = document.querySelector('#model');
+customElements.whenDefined('model-viewer').then(() => {
+  const style = document.createElement('style');
+  style.textContent = '@media (any-pointer:fine){:host *{cursor:var(--exhibition-cursor)!important}}';
+  model.shadowRoot?.append(style);
+});
 const status = document.querySelector('#status');
 const stage = document.querySelector('#stage');
 const expand = document.querySelector('#expand');
@@ -27,6 +32,14 @@ const presetButtons = [...document.querySelectorAll('[data-view]')];
 let phase = 'opening';
 let viewerError = false;
 let tourDeadline;
+let previewDeadline;
+let previewMove;
+let previewFade;
+let arrivalFilm;
+const preview = opening.querySelector('.facade-preview');
+const closePhoto = preview.querySelector('.facade-close');
+const widePhoto = preview.querySelector('.facade-wide');
+const skipPreview = preview.querySelector('button');
 let tourFrame;
 let settleAnimation;
 let tourImage;
@@ -94,12 +107,19 @@ window.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
   if (directory.open) closeDirectory(true);
   else if (phase === 'tour') finishTour();
+  else if (['waiting', 'photo-tour', 'film-tour'].includes(phase)) enterGallery();
   else if (stage.classList.contains('expanded')) setExpanded(false);
 });
 
 function hideOpening() {
   opening.hidden = true;
-  opening.classList.remove('light-tour', 'slow-overview');
+  clearTimeout(previewDeadline);
+  previewMove?.cancel();
+  previewFade?.cancel();
+  arrivalFilm?.remove();
+  arrivalFilm = undefined;
+  preview.hidden = true;
+  opening.classList.remove('waiting-facade');
   document.body.classList.remove('opening-active');
   for (const element of siteChrome) element.inert = false;
 }
@@ -107,6 +127,7 @@ function hideOpening() {
 function enterGallery() {
   phase = 'gallery';
   hideOpening();
+  replay.hidden = false;
   document.body.classList.add('gallery-ready');
   setView('overview', true);
   presetButtons[0].focus({ preventScroll: true });
@@ -144,7 +165,7 @@ function finishTour() {
     }
   }
   settleAnimation = undefined;
-  window.removeEventListener('resize', finishTour);
+
   document.body.classList.remove('tour-settling');
   document.body.classList.remove('camera-tour');
   document.body.classList.add('gallery-revealed', 'gallery-ready');
@@ -158,8 +179,8 @@ const smooth = progress => progress * progress * (3 - 2 * progress);
 const clamp = value => Math.max(0, Math.min(1, value));
 const radians = degrees => degrees * Math.PI / 180;
 const fadeTime = 560;
-const facadeHold = 320;
-const retreatTime = 1380;
+const facadeHold = 640;
+const retreatTime = 2050;
 const settleTime = 880;
 const settleEase = "cubic-bezier(.35, 0, .25, 1)";
 
@@ -187,6 +208,8 @@ function measureGalleryScreen() {
 }
 
 async function settleGallery(rect) {
+  // A slow GPU readback must not keep the visitor inside the finished tour.
+  tourDeadline = setTimeout(finishTour, 2300);
   const full = model.getBoundingClientRect();
   const idealAspect = model.getIdealAspect?.() || 1;
   const projectedHeight = ({ width, height }) => Math.min(height, width / idealAspect);
@@ -239,26 +262,27 @@ function playTour() {
   }
 
   phase = 'tour';
-  tourDeadline = setTimeout(finishTour, 4800);
+  clearTimeout(previewDeadline);
   stage.classList.add('entering');
   document.body.classList.add('camera-tour');
   model.inert = true;
   model.removeAttribute('camera-controls');
   model.setAttribute('min-camera-orbit', 'auto auto 2m');
   model.setAttribute('max-camera-orbit', 'auto auto 190m');
-  window.addEventListener("resize", finishTour, { once: true });
+
   const screenRect = measureGalleryScreen();
   const close = getFacadeView();
   const full = fittedView(views.overview, screenRect);
   applyCamera(close, true);
 
-  let started;
+  let previous;
+  let elapsed = 0;
   let revealed = false;
   tourFrame = requestAnimationFrame(() => {
     tourFrame = requestAnimationFrame(function draw(now) {
       if (phase !== 'tour') return;
-      started ??= now;
-      const elapsed = now - started;
+      if (previous !== undefined) elapsed += Math.min(now - previous, 90);
+      previous = now;
       if (!revealed) {
         revealed = true;
         opening.classList.add('leaving');
@@ -292,6 +316,7 @@ function onLoaded() {
   status.hidden = true;
   model.classList.add('model-loaded');
   viewerError = false;
+  if (phase === 'waiting') playTour();
 }
 function loadingError() {
   viewerError = true;
@@ -334,35 +359,93 @@ else {
   cover.addEventListener('error', prepareModel, { once:true });
 }
 replay.addEventListener('click', () => {
-  if (phase !== 'gallery' || !model.loaded) return;
+  if (phase !== 'gallery') return;
   closeDirectory();
   if (stage.classList.contains('expanded')) setExpanded(false);
+  document.documentElement.classList.remove('direct-gallery');
+  document.body.classList.remove('gallery-ready', 'gallery-revealed');
   opening.classList.remove('leaving');
   opening.hidden = false;
   document.body.classList.add('opening-active');
   for (const element of siteChrome) element.inert = true;
-  playTour();
+  phase = 'opening';
+  beginEntrance();
 });
 
-enter.addEventListener('click', () => {
+function prepareArrivalFilm() {
+  // This self-contained shot was rendered from the gallery's own camera path.
+  const film = new Image();
+  film.alt = '';
+  film.className = 'arrival-film';
+  film.onload = () => {
+    if (phase !== 'waiting') return;
+    clearTimeout(previewDeadline);
+    phase = 'film-tour';
+    preview.querySelector('[role="status"]').textContent = '';
+    preview.insertBefore(film, preview.querySelector('.facade-actions'));
+    arrivalFilm = film;
+    const viewport = preview.getBoundingClientRect();
+    const target = model.getBoundingClientRect();
+    const fit = Math.min(target.width / 720, target.height / 440) /
+      Math.min(viewport.width / 720, viewport.height / 440);
+    const x = target.left + target.width / 2 - viewport.width / 2;
+    const y = target.top + target.height / 2 - viewport.height / 2;
+    // 640 ms close-up and 35 camera poses spaced 60 ms apart.
+    previewMove = film.animate([
+      {transform:'none'},
+      {transform:'translate('+x+'px,'+y+'px) scale('+fit+')'}
+    ], {delay:2740, duration:settleTime, easing:settleEase, fill:'forwards'});
+    closePhoto.hidden = true;
+    widePhoto.hidden = true;
+    previewMove.onfinish = () => { if (phase === 'film-tour') enterGallery(); };
+  };
+  film.onerror = () => { if (viewerError && phase === 'waiting') startPhotoTour(); };
+  film.src = new URL('./assets/gallery-arrival.webp', import.meta.url);
+}
+
+// If even the recorded tour is unavailable, pull back from the sign's position in the overview
+// photograph and land on the identical still already in the gallery.
+function startPhotoTour() {
+  if (phase !== 'waiting') return;
+  clearTimeout(previewDeadline);
+  phase = 'photo-tour';
+  preview.querySelector('[role="status"]').textContent = '';
+  const target = model.getBoundingClientRect();
+  const scale = Math.min(target.width / 690, target.height / 378);
+  const w = 690 * scale, h = 378 * scale;
+  const viewport = preview.getBoundingClientRect();
+  const endX = target.left + (target.width - w) / 2;
+  const endY = target.top + (target.height - h) / 2;
+  // The facade sign is centered at (116,235) in the 690 x 378 overview.
+  const zoom = Math.max(5, Math.min(viewport.width * .54 / (65 * scale), viewport.height * .68 / (49 * scale)));
+  const startX = viewport.width / 2 - 116 * scale * zoom;
+  const startY = viewport.height / 2 - 235 * scale * zoom;
+  Object.assign(widePhoto.style,{width:w+'px',height:h+'px'});
+  const time = facadeHold + retreatTime;
+  previewMove = widePhoto.animate([
+    {transform:'translate('+startX+'px,'+startY+'px) scale('+zoom+')',offset:0},
+    {transform:'translate('+startX+'px,'+startY+'px) scale('+zoom+')',offset:facadeHold/time,easing:'cubic-bezier(.32,0,.24,1)'},
+    {transform:'translate('+endX+'px,'+endY+'px) scale(1)'}
+  ],{duration:time,fill:'both'});
+  previewFade = closePhoto.animate([{opacity:1},{opacity:0}],{delay:facadeHold,duration:620,fill:'forwards'});
+  previewMove.onfinish = () => { if (phase === 'photo-tour') enterGallery(); };
+}
+skipPreview.addEventListener('click', enterGallery);
+function beginEntrance() {
   if (phase !== 'opening') return;
   prepareModel();
-  if (model.loaded && !viewerError) {
-    playTour();
-    return;
-  }
   if (reducedMotion.matches) { enterGallery(); return; }
-  phase = 'light-tour';
-  opening.classList.add('light-tour');
-  setTimeout(() => {
-    if (model.loaded && !viewerError) {
-      playTour();
-    } else {
-      opening.classList.add('slow-overview');
-      setTimeout(enterGallery, 1050);
-    }
-  }, 700);
-});
+  if (model.loaded && !viewerError) { playTour(); return; }
+  phase = 'waiting';
+  closePhoto.hidden = widePhoto.hidden = false;
+  preview.querySelector('[role="status"]').textContent = '正在准备入馆镜头…';
+  preview.hidden = false;
+  opening.classList.add('waiting-facade');
+  skipPreview.focus({preventScroll:true});
+  previewDeadline = setTimeout(startPhotoTour, 6500);
+  prepareArrivalFilm();
+}
+enter.addEventListener('click', beginEntrance);
 
 if (document.documentElement.classList.contains('direct-gallery')) {
   enterGallery();

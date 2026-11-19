@@ -59,7 +59,7 @@ h1 span { display:block; margin-top: .22em; color:var(--ink); font: 500 clamp(15
 .n4 { grid-area:2/3; align-self:start; justify-self:start; width:97%; margin-top:2vh }
 footer { max-width: 64ch; margin: 0 auto; padding: 6px 22px 36px; line-height:1.75; color:#516174 }
 footer p { margin:0 }
-@media(max-width:800px) {
+@media(max-width:1000px) {
   .stage { grid-template-columns:1fr 1fr; grid-template-rows:auto auto auto; gap:24px 14px;
     margin-top:0; padding:18px clamp(14px,4vw,32px) 36px; min-height:calc(100svh - 54px); align-content:center }
   .mast { height:54px; font-size:.8rem }
@@ -87,8 +87,8 @@ body {
   gap:16px clamp(20px,3.8vw,78px); padding:72px clamp(20px,3vw,70px) 30px;
   min-height:max(790px,100svh); }
 .specimen { grid-area:2/2; }
-.emblem canvas { aspect-ratio:1.18; touch-action:pan-y; cursor:grab }
-.emblem canvas:active { cursor:grabbing }
+.emblem canvas { aspect-ratio:1.18; touch-action:pan-y }
+
 .signature { grid-area:1/1; align-self:start; padding:4px 0; text-align:left; z-index:1; }
 .signature h1 { font-size:clamp(42px,4.5vw,86px); font-weight:550; line-height:1 }
 .signature h1 span { font:450 clamp(32px,3.8vw,76px)/.98 Inter,Arial,sans-serif; margin-top:5px; letter-spacing:-.05em }
@@ -109,10 +109,8 @@ body {
 .index a span { margin-left:auto }
 .note.active { --rule:#203f64 }
 .note.active h2 { color:#234d77 }
-@media (pointer:fine) {
-  body { cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M2 2H17V17H2Z' fill='white' fill-opacity='.83' stroke='%23263848'/%3E%3Cpath d='M6 9.5h7m-3.5-3.5v7' stroke='%23263848'/%3E%3C/svg%3E") 9 9, crosshair }
-}
-@media(max-width:800px) {
+
+@media(max-width:1000px) {
   .stage { margin:0 auto; padding:12px clamp(14px,4vw,32px) 20px; grid-template-columns:1fr 1fr; grid-template-rows:repeat(5,auto); gap:16px 12px; min-height:0 }
   .signature { grid-area:1/1/2/3; padding:0 }.signature h1{font-size:32px}.signature h1 span{font-size:27px}.signature p{margin-top:6px}
   .specimen { grid-area:3/1/4/3; width:clamp(195px,53vw,320px) }
@@ -123,21 +121,64 @@ body {
 }
 .leads { z-index:2; }
 .note, .signature, .index { z-index:3; }
-@media(min-width:801px) {
+@media(min-width:1001px) {
   .stage { min-height:max(670px,100svh); grid-template-rows:1fr clamp(200px,35svh,360px) 1fr; gap:10px clamp(20px,3.8vw,78px); padding-block:60px 26px; }
   .emblem canvas { height:clamp(200px,37svh,380px); aspect-ratio:auto; }
   .n3 { width:min(54%,470px); }
 }
-@media(min-width:801px) and (max-height:760px) {
+@media(min-width:1001px) and (max-height:760px) {
   .stage { padding-block:54px 16px; }
   .note { padding-block:9px; }.note h2 { margin-bottom:.38em; }
 }
-@media(min-width:801px) {
-  .index { position:relative; padding-left:54px; max-width:310px; }
-  .index::before {
-    content:""; position:absolute; inset:0 auto 0 0; width:42px; border:1px solid #566878;
-    background:conic-gradient(from 45deg at 65% 28%, transparent 0 24%,#374e67 24% 30%,transparent 30% 66%,#8c9caa 66% 73%,transparent 73%) top / 100% 50% no-repeat,
-      repeating-conic-gradient(#5d7085 0 25%,#c9d2da 0 50%,#eef2f4 0 75%,#93a4b5 0) bottom / 11px 11px repeat-x;
-  }
-  .index::after { content:"01/10\A +:-+\A 10/01"; white-space:pre; color:#53697c; position:absolute; left:5px; bottom:18px; font:9px/1.1 var(--mono); }
+.signature .team-glyphs {display:block;height:clamp(38px,4.1vw,66px);width:auto}
+.signature h1 span {font:400 clamp(27px,3.4vw,62px)/1 "Bahnschrift","Arial Narrow",Arial,sans-serif;letter-spacing:.085em;margin:.2em 0 0}
+.signature > p {margin:8px 0}
+.design-brief {position:relative;max-width:36ch;margin:12px 0 0;padding:7px 12px 8px;border-left:1px solid #8998a4;border-bottom:1px solid #a1acb6}
+.design-brief::before {content:"";position:absolute;top:0;left:0;width:23px;border-top:1px solid #526678}
+.design-brief h2 {font:inherit;font-weight:600;font-size:14px;line-height:1.3;margin:0;color:#21394e;letter-spacing:.08em}
+.signature .design-brief p {margin:4px 0 0;color:#435363;font-size:14px;line-height:1.55}
+.note h2 .ordinal,.pin .ordinal {font:500 .73em/1 var(--mono);letter-spacing:.04em;color:#506579}
+.frost {position:absolute;pointer-events:none;z-index:2;display:none;--tile:clamp(24px,4vw,60px)}
+.frost.lit {display:block}
+.frost i {display:block;position:absolute;width:var(--tile);height:var(--tile);transform:translate(-50%,-50%);
+ border:1px solid #8c9ca9a8;box-shadow:inset 0 0 8px #fff4;background:#e9eff144;backdrop-filter:blur(5px) saturate(.7);-webkit-backdrop-filter:blur(5px) saturate(.7);
+ animation:frost-signal 1.2s steps(1,end) infinite}
+.frost i:nth-child(2){left:calc(var(--tile)*.82);top:calc(var(--tile)*-.65);width:calc(var(--tile)*.62);height:calc(var(--tile)*.62);animation-delay:-.72s}
+.frost i:nth-child(3){left:calc(var(--tile)*-.92);top:calc(var(--tile)*.74);width:calc(var(--tile)*.46);height:calc(var(--tile)*.46);animation-delay:-.32s}
+@keyframes frost-signal {0%,70%,100%{opacity:.86}29%{opacity:.28}44%{opacity:.65}56%{opacity:.12}}
+.date-mosaic {display:grid;place-items:center;color:#2c445b;background:repeating-conic-gradient(#d1dce3 0 25%,#edf1f3 0 50%) 0 0/8px 8px;border:1px solid #a2b1bd}
+.date-mosaic svg{width:100%;height:auto;background:#eff3f5db}
+.date-mosaic rect{animation:date-pixel 4.2s steps(1,end) var(--phase) infinite}
+@keyframes date-pixel {0%,68%,100%{opacity:.97}72%{opacity:.4}79%{opacity:.74}85%{opacity:.55}}
+.index {position:relative;padding-left:92px;max-width:330px}
+.date-mosaic {position:absolute;inset:0 auto 0 0;width:80px}
+.mobile-pins {display:none}
+@media(min-width:1001px) {
+  body[data-team="design"] .stage{min-height:max(760px,100svh)}
+}
+@media(max-width:1000px) {
+  .stage {display:flex;flex-direction:column;align-items:stretch;gap:18px;max-width:640px;padding:12px clamp(14px,4vw,30px) 22px}
+  .signature .team-glyphs{height:34px}.signature h1 span{font-size:25px}
+  .signature{align-self:stretch}.signature > p{margin-bottom:0}
+  .design-brief{max-width:100%;margin-top:10px}
+  .specimen{align-self:stretch;width:100%;position:relative;display:grid;place-items:center}
+  .emblem{width:62%;max-width:330px}.emblem canvas{width:100%;height:clamp(180px,51vw,270px);aspect-ratio:auto}
+  .motion{right:2px;top:1px;width:36px;height:36px}
+  .has-pins .mobile-pins{display:block;position:absolute;inset:0;pointer-events:none}
+  .pin {position:absolute;pointer-events:auto;min-height:44px;max-width:34%;padding:5px 6px;display:grid;align-content:center;gap:3px;text-align:left;
+    font-family:inherit;line-height:1.15;font-size:clamp(14px,3.9vw,17px);font-weight:600;border:0;border-bottom:1px solid #91a1ac;background:#fcfcfb;color:#23374a}
+  .pin[aria-pressed=true]{background:#263e54;color:white;border-color:#263e54}.pin[aria-pressed=true] .ordinal{color:#d2e0ea}
+  .pin-1{left:0;top:4%}.pin-2{right:0;top:0}.pin-3{left:0;bottom:0}.pin-4{right:0;bottom:8%}
+  .note,.n1,.n2,.n3,.n4{width:100%;margin:0;padding:12px 14px;align-self:stretch}
+  .has-pins .note:not(.selected){display:none}
+  .note h2 {display:flex;align-items:baseline;gap:9px}.note h2 small{margin:0}
+  .note p{font-size:16px;line-height:1.74}.note .follow{font-size:15px}
+  .index{width:100%;max-width:none;align-self:stretch;margin-top:2px;padding-left:78px;gap:2px 12px}.date-mosaic{width:67px}
+}
+@media(max-width:400px){.index{grid-template-columns:1fr;gap:0}.emblem{width:67%}}
+@media(prefers-reduced-motion:reduce){.frost{display:none!important}.date-mosaic rect{animation:none}}
+@media(min-width:1001px) {
+  .signature {grid-area:auto;position:absolute;top:clamp(55px,7vh,75px);left:clamp(20px,3vw,70px);width:28%}
+  body[data-team="design"] .stage {min-height:max(720px,100svh)}
+  body[data-team="design"] .n1 {align-self:end;margin-bottom:14px}
 }
