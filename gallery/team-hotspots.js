@@ -133,13 +133,36 @@ export function installTeamHotspots(model, stage) {
 
   const meshLinks = new Map();
   const linksByTeam = new Map(links.map(link => [link.dataset.team, link]));
+  const zones = new Map([...model.querySelectorAll('.zone-link')].map(link => [link.dataset.zone, link]));
+  const zoneOrder = ['design', 'software', 'hardware', 'operations'];
+  let floorMesh;
+  let activeZone;
   let hoverFrame;
+  const fingers = new Set();
+
+  function highlightZone(zone) {
+    if (activeZone === zone) return;
+    activeZone?.classList.remove('is-hovered');
+    activeZone = zone;
+    zone?.classList.add('is-hovered');
+    model.classList.toggle('zone-hover', Boolean(zone));
+  }
   let dragged = false;
 
   function indexTerminals() {
     meshLinks.clear();
     const nodes = model.originalGltfJson?.nodes || [];
-    for (const node of nodes) {
+    function addTree(index, link) {
+      const node = nodes[index];
+      if (!link || !node) return;
+      if (node.mesh !== undefined) meshLinks.set(node.mesh, link);
+      for (const child of node.children || []) addTree(child, link);
+    }
+    floorMesh = nodes.find(node => node.name === '地台')?.mesh;
+    for (const [index, node] of nodes.entries()) {
+      const section = /^展区 ([1-4])$/.exec(node.name);
+      if (section) addTree(index, zones.get(zoneOrder[Number(section[1]) - 1]));
+      if (node.name?.startsWith('Team exhibits | ')) addTree(index, zones.get(node.name.split(' | ')[1]));
       const prefix = 'Team terminal | ';
       if (!node.name?.startsWith(prefix)) continue;
       const link = linksByTeam.get(node.name.slice(prefix.length));
@@ -157,7 +180,18 @@ export function installTeamHotspots(model, stage) {
     if (!meshLinks.size || !document.body.classList.contains('gallery-ready')) return;
     const surface = model.surfaceFromPoint?.(x, y);
     // model-viewer starts the surface identifier with the glTF mesh index.
-    if (surface) return meshLinks.get(Number(surface.split(' ', 1)[0]));
+    if (!surface) return;
+    const mesh = Number(surface.split(' ', 1)[0]);
+    if (mesh !== floorMesh) return meshLinks.get(mesh);
+    const point = model.positionAndNormalFromPoint(x, y)?.position;
+    if (!point) return;
+    // The north/south racks sit at z = ±6.36 m and the east/west racks at x = ±7.57 m.
+    // Leave the sculpture, diagonal approach paths and outside apron free for orbiting.
+    const ax = Math.abs(point.x), az = Math.abs(point.z);
+    if (az >= 3.0 && az <= 8.6 && ax <= 6.9 && az / 6.36 > ax / 7.57 + .09)
+      return zones.get(point.z < 0 ? 'design' : 'software');
+    if (ax >= 3.3 && ax <= 10.45 && az <= 6.9 && ax / 7.57 > az / 6.36 + .09)
+      return zones.get(point.x > 0 ? 'hardware' : 'operations');
   }
 
   function overActiveLabel(x, y) {
@@ -199,46 +233,58 @@ export function installTeamHotspots(model, stage) {
   }
 
   model.addEventListener('pointerdown', event => {
-    gesture = [event.clientX, event.clientY];
-    dragged = false;
+    fingers.add(event.pointerId);
+    if (fingers.size === 1) {
+      gesture = [event.clientX, event.clientY];
+      dragged = false;
+    } else dragged = true;
+    highlightZone(null);
   });
   model.addEventListener('pointermove', event => {
     if (gesture && Math.hypot(event.clientX - gesture[0], event.clientY - gesture[1]) >= 7) {
       dragged = true;
     }
-    if (input.matches || event.buttons) return;
+    if (event.pointerType === 'touch' || event.buttons || fingers.size) return;
     cancelAnimationFrame(hoverFrame);
-    const label = event.target.closest('.team-hotspot.is-active');
+    const label = event.target.closest('.team-hotspot.is-active, .zone-link.is-hovered');
     hoverFrame = requestAnimationFrame(() => {
       const link = label || terminalAt(event.clientX, event.clientY) ||
         (overActiveLabel(event.clientX, event.clientY) ? active : null);
       model.classList.toggle('terminal-hover', Boolean(link));
-      if (link) show(link);
+      highlightZone(link?.dataset.zone ? link : null);
+      if (link?.dataset.zone) { if (active) clear(); }
+      else if (link) show(link);
       else hideSoon();
     });
   });
   model.addEventListener('pointerleave', () => {
     cancelAnimationFrame(hoverFrame);
     model.classList.remove('terminal-hover');
+    highlightZone(null);
     if (!input.matches) hideSoon();
   });
-  model.addEventListener('pointerup', event => {
+  window.addEventListener('pointerup', event => {
+    if (!fingers.delete(event.pointerId)) return;
     if (gesture && Math.hypot(event.clientX - gesture[0], event.clientY - gesture[1]) >= 7) {
       dragged = true;
     }
     gesture = null;
   });
-  model.addEventListener('pointercancel', () => {
+  window.addEventListener('pointercancel', event => {
+    if (!fingers.delete(event.pointerId)) return;
     gesture = null;
     dragged = true;
   });
   model.addEventListener('click', event => {
-    if (dragged || event.detail === 0 || event.target.closest('.team-hotspot')) return;
+    if (dragged && event.detail !== 0) { event.preventDefault(); return; }
+    if (event.detail === 0 || event.target.closest('.team-hotspot, .zone-link')) return;
     const link = terminalAt(event.clientX, event.clientY);
-    if (link) enterTerminal(link);
+    if (link?.dataset.zone) window.location.assign(link.href);
+    else if (link) enterTerminal(link);
     else if (input.matches && active) clear(true);
   });
   model.addEventListener('camera-change', event => {
+    if (event.detail.source === 'user-interaction') highlightZone(null);
     queueMarkerLayout();
     if (event.detail.source === 'user-interaction' && active && input.matches) clear();
   });

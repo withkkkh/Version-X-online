@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VERSION X · 版本之外</title>
 <meta name="description" content="从各个角度探索 VERSION X 三维展馆。">
-<link rel="stylesheet" href="./style.css?v=27">
+<link rel="stylesheet" href="./style.css?v=28">
 <script type="module" async src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"></script>
-<script type="module" src="./viewer.js?v=27"></script>
+<script type="module" src="./viewer.js?v=28"></script>
 <noscript><style>.opening{display:none!important}body.opening-active{overflow:auto}</style></noscript>
 <script>
   const entryUrl = new URL(location.href);
@@ -82,23 +82,27 @@
   <a class="team-hotspot" slot="hotspot-team-operations" data-team="operations" data-position="1.049m 1.13m 0.859m" href="./knowledge.html?team=operations" aria-label="运营团队知识图谱">
     <span class="team-hotspot-dot" aria-hidden="true"></span><span class="team-hotspot-label" aria-hidden="true">运营团队知识图谱 <span>↗</span></span>
   </a>
+  <a class="zone-link" data-zone="design" slot="hotspot-zone-design" data-position="0m 2.4m -6.36m" href="./story-design.html" aria-label="进入设计团队叙事页"><span>设计展区 ↗</span></a>
+  <a class="zone-link" data-zone="software" slot="hotspot-zone-software" data-position="0m 2.4m 6.36m" href="./story-software.html" aria-label="进入软件团队叙事页"><span>软件展区 ↗</span></a>
+  <a class="zone-link" data-zone="hardware" slot="hotspot-zone-hardware" data-position="7.57m 2.4m 0m" href="./story-hardware.html" aria-label="进入硬件团队叙事页"><span>硬件展区 ↗</span></a>
+  <a class="zone-link" data-zone="operations" slot="hotspot-zone-operations" data-position="-7.57m 2.4m 0m" href="./story-operations.html" aria-label="进入运营团队叙事页"><span>运营展区 ↗</span></a>
 </model-viewer>
 <div id="status" class="status" role="status">正在加载三维模型…</div>
 <noscript><p class="status">开启 JavaScript 后即可旋转展馆。</p></noscript>
 </div>
 <button type="button" class="tour-skip" id="tour-skip" hidden>跳过导览</button>
 <div class="stage-foot">
-  <p id="visit-tip"><span class="mouse-tip">请拖动鼠标环顾展馆，将光标移到展品终端上，点击名称进入知识图谱。</span><span class="touch-tip">请滑动屏幕环顾展馆，轻点展品终端，再点名称进入知识图谱。</span></p>
+  <p id="visit-tip"><span class="mouse-tip">请将光标移到展区，点击进入团队故事；拖动可环顾展馆。</span><span class="touch-tip">轻点展区，进入团队故事；滑动可环顾展馆。</span></p>
   <div class="visit-actions">
     <button type="button" id="reset">重置视角 <span aria-hidden="true">↺</span></button>
     <details class="directory">
       <summary>展区入口</summary>
       <div class="directory-panel">
         <ul>
-        <li><strong>设计</strong><button type="button" data-view="rack-design" aria-label="查看设计展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=design" aria-label="设计知识图谱">知识图谱 ↗</a></li>
-        <li><strong>软件</strong><button type="button" data-view="rack-software" aria-label="查看软件展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=software" aria-label="软件知识图谱">知识图谱 ↗</a></li>
-        <li><strong>硬件</strong><button type="button" data-view="rack-hardware" aria-label="查看硬件展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=hardware" aria-label="硬件知识图谱">知识图谱 ↗</a></li>
-        <li><strong>运营</strong><button type="button" data-view="rack-operations" aria-label="查看运营展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=operations" aria-label="运营知识图谱">知识图谱 ↗</a></li>
+        <li><a class="zone-directory-link" href="./story-design.html" aria-label="进入设计团队叙事页">设计展区 ↗</a><button type="button" data-view="rack-design" aria-label="查看设计展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=design" aria-label="设计知识图谱">知识图谱 ↗</a></li>
+        <li><a class="zone-directory-link" href="./story-software.html" aria-label="进入软件团队叙事页">软件展区 ↗</a><button type="button" data-view="rack-software" aria-label="查看软件展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=software" aria-label="软件知识图谱">知识图谱 ↗</a></li>
+        <li><a class="zone-directory-link" href="./story-hardware.html" aria-label="进入硬件团队叙事页">硬件展区 ↗</a><button type="button" data-view="rack-hardware" aria-label="查看硬件展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=hardware" aria-label="硬件知识图谱">知识图谱 ↗</a></li>
+        <li><a class="zone-directory-link" href="./story-operations.html" aria-label="进入运营团队叙事页">运营展区 ↗</a><button type="button" data-view="rack-operations" aria-label="查看运营展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=operations" aria-label="运营知识图谱">知识图谱 ↗</a></li>
         </ul>
         <button type="button" data-view="sculpture" aria-pressed="false">雕塑俯视</button>
       </div>

@@ -1,4 +1,4 @@
-import { installTeamHotspots } from './team-hotspots.js?v=4';
+import { installTeamHotspots } from './team-hotspots.js?v=28';
 
 const model = document.querySelector('#model');
 const status = document.querySelector('#status');

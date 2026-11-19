@@ -193,3 +193,11 @@ model-viewer.model-loaded::part(default-progress-bar){display:none}
   .visit-actions { margin-left:auto; }
   .opening-glass .opening-copy::after { inset:3px 12px 9px; --corner:linear-gradient(#acbfde,#acbfde); }
 }
+
+.zone-link { display:none; pointer-events:none; white-space:nowrap; color:#fff; }
+.gallery-ready .model-loaded .zone-link { display:block; }
+.zone-link span { display:block; padding:8px 14px; border:1px solid #c7d4e1; border-radius:2px; background:#234e75; box-shadow:0 3px 15px #17395926; font-size:.88rem; font-weight:650; }
+.zone-link:not(.is-hovered):not(:focus-visible) { opacity:0; }
+.zone-link.is-hovered span,.zone-link:focus-visible span { pointer-events:auto; }
+model-viewer.zone-hover { cursor:pointer; }
+.directory-panel .zone-directory-link { font-weight:700; color:#1b3b56; }
