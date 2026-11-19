@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VERSION X · 版本之外</title>
 <meta name="description" content="从各个角度探索 VERSION X 三维展馆。">
-<link rel="stylesheet" href="./style.css?v=12">
+<link rel="stylesheet" href="./style.css?v=27">
 <script type="module" async src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"></script>
-<script type="module" src="./viewer.js?v=17"></script>
+<script type="module" src="./viewer.js?v=27"></script>
 <noscript><style>.opening{display:none!important}body.opening-active{overflow:auto}</style></noscript>
 <script>
   const entryUrl = new URL(location.href);
@@ -19,7 +19,7 @@
   }
 </script>
 </head>
-<body class="opening-active">
+<body class="opening-active exhibit">
 <section class="opening" id="opening" role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="opening-title">
   <div class="opening-art">
     <img src="./assets/version-x-opening.webp" alt="版本之外 VERSION X 展览主海报" width="896" height="1200" fetchpriority="high">
@@ -57,27 +57,10 @@
 </section>
 <section id="stage" class="stage" aria-label="展馆交互预览">
 <div class="toolbar">
-<div class="view-controls">
 <div class="presets" role="group" aria-label="视角">
 <button type="button" data-view="overview" aria-pressed="true">总览</button>
 <button type="button" data-view="top" aria-pressed="false">俯视</button>
-<button type="button" data-view="sculpture" aria-pressed="false">雕塑俯视</button>
 <button type="button" data-view="facade" aria-pressed="false">玻璃立面</button>
-</div>
-<div class="rack-views" role="group" aria-label="团队展架">
-<span aria-hidden="true">展架</span>
-<button type="button" data-view="rack-design" aria-pressed="false">设计</button>
-<button type="button" data-view="rack-software" aria-pressed="false">软件</button>
-<button type="button" data-view="rack-hardware" aria-pressed="false">硬件</button>
-<button type="button" data-view="rack-operations" aria-pressed="false">运营</button>
-</div>
-<nav class="knowledge-entries" aria-label="团队知识图谱">
-<span>知识图谱</span>
-<a href="./knowledge.html?team=design" aria-label="设计团队知识图谱">设计</a>
-<a href="./knowledge.html?team=software" aria-label="软件团队知识图谱">软件</a>
-<a href="./knowledge.html?team=hardware" aria-label="硬件团队知识图谱">硬件</a>
-<a href="./knowledge.html?team=operations" aria-label="运营团队知识图谱">运营</a>
-</nav>
 </div>
 <button id="expand" type="button" class="expand" aria-label="放大预览" aria-pressed="false"><span aria-hidden="true">⛶</span><span class="expand-text">放大</span></button>
 </div>
@@ -104,7 +87,24 @@
 <noscript><p class="status">开启 JavaScript 后即可旋转展馆。</p></noscript>
 </div>
 <button type="button" class="tour-skip" id="tour-skip" hidden>跳过导览</button>
-<div class="stage-foot"><span>拖动旋转 <i>·</i> 滚轮或双指缩放</span><button type="button" id="reset">重置视角 <span aria-hidden="true">↺</span></button></div>
+<div class="stage-foot">
+  <p id="visit-tip"><span class="mouse-tip">请拖动鼠标环顾展馆，将光标移到展品终端上，点击名称进入知识图谱。</span><span class="touch-tip">请滑动屏幕环顾展馆，轻点展品终端，再点名称进入知识图谱。</span></p>
+  <div class="visit-actions">
+    <button type="button" id="reset">重置视角 <span aria-hidden="true">↺</span></button>
+    <details class="directory">
+      <summary>展区入口</summary>
+      <div class="directory-panel">
+        <ul>
+        <li><strong>设计</strong><button type="button" data-view="rack-design" aria-label="查看设计展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=design" aria-label="设计知识图谱">知识图谱 ↗</a></li>
+        <li><strong>软件</strong><button type="button" data-view="rack-software" aria-label="查看软件展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=software" aria-label="软件知识图谱">知识图谱 ↗</a></li>
+        <li><strong>硬件</strong><button type="button" data-view="rack-hardware" aria-label="查看硬件展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=hardware" aria-label="硬件知识图谱">知识图谱 ↗</a></li>
+        <li><strong>运营</strong><button type="button" data-view="rack-operations" aria-label="查看运营展架" aria-pressed="false">查看展架</button><a href="./knowledge.html?team=operations" aria-label="运营知识图谱">知识图谱 ↗</a></li>
+        </ul>
+        <button type="button" data-view="sculpture" aria-pressed="false">雕塑俯视</button>
+      </div>
+    </details>
+  </div>
+</div>
 </section>
 </main>
 </body>

@@ -143,17 +143,53 @@ body.camera-tour .stage.waiting-for-tour .screen,
 
 model-viewer.model-loaded::part(default-progress-bar){display:none}
 
-.toolbar{align-items:flex-start}
-.view-controls{display:flex;align-items:center;flex-wrap:wrap;column-gap:19px;row-gap:3px;min-width:0}
-.rack-views{display:flex;align-items:center;gap:2px;min-width:0}
-.rack-views>span{font-size:.72rem;color:var(--muted);padding-inline:7px 5px;white-space:nowrap}
-.rack-views>button{white-space:nowrap}
-.expand{flex-shrink:0}
-@media(max-width:680px){.view-controls{flex-direction:column;align-items:flex-start}.rack-views>button{min-height:33px}}
 
-.knowledge-entries{display:flex;align-items:center;gap:2px;min-width:0}
-.knowledge-entries>span{font-size:.72rem;color:var(--muted);padding-inline:7px 5px;white-space:nowrap}
-.knowledge-entries a{padding:8px 7px;min-height:35px;display:inline-flex;align-items:center;gap:3px;font-size:.8rem;white-space:nowrap;text-decoration:none;color:#254d71;border-radius:4px}
-.knowledge-entries a::after{content:"↗";font-size:.65rem}
-.knowledge-entries a:is(:hover,:focus-visible){background:#e2edf5;color:#153957}
-@media(max-width:680px){.toolbar{align-items:flex-start}.knowledge-entries a{min-height:36px}.knowledge-entries>span,.rack-views>span{padding-left:0}}
+/* Repeat the four registration marks used on the team's knowledge maps. */
+.exhibit { --ink:#142b46; --rule:#b8cadb; --corner:linear-gradient(#536cb5,#536cb5); background:#f4f7fa; }
+.exhibit .mast { background:#f9fbfd; }
+.exhibit .intro { gap:18px; padding-block:clamp(21px,3vw,43px); }
+.exhibit .version-mark { width:clamp(42px,5vw,65px); color:#254e76; }
+.wordmark h1 { display:flex; gap:.27em; color:#183657; letter-spacing:.12em; }
+.wordmark h1 b { color:#6d84ac; }
+.exhibit .stage:not(.entering) { border:1px solid var(--rule); background:#f9fbfd; }
+.exhibit .stage:not(.entering)::after, .opening-glass .opening-copy::after {
+  content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:var(--corner) left top,var(--corner) right top,var(--corner) left bottom,var(--corner) right bottom,
+    var(--corner) left top,var(--corner) right top,var(--corner) left bottom,var(--corner) right bottom;
+  background-repeat:no-repeat;
+  background-size:15px 2px,15px 2px,15px 2px,15px 2px,2px 15px,2px 15px,2px 15px,2px 15px;
+}
+.opening-glass .opening-copy::after { inset:clamp(12px,2vw,28px); }
+.exhibit #open-gallery { color:white; background:#244e77; border-color:#244e77; border-radius:3px; }
+.exhibit #open-gallery:hover { background:#16385a; }
+.opening-arrow { color:inherit; }
+.toolbar { align-items:center; padding:8px clamp(8px,1.6vw,20px); border-bottom:1px solid #d5dfeb; }
+.presets { align-items:center; gap:3px; }
+.presets button[aria-pressed="true"] { color:white; background:#244e77; border-color:#244e77; }
+.screen { background:radial-gradient(ellipse at 50% 55%,#fff 20%,#edf3f8 100%); }
+.stage-foot { position:relative; z-index:3; padding:9px clamp(10px,1.6vw,20px); border-top:1px solid #cfdae6; }
+#visit-tip { margin:0; color:#365573; font-size:.875rem; line-height:1.6; }
+.touch-tip { display:none; }
+.visit-actions { display:flex; align-items:center; gap:10px; flex:none; }
+.directory summary { cursor:pointer; color:#fff; background:#234d75; border-radius:3px; padding:9px 14px; font-size:.875rem; }
+.directory summary:focus-visible { outline:2px solid #3978aa; outline-offset:2px; }
+.directory-panel {
+  position:absolute; bottom:calc(100% + 2px); right:8px; width:min(320px,calc(100% - 16px));
+  max-height:min(52dvh,320px); overflow:auto; padding:8px 12px;
+  border:1px solid #99b1c9; background:#fbfdff; box-shadow:0 8px 26px #183b6026;
+}
+.directory-panel ul { list-style:none; margin:0; padding:0; }
+.directory-panel li { display:grid; grid-template-columns:1fr auto auto; gap:8px; align-items:center; border-bottom:1px solid #dbe4ed; }
+.directory-panel strong { font-size:.95rem; color:#183957; }
+.directory-panel li a { display:inline-flex; align-items:center; min-height:44px; font-size:.875rem; color:#235d92; }
+.directory-panel a:hover { text-decoration:underline; }
+.directory-panel > button { margin-top:4px; }
+@media (max-width:680px), (pointer:coarse), (hover:none) {
+  .mouse-tip { display:none; }
+  .touch-tip { display:inline; }
+}
+@media (max-width:680px) {
+  .stage-foot { flex-wrap:wrap; gap:2px; }
+  .visit-actions { margin-left:auto; }
+  .opening-glass .opening-copy::after { inset:3px 12px 9px; --corner:linear-gradient(#acbfde,#acbfde); }
+}

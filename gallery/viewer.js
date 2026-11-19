@@ -65,7 +65,19 @@ function setView(name, immediate = false) {
   }
 }
 
-for (const button of presetButtons) button.addEventListener('click', () => setView(button.dataset.view));
+const directory = stage.querySelector('.directory');
+const directoryToggle = directory.querySelector('summary');
+function closeDirectory(restoreFocus = false) {
+  directory.open = false;
+  if (restoreFocus) directoryToggle.focus({ preventScroll: true });
+}
+for (const button of presetButtons) button.addEventListener('click', () => {
+  setView(button.dataset.view);
+  if (directory.contains(button)) closeDirectory(true);
+});
+document.addEventListener('pointerdown', event => {
+  if (directory.open && !directory.contains(event.target)) closeDirectory();
+});
 document.querySelector('#reset').addEventListener('click', () => setView('overview', true));
 model.addEventListener('camera-change', (event) => {
   if (phase !== 'gallery' || event.detail.source !== 'user-interaction') return;
@@ -82,7 +94,8 @@ function setExpanded(show) {
 expand.addEventListener('click', () => setExpanded(!stage.classList.contains('expanded')));
 window.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
-  if (phase === 'tour') finishTour();
+  if (directory.open) closeDirectory(true);
+  else if (phase === 'tour') finishTour();
   else if (stage.classList.contains('expanded')) setExpanded(false);
 });
 
