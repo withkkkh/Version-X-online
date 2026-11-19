@@ -1,5 +1,5 @@
 export function installTeamHotspots(model, stage, openMap) {
-  const links = [...model.querySelectorAll('.team-hotspot')];
+  const links = [...model.querySelectorAll('.team-hotspot[data-team]')];
   const input = matchMedia('(max-width: 680px), (pointer: coarse), (hover: none)');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let active;
@@ -94,7 +94,7 @@ export function installTeamHotspots(model, stage, openMap) {
     hiding = undefined;
     model.classList.remove('terminal-hover');
     if (active) {
-      movePlatform(active.dataset.team, 0);
+      movePlatform(active.dataset.zone ? 'zone-' + active.dataset.zone : active.dataset.team, 0);
       active.classList.remove('is-active');
       active = null;
       model.variantName = null;
@@ -111,8 +111,7 @@ export function installTeamHotspots(model, stage, openMap) {
     clearTimeout(hiding);
     hiding = undefined;
     if (!model.loaded || active === link) return;
-    highlightZone(null);
-    const key = link.dataset.team;
+    const key = link.dataset.zone ? 'zone-' + link.dataset.zone : link.dataset.team;
     active?.classList.remove('is-active');
     active = link;
     link.classList.add('is-active');
@@ -137,34 +136,9 @@ export function installTeamHotspots(model, stage, openMap) {
   const zones = new Map([...model.querySelectorAll('.zone-link')].map(link => [link.dataset.zone, link]));
   const zoneOrder = ['design', 'software', 'hardware', 'operations'];
   let floorMesh;
-  let activeZone;
   let hoverFrame;
   const fingers = new Set();
 
-  function highlightZone(zone) {
-    if (activeZone === zone) return;
-    if (activeZone) {
-      activeZone.classList.remove('is-hovered');
-      if (!active) {
-        movePlatform('zone-' + activeZone.dataset.zone, 0);
-        model.variantName = null;
-      }
-    }
-    if (zone && active) clear();
-    activeZone = zone;
-    if (zone) {
-      zone.classList.add('is-hovered');
-      model.variantName = 'zone-' + zone.dataset.zone;
-      movePlatform(model.variantName, 1);
-    }
-    model.classList.toggle('zone-hover', Boolean(zone));
-  }
-  for (const zone of zones.values()) {
-    zone.addEventListener('focus', () => {
-      if (zone.matches(':focus-visible')) highlightZone(zone);
-    });
-    zone.addEventListener('blur', () => { if (activeZone === zone) highlightZone(null); });
-  }
   let dragged = false;
 
   function indexTerminals() {
@@ -236,14 +210,14 @@ export function installTeamHotspots(model, stage, openMap) {
     }
   }
 
-  for (const link of links) {
+  for (const link of [...links, ...zones.values()]) {
     link.addEventListener('focus', () => { if (link.matches(':focus-visible')) show(link); });
     link.addEventListener('blur', () => {
       if (!input.matches && !link.matches(':hover')) hideSoon();
     });
     link.addEventListener('pointerdown', event => event.stopPropagation());
     link.addEventListener('click', event => {
-      if (!input.matches || event.detail === 0 || active === link || !model.loaded) return;
+      if (link.dataset.zone || !input.matches || event.detail === 0 || active === link || !model.loaded) return;
       event.preventDefault();
       show(link);
       focusCamera(link);
@@ -257,30 +231,28 @@ export function installTeamHotspots(model, stage, openMap) {
       dragged = false;
     } else dragged = true;
     const hit = event.pointerType === 'touch' && fingers.size === 1 ? terminalAt(event.clientX, event.clientY) : null;
-    highlightZone(hit?.dataset.zone ? hit : null);
+    if (hit?.dataset.zone) show(hit);
   });
   model.addEventListener('pointermove', event => {
     if (gesture && Math.hypot(event.clientX - gesture[0], event.clientY - gesture[1]) >= 7) {
       dragged = true;
-      highlightZone(null);
+      clear();
     }
     if (event.pointerType === 'touch' || event.buttons || fingers.size) return;
     cancelAnimationFrame(hoverFrame);
-    const label = event.target.closest('.team-hotspot.is-active, .zone-link.is-hovered');
+    if (event.target.closest('.map-sign')) { clear(); return; }
+    const label = event.target.closest('.team-hotspot.is-active');
     hoverFrame = requestAnimationFrame(() => {
       const link = label || terminalAt(event.clientX, event.clientY) ||
         (overActiveLabel(event.clientX, event.clientY) ? active : null);
       model.classList.toggle('terminal-hover', Boolean(link));
-      highlightZone(link?.dataset.zone ? link : null);
-      if (link?.dataset.zone) { if (active) clear(); }
-      else if (link) show(link);
+      if (link) show(link);
       else hideSoon();
     });
   });
   model.addEventListener('pointerleave', () => {
     cancelAnimationFrame(hoverFrame);
     model.classList.remove('terminal-hover');
-    highlightZone(null);
     if (!input.matches) hideSoon();
   });
   window.addEventListener('pointerup', event => {
@@ -297,19 +269,19 @@ export function installTeamHotspots(model, stage, openMap) {
   });
   model.addEventListener('click', event => {
     if (dragged && event.detail !== 0) { event.preventDefault(); return; }
-    if (event.detail === 0 || event.target.closest('.team-hotspot, .zone-link')) return;
-    const link = activeZone || terminalAt(event.clientX, event.clientY);
+    if (event.detail === 0 || event.target.closest('.team-hotspot, [data-view]')) return;
+    const link = terminalAt(event.clientX, event.clientY);
     if (link?.dataset.zone) window.location.assign(link.href);
     else if (link) enterTerminal(link);
     else if (input.matches && active) clear(true);
   });
   model.addEventListener('camera-change', event => {
-    if (event.detail.source === 'user-interaction') highlightZone(null);
+
     queueMarkerLayout();
-    if (event.detail.source === 'user-interaction' && active && input.matches) clear();
+    if (event.detail.source === 'user-interaction' && active && (input.matches || active.dataset.zone)) clear();
   });
   stage.addEventListener('click', event => {
-    if (event.target.closest('[data-view], #reset')) { highlightZone(null); clear(); }
+    if (event.target.closest('[data-view], #reset')) clear();
   });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && active) clear(true);

@@ -1,4 +1,5 @@
-import { installTeamHotspots } from './team-hotspots.js?v=29';
+import { startModel } from './gallery-runtime.js?v=31';
+import { installTeamHotspots } from './team-hotspots.js?v=30';
 
 const model = document.querySelector('#model');
 const status = document.querySelector('#status');
@@ -98,6 +99,7 @@ window.addEventListener('keydown', (event) => {
 
 function hideOpening() {
   opening.hidden = true;
+  opening.classList.remove('light-tour', 'slow-overview');
   document.body.classList.remove('opening-active');
   for (const element of siteChrome) element.inert = false;
 }
@@ -282,7 +284,11 @@ function playTour() {
   });
 }
 
+const replay = document.querySelector('#tour-replay');
+let waitNotice;
 function onLoaded() {
+  clearTimeout(waitNotice);
+  replay.hidden = false;
   status.hidden = true;
   model.classList.add('model-loaded');
   viewerError = false;
@@ -291,13 +297,8 @@ function loadingError() {
   viewerError = true;
   model.classList.remove('model-loaded');
   status.hidden = false;
-  status.replaceChildren('三维预览加载失败。', document.createTextNode(' '));
-  const link = document.createElement('a');
-  link.href = model.getAttribute('src');
-  link.download = '';
-  link.textContent = '下载 GLB ↗';
-  status.append(link);
-  status.prepend('可通过下方「展区目录」继续参观。');
+  clearTimeout(waitNotice);
+  showRetry('三维模型暂时无法显示，可从下方「展区入口」继续参观。');
 }
 let lastProgress = -1;
 model.addEventListener('progress', event => {
@@ -310,17 +311,57 @@ model.addEventListener('progress', event => {
 model.addEventListener('load', onLoaded);
 model.addEventListener('error', loadingError);
 if (model.loaded) onLoaded();
-window.setTimeout(() => {
-  if (!customElements.get('model-viewer') && !viewerError) loadingError();
-}, 12000);
+function showRetry(message) {
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.textContent = '重新加载';
+  retry.onclick = () => location.assign('./?entry=return-from-map');
+  status.replaceChildren(message, ' ', retry);
+}
+let startedModel = false;
+function prepareModel() {
+  if (startedModel) return;
+  startedModel = true;
+  waitNotice = setTimeout(() => {
+    if (!model.loaded) showRetry('仍在准备三维展馆，可先浏览下方「展区入口」。');
+  }, 18000);
+  startModel(model).catch(loadingError);
+}
+const cover = opening.querySelector('img');
+if (cover.complete || document.documentElement.classList.contains('direct-gallery')) prepareModel();
+else {
+  cover.addEventListener('load', prepareModel, { once:true });
+  cover.addEventListener('error', prepareModel, { once:true });
+}
+replay.addEventListener('click', () => {
+  if (phase !== 'gallery' || !model.loaded) return;
+  closeDirectory();
+  if (stage.classList.contains('expanded')) setExpanded(false);
+  opening.classList.remove('leaving');
+  opening.hidden = false;
+  document.body.classList.add('opening-active');
+  for (const element of siteChrome) element.inert = true;
+  playTour();
+});
 
 enter.addEventListener('click', () => {
   if (phase !== 'opening') return;
+  prepareModel();
   if (model.loaded && !viewerError) {
     playTour();
     return;
   }
-  enterGallery();
+  if (reducedMotion.matches) { enterGallery(); return; }
+  phase = 'light-tour';
+  opening.classList.add('light-tour');
+  setTimeout(() => {
+    if (model.loaded && !viewerError) {
+      playTour();
+    } else {
+      opening.classList.add('slow-overview');
+      setTimeout(enterGallery, 1050);
+    }
+  }, 700);
 });
 
 if (document.documentElement.classList.contains('direct-gallery')) {
