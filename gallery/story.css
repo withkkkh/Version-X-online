@@ -139,24 +139,6 @@ body {
 .design-brief h2 {margin:0 0 5px 0;display:table;position:relative;left:1px;padding:3px 9px;background:#2d3d4d;color:#fff;font:600 13px/1.2 "PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:.09em}
 .design-brief p {margin:0;padding:4px 11px;font-size:13px;line-height:1.6;color:#566470}
 .note h2 .ordinal,.pin .ordinal {font:500 .73em/1 var(--mono);letter-spacing:.04em;color:#506579}
-.frost {position:absolute;pointer-events:none;z-index:2;display:none;--tile:clamp(42px,5.2vw,88px)}
-.frost.lit {display:block}
-.frost i {position:absolute;display:block;width:var(--tile);aspect-ratio:1;
-  --ax:-36%;--ay:-63%;--bx:12%;--by:-96%;
-  border:1px solid #76889bc2;box-shadow:inset 1px 1px 0 #ffffffad,inset 0 0 17px #ffffff54;
-  background:linear-gradient(135deg,#f7fafc3d,#a8c0ce27);
-  backdrop-filter:blur(7px) saturate(.56) contrast(1.18);-webkit-backdrop-filter:blur(7px) saturate(.56) contrast(1.18);
-  animation:glass-cut 1.82s infinite}
-.frost i:nth-child(2){width:calc(var(--tile)*.7);--ax:-154%;--ay:26%;--bx:-193%;--by:5%;animation-delay:-.71s}
-.frost i:nth-child(3){width:calc(var(--tile)*.46);--ax:160%;--ay:69%;--bx:185%;--by:112%;animation-delay:-1.21s}
-@keyframes glass-cut {
-  0%,17%{opacity:0;transform:translate(var(--ax),var(--ay)) scale(.78)}
-  22%,45%{opacity:.98;transform:translate(var(--ax),var(--ay)) scale(1)}
-  49%{opacity:.08;transform:translate(var(--ax),var(--ay)) scale(.99)}
-  50%{opacity:0;transform:translate(var(--bx),var(--by)) scale(.94)}
-  55%,72%{opacity:.82;transform:translate(var(--bx),var(--by)) scale(1)}
-  82%,100%{opacity:0;transform:translate(var(--bx),var(--by)) scale(1)}
-}
 /* The original narrow plate: folded dark shard above, pixel strip at its foot. */
 .index {position:relative;padding-left:54px;max-width:310px}
 .date-mosaic {position:absolute;inset:0 auto 0 0;width:42px;overflow:hidden;border:1px solid #566878;color:#394f63}
@@ -166,8 +148,6 @@ body {
 .date-mosaic span {position:absolute;left:5px;bottom:18px;font:11px/1 var(--mono);letter-spacing:.06em}
 @keyframes shard-shift {0%,54%,100%{transform:none}63%{transform:translateX(-2px) skewY(8deg)}70%{transform:translateX(1px) skewY(-4deg)}80%{transform:none}}
 @keyframes pixel-shift {0%,64%,100%{background-position:0 0}67%{background-position:3px 5px}74%{background-position:11px 0}83%{background-position:5px 5px}}
-.lead-sweep {stroke:#263e54;stroke-width:1.35;stroke-dasharray:.15 1.85;animation:lead-sweep 4s ease-out var(--lag) infinite;pointer-events:none}
-@keyframes lead-sweep {0%,57%{opacity:0;stroke-dashoffset:.15}60%{opacity:.78}80%{opacity:.5;stroke-dashoffset:-.9}84%,100%{opacity:0;stroke-dashoffset:-1}}
 .stage.motion-paused *, .stage.motion-paused *::before,.stage.motion-paused *::after{animation-play-state:paused}
 .mobile-pins {display:none}
 @media(min-width:1001px) {
@@ -193,7 +173,7 @@ body {
   .index{width:100%;max-width:none;align-self:stretch;margin-top:2px;padding-left:54px;gap:2px 12px}
 }
 @media(max-width:400px){.index{grid-template-columns:1fr;gap:0}.emblem{width:73%}}
-@media(prefers-reduced-motion:reduce){.frost{display:none!important}.date-mosaic::before,.date-mosaic::after,.lead-sweep{animation:none}.lead-sweep{opacity:0}}
+@media(prefers-reduced-motion:reduce){.date-mosaic::before,.date-mosaic::after{animation:none}}
 @media(min-width:1001px) {
   .signature {grid-area:auto;position:absolute;top:clamp(55px,7vh,75px);left:clamp(20px,3vw,70px);width:28%}
   body[data-team="design"] .stage {min-height:max(720px,100svh)}
@@ -217,4 +197,21 @@ body {
 }
 @media(max-width:1000px){
   .design-brief{width:min(100%,420px);align-self:flex-end;margin:2px 0 0}
+}
+
+/* The caption rule and its leader meet at one fixed joint. */
+.callout-line {color:#26313b}
+@media(min-width:1001px){
+  .note {--rule:#56616a;border:0;border-bottom:1px solid var(--rule);background:transparent}
+  .note::before,.note::after {display:none}
+  .n3 {border-bottom:0;border-top:1px solid var(--rule)}
+  .n4 {--corner:13px;border:0;background:var(--rule);clip-path:polygon(0 0,100% 0,100% calc(100% - var(--corner)),calc(100% - var(--corner)) 100%,0 100%)}
+  .n4::before {display:block;inset:1px;width:auto;height:auto;background:#fcfcfb;clip-path:inherit}
+  .n4::after {display:block;top:0;left:49%;width:19%;height:1px;background:#fcfcfb;border:0}
+  .n4 h2 {background:#e1e4e6;padding:2px 5px}
+}
+
+@media(hover:hover) and (min-width:1001px){
+  .motion {opacity:0}
+  .emblem:hover .motion,.motion:focus-visible,.motion-paused .motion {opacity:1}
 }
