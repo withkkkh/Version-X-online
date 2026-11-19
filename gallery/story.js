@@ -89,15 +89,17 @@
   selectQuestion(0);
   const frost=document.querySelector('.frost');
   let pointer=null;
-  const leaders=notes.map(note=>{
+  const leaders=notes.map((note,index)=>{
     const group=vector('g',{},svg);
     const path=vector('path',{fill:'none',stroke:'#61717f','stroke-width':1},group);
+    const sweep=vector('path',{class:'lead-sweep',fill:'none',pathLength:1},group);
+    sweep.style.setProperty('--lag',(-index*.87)+'s');
     const marker=vector('g',{},group);
     vector('rect',{x:-6,y:-6,width:12,height:12,fill:'#fcfcfb',stroke:'#435162'},marker);
     vector('rect',{x:-2.5,y:-2.5,width:5,height:5,fill:'#283748'},marker);
     note.addEventListener('pointerenter',()=>{path.setAttribute('stroke','#193f6c');note.classList.add('active');});
     note.addEventListener('pointerleave',()=>{path.setAttribute('stroke','#61717f');note.classList.remove('active');});
-    return {path,marker,note};
+    return {path,sweep,marker};
   });
   let bounds, anchors, width,height,scale,frame=0,last=0,heading=.27,pitch=-.43;
   let paused=preference.matches,visible=true,step=-1,clock=0;
@@ -107,7 +109,7 @@
     const ratio=Math.min(devicePixelRatio||1,1.75);
     canvas.width=Math.round(width*ratio); canvas.height=Math.round(height*ratio);
     ctx.setTransform(ratio,0,0,ratio,0,0);
-    scale=Math.min(width,height)*.43/radius;
+    scale=Math.min(width,height)*.477/radius;
     bounds={x:box.left-board.left+width/2,y:box.top-board.top+height/2};
     anchors=(compact.matches?pins:notes).map(note=>{
       const b=note.getBoundingClientRect();
@@ -118,7 +120,7 @@
     step=-1;draw();schedule();
   }
   function draw(){
-    const yaw=heading,tilt=pitch,cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(tilt),sp=Math.sin(tilt);
+    const yaw=heading,tilt=pitch+.17*Math.sin(heading*1.48),cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(tilt),sp=Math.sin(tilt);
     const points=vertices.map(([x,y,z])=>{
       const xx=x*cy-z*sy,zz=x*sy+z*cy;
       return [xx,y*cp-zz*sp,y*sp+zz*cp];
@@ -131,7 +133,9 @@
     for(const {ids,i} of ordered){
       const p=points[ids[0]], normal=normalize(cross(minus(points[ids[1]],p),minus(points[ids[2]],p)));
       const sign=normal[2]<0?-1:1, light=.24+.69*Math.max(0,sign*(-normal[0]*.42+normal[1]*.64+normal[2]*.58));
-      const rgb=palette.map(n=>Math.round(n+(239-n)*light));
+      const sheen = Math.pow(Math.max(0,sign*(-.18*normal[0]+.32*normal[1]+.93*normal[2])),16)*.22;
+      const tone = Math.min(1,Math.max(0,(light-.43)*1.3+.42+sheen));
+      const rgb=palette.map(n=>Math.round(n+(246-n)*tone));
       ctx.fillStyle='rgb('+rgb.join(',')+')';ctx.strokeStyle='rgba(39,57,73,.36)';ctx.lineWidth=.55;
       ctx.beginPath();ids.forEach((id,k)=>{const [x,y]=screen[id];k?ctx.lineTo(x,y):ctx.moveTo(x,y);});
       ctx.closePath();ctx.fill();ctx.stroke();
@@ -148,21 +152,30 @@
       frost.style.left=Math.round(pointer.x/8)*8+'px';
       frost.style.top=Math.round(pointer.y/8)*8+'px';
     }
-    const tickIndex=Math.floor(clock/195);
+    const tickIndex=Math.floor(clock/145);
     if(tickIndex===step)return;
     step=tickIndex;
-    leaders.forEach(({path,marker},i)=>{
+    leaders.forEach(({path,sweep,marker},i)=>{
       const end=anchors[i], dx=end.x-bounds.x, dy=end.y-bounds.y;
-      const mag=Math.hypot(dx,dy)||1, reach=Math.min(width,height)*.34;
-      const burst=(step+i*3)%11;
-      const jitter=!paused && burst<3;
-      const x=Math.round(bounds.x+dx/mag*reach+(jitter?[3,-4,2][burst]:0));
-      const y=Math.round(bounds.y+dy/mag*reach+(jitter?[-3,2,4][burst]:0));
-      const elbow=Math.round(x+(end.x-x)*.42);
-      path.setAttribute('d','M'+x+' '+y+' H'+elbow+' L'+end.x+' '+end.y);
+      const mag=Math.hypot(dx,dy)||1;
+      const reach=Math.min(mag*.76,Math.min(width,height)*.405);
+      const beat=(step+7*i)%(19+i*2);
+      const twitch=!paused && beat<4;
+      const jump=compact.matches?0.6:1;
+      const x=Math.round(bounds.x+dx/mag*reach+(twitch?[3,-8,5,-1][beat]*jump:0));
+      const y=Math.round(bounds.y+dy/mag*reach+(twitch?[-4,6,2,0][beat]*jump:0));
+      // Route from the registered object area to the card on a 45-degree elbow.
+      const horizontal=Math.abs(end.x-x),vertical=Math.abs(end.y-y);
+      const sx=Math.sign(end.x-x),sy=Math.sign(end.y-y);
+      const diagonal=Math.min(horizontal*.7,vertical);
+      const lead=Math.min(24,horizontal-diagonal)*sx;
+      const bendX=x+lead+sx*diagonal,bendY=y+sy*diagonal;
+      const route='M'+x+' '+y+' h'+lead+' L'+bendX+' '+bendY+' V'+end.y+' H'+end.x;
+      path.setAttribute('d',route);
+      sweep.setAttribute('d',route);
       marker.setAttribute('transform','translate('+x+' '+y+')');
-      path.setAttribute('opacity',jitter&&burst===1?'.48':'.91');
-      marker.setAttribute('opacity',jitter&&burst===0?'.42':'1');
+      path.setAttribute('opacity',twitch&&beat===1?'.35':'.83');
+      marker.setAttribute('opacity',twitch&&beat===2?'.27':'1');
     });
   }
   function tick(now){
@@ -170,7 +183,7 @@
     if(now-last>32){
       if(!paused){
         const delta=Math.min(now-last,70);
-        heading+=delta*.00018;clock+=delta;
+        heading+=delta*(.00018+.00009*(1+Math.sin(clock*.00091)));clock+=delta;
       }
       draw();last=now;
     }
@@ -185,6 +198,7 @@
   });
   canvas.addEventListener('pointerleave',()=>{pointer=null;frost.classList.remove('lit');});
   function updateMotion(){
+    stage.classList.toggle('motion-paused',paused);
     motion.hidden=false;motion.textContent=paused?'▷':'Ⅱ';
     motion.setAttribute('aria-label',motion.title=paused?'继续旋转':'暂停旋转');step=-1;draw();schedule();
   }
