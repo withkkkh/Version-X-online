@@ -6,10 +6,8 @@ a:focus-visible,summary:focus-visible{outline:2px solid #356da4;outline-offset:4
 .mast,.frame{width:min(1160px,calc(100% - clamp(32px,8vw,120px)));margin-inline:auto}
 .mast,.frame-top{display:flex;align-items:center;justify-content:space-between;gap:1em}
 .mast{height:68px;font-size:.9rem;color:#445b72}.brand{display:inline-flex;align-items:center;gap:.7em;letter-spacing:.14em;font-size:.92rem;font-weight:650}.brand svg{width:27px;height:27px}
-.frame{--corner:linear-gradient(#6177a1,#6177a1);position:relative;margin-block:14px 40px;border:1px solid #becedc;background:
-var(--corner) left top/17px 2px,var(--corner) left top/2px 17px,var(--corner) right top/17px 2px,var(--corner) right top/2px 17px,var(--corner) left bottom/17px 2px,var(--corner) left bottom/2px 17px,var(--corner) right bottom/17px 2px,var(--corner) right bottom/2px 17px,
-radial-gradient(ellipse at 51% 60%,rgb(var(--accent)/.08),transparent 62%),#f9fbfd;background-repeat:no-repeat}
-.frame-top{margin:0 clamp(18px,4vw,58px);padding:clamp(18px,3vw,36px) 0 14px;border-bottom:1px solid #d9e2ea}
+.frame{margin-block:14px 40px}
+.frame-top{padding:clamp(18px,3vw,36px) 0 14px}
 h1{margin:0;font-size:clamp(1.1rem,2vw,1.42rem);font-weight:550;letter-spacing:.12em}.frame-top a{font-size:.88rem;color:#45617d}
 summary{position:relative;display:block;list-style:none;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 summary::-webkit-details-marker{display:none}
@@ -34,7 +32,7 @@ box-shadow:inset 3px 5px 13px #ffffffcf,inset -7px -8px 13px rgb(var(--accent)/.
 @media(hover:hover){summary:hover .bubble{transform:translateY(-3px) scale(1.016)}}
 summary:active .bubble{transform:scale(.97)}
 .unfolded-title,.fold{display:none}
-.story[open]{padding:clamp(24px,4vw,52px) clamp(18px,4vw,58px) clamp(30px,5vw,64px)}
+.story[open]{padding:clamp(24px,4vw,52px) 0 clamp(30px,5vw,64px)}
 .story[open] summary{display:flex;align-items:center;justify-content:space-between;gap:16px}
 .story[open] .field{display:none}.story[open] .unfolded-title{display:block;font-size:clamp(1.65rem,3.6vw,3rem);line-height:1.22}.story[open] .fold{display:block;white-space:nowrap;font-size:.84rem;color:#496079}
 .intro{max-width:47em;margin:18px 0 0;line-height:1.85;color:#4c6379}
