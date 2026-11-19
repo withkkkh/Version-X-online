@@ -1,4 +1,4 @@
-import { installTeamHotspots } from './team-hotspots.js?v=28';
+import { installTeamHotspots } from './team-hotspots.js?v=29';
 
 const model = document.querySelector('#model');
 const status = document.querySelector('#status');
@@ -6,7 +6,6 @@ const stage = document.querySelector('#stage');
 const expand = document.querySelector('#expand');
 const opening = document.querySelector('#opening');
 const enter = document.querySelector('#open-gallery');
-const openingStatus = document.querySelector('#opening-status');
 const skip = document.querySelector('#tour-skip');
 const siteChrome = [document.querySelector('.mast'), document.querySelector('main')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -25,15 +24,13 @@ const views = {
 const presetButtons = [...document.querySelectorAll('[data-view]')];
 
 let phase = 'opening';
-let requestedEntry = false;
-let canEnterWithoutModel = false;
 let viewerError = false;
-let loadWait;
+let tourDeadline;
 let tourFrame;
 let settleAnimation;
 let tourImage;
 
-installTeamHotspots(model, stage);
+installTeamHotspots(model, stage, openMap);
 
 function units(values, suffix) {
   return values.map(value => value.toFixed(3) + suffix).join(' ');
@@ -115,6 +112,7 @@ function enterGallery() {
 
 function finishTour() {
   if (phase !== 'tour') return;
+  clearTimeout(tourDeadline);
   cancelAnimationFrame(tourFrame);
   hideOpening();
   phase = 'gallery';
@@ -239,6 +237,7 @@ function playTour() {
   }
 
   phase = 'tour';
+  tourDeadline = setTimeout(finishTour, 4800);
   stage.classList.add('entering');
   document.body.classList.add('camera-tour');
   model.inert = true;
@@ -283,20 +282,12 @@ function playTour() {
   });
 }
 
-function showEntryFallback(message) {
-  canEnterWithoutModel = true;
-  enter.removeAttribute('aria-disabled');
-  openingStatus.textContent = message;
-}
 function onLoaded() {
-  window.clearTimeout(loadWait);
   status.hidden = true;
   model.classList.add('model-loaded');
   viewerError = false;
-  if (phase === 'opening' && requestedEntry) playTour();
 }
 function loadingError() {
-  window.clearTimeout(loadWait);
   viewerError = true;
   model.classList.remove('model-loaded');
   status.hidden = false;
@@ -306,8 +297,16 @@ function loadingError() {
   link.download = '';
   link.textContent = '下载 GLB ↗';
   status.append(link);
-  if (phase === 'opening') showEntryFallback('模型暂时无法加载，可以先进入展馆。');
+  status.prepend('可通过下方「展区目录」继续参观。');
 }
+let lastProgress = -1;
+model.addEventListener('progress', event => {
+  if (model.loaded || viewerError) return;
+  const progress = Math.min(99, Math.floor(event.detail.totalProgress * 10) * 10);
+  if (progress === lastProgress) return;
+  lastProgress = progress;
+  status.textContent = '三维展馆加载中 ' + progress + '% · 可先浏览下方展区目录';
+});
 model.addEventListener('load', onLoaded);
 model.addEventListener('error', loadingError);
 if (model.loaded) onLoaded();
@@ -321,16 +320,7 @@ enter.addEventListener('click', () => {
     playTour();
     return;
   }
-  if (canEnterWithoutModel) {
-    requestedEntry = false;
-    enterGallery();
-    return;
-  }
-  if (requestedEntry) return;
-  requestedEntry = true;
-  enter.setAttribute('aria-disabled', 'true');
-  openingStatus.textContent = '正在加载三维展馆…';
-  loadWait = window.setTimeout(() => showEntryFallback('模型仍在加载，可以先进入展馆。'), 20000);
+  enterGallery();
 });
 
 if (document.documentElement.classList.contains('direct-gallery')) {
@@ -345,3 +335,68 @@ new ResizeObserver(() => {
   const selected = presetButtons.find(button => button.getAttribute('aria-pressed') === 'true');
   if (selected) setView(selected.dataset.view, phase === 'opening');
 }).observe(model);
+
+const mapDialog = document.createElement('dialog');
+mapDialog.className = 'gallery-map';
+mapDialog.setAttribute('aria-label', '团队知识图谱');
+document.body.append(mapDialog);
+const galleryTitle = document.title;
+function closeMap() {
+  if (mapDialog.open) history.back();
+}
+function displayMap(url) {
+  const frame = document.createElement('iframe');
+  frame.title = '团队知识图谱';
+  frame.addEventListener('load', () => {
+    const doc = frame.contentDocument;
+    if (!doc?.querySelector('.knowledge-page')) {
+      location.replace(url);
+      return;
+    }
+    document.title = doc.title;
+    doc.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      const link = event.target.closest('a[href]');
+      if (!link) return;
+      const target = new URL(link.href);
+      if (target.origin !== location.origin) return;
+      if (target.searchParams.get('entry') === 'return-from-map') {
+        event.preventDefault();
+        closeMap();
+      } else if (target.pathname.endsWith('/knowledge.html')) {
+        event.preventDefault();
+        openMap(target.href);
+      }
+    });
+    doc.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !event.defaultPrevented) closeMap();
+    });
+    frame.focus();
+  }, { once:true });
+  frame.src = url;
+  mapDialog.replaceChildren(frame);
+  if (!mapDialog.open) mapDialog.showModal();
+}
+function openMap(href) {
+  const url = new URL(href, location.href);
+  const state = { galleryMap: url.href };
+  if (mapDialog.open) history.replaceState(state, '', url);
+  else history.pushState(state, '', url);
+  displayMap(url.href);
+}
+mapDialog.addEventListener('cancel', event => { event.preventDefault(); closeMap(); });
+document.addEventListener('click', event => {
+  if (event.defaultPrevented || event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  const link = event.target.closest('a[href]');
+  if (!link || !new URL(link.href).pathname.endsWith('/knowledge.html')) return;
+  event.preventDefault();
+  openMap(link.href);
+});
+window.addEventListener('popstate', () => {
+  if (history.state?.galleryMap) displayMap(history.state.galleryMap);
+  else if (mapDialog.open) {
+    mapDialog.close();
+    mapDialog.replaceChildren();
+    document.title = galleryTitle;
+  }
+});

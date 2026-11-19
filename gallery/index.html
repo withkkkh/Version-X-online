@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VERSION X · 版本之外</title>
 <meta name="description" content="从各个角度探索 VERSION X 三维展馆。">
-<link rel="stylesheet" href="./style.css?v=28">
+<link rel="stylesheet" href="./style.css?v=29">
+<link rel="preload" as="fetch" crossorigin href="./assets/version-x-gallery-v29.glb">
 <script type="module" async src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"></script>
-<script type="module" src="./viewer.js?v=28"></script>
+<script type="module" src="./viewer.js?v=29"></script>
 <noscript><style>.opening{display:none!important}body.opening-active{overflow:auto}</style></noscript>
 <script>
   const entryUrl = new URL(location.href);
@@ -65,7 +66,7 @@
 <button id="expand" type="button" class="expand" aria-label="放大预览" aria-pressed="false"><span aria-hidden="true">⛶</span><span class="expand-text">放大</span></button>
 </div>
 <div class="screen">
-<model-viewer id="model" src="./assets/version-x-team-exhibits.glb?v=original-art-1"
+<model-viewer id="model" src="./assets/version-x-gallery-v29.glb"
   alt="VERSION X 展馆，中央雕塑、四个展区和乳白竖纹磨砂玻璃外墙"
   loading="eager" animation-crossfade-duration="0" camera-controls touch-action="none" interaction-prompt="none"
   environment-image="neutral" exposure=".87" shadow-intensity=".65"
