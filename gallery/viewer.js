@@ -1,5 +1,6 @@
+import { installWalk } from './walk.js?v=40';
 import { startModel } from './gallery-runtime.js?v=31';
-import { installTeamHotspots } from './team-hotspots.js?v=30';
+import { installTeamHotspots } from './team-hotspots.js?v=40';
 
 const model = document.querySelector('#model');
 customElements.whenDefined('model-viewer').then(() => {
@@ -39,12 +40,23 @@ let arrivalFilm;
 const preview = opening.querySelector('.facade-preview');
 const closePhoto = preview.querySelector('.facade-close');
 const widePhoto = preview.querySelector('.facade-wide');
-const skipPreview = preview.querySelector('button');
+const skipPreview = preview.querySelector('#skip-facade');
 let tourFrame;
 let settleAnimation;
 let tourImage;
 
 installTeamHotspots(model, stage, openMap);
+const startWalk=installWalk(stage,model,setView);
+const address=preview.querySelector('.opening-address');
+let walkRequested=false;
+function afterArrival(){
+  if(!walkRequested)return;
+  walkRequested=false;startWalk();
+}
+function skipWalk(){
+  walkRequested=false;
+  if(phase==='tour')finishTour();else enterGallery();
+}
 
 function units(values, suffix) {
   return values.map(value => value.toFixed(3) + suffix).join(' ');
@@ -106,13 +118,13 @@ expand.addEventListener('click', () => setExpanded(!stage.classList.contains('ex
 window.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
   if (directory.open) closeDirectory(true);
-  else if (phase === 'tour') finishTour();
-  else if (['waiting', 'photo-tour', 'film-tour'].includes(phase)) enterGallery();
+  else if (['address','tour','waiting','photo-tour','film-tour'].includes(phase)) skipWalk();
   else if (stage.classList.contains('expanded')) setExpanded(false);
 });
 
 function hideOpening() {
   opening.hidden = true;
+  address.hidden=true;preview.classList.remove('reading-address');
   clearTimeout(previewDeadline);
   previewMove?.cancel();
   previewFade?.cancel();
@@ -131,6 +143,7 @@ function enterGallery() {
   document.body.classList.add('gallery-ready');
   setView('overview', true);
   presetButtons[0].focus({ preventScroll: true });
+  afterArrival();
 }
 
 function finishTour() {
@@ -171,8 +184,9 @@ function finishTour() {
   document.body.classList.add('gallery-revealed', 'gallery-ready');
   setView('overview', true);
   presetButtons[0].focus({ preventScroll: true });
+  afterArrival();
 }
-skip.addEventListener('click', finishTour);
+skip.addEventListener('click', skipWalk);
 
 const lerp = (from, to, progress) => from + (to - from) * progress;
 const smooth = progress => progress * progress * (3 - 2 * progress);
@@ -323,7 +337,7 @@ function loadingError() {
   model.classList.remove('model-loaded');
   status.hidden = false;
   clearTimeout(waitNotice);
-  showRetry('三维模型暂时无法显示，可从下方「展区入口」继续参观。');
+  showRetry('三维模型暂时无法显示，可从下方「导览入口」继续参观。');
 }
 let lastProgress = -1;
 model.addEventListener('progress', event => {
@@ -348,7 +362,7 @@ function prepareModel() {
   if (startedModel) return;
   startedModel = true;
   waitNotice = setTimeout(() => {
-    if (!model.loaded) showRetry('仍在准备三维展馆，可先浏览下方「展区入口」。');
+    if (!model.loaded) showRetry('仍在准备三维展馆，可先浏览下方「导览入口」。');
   }, 18000);
   startModel(model).catch(loadingError);
 }
@@ -411,15 +425,15 @@ function startPhotoTour() {
   phase = 'photo-tour';
   preview.querySelector('[role="status"]').textContent = '';
   const target = model.getBoundingClientRect();
-  const scale = Math.min(target.width / 690, target.height / 378);
-  const w = 690 * scale, h = 378 * scale;
+  const scale = Math.min(target.width / 720, target.height / 440);
+  const w = 720 * scale, h = 440 * scale;
   const viewport = preview.getBoundingClientRect();
   const endX = target.left + (target.width - w) / 2;
   const endY = target.top + (target.height - h) / 2;
-  // The facade sign is centered at (116,235) in the 690 x 378 overview.
+  // The facade sign is centered at (116,285) in the 720 x 440 overview.
   const zoom = Math.max(5, Math.min(viewport.width * .54 / (65 * scale), viewport.height * .68 / (49 * scale)));
   const startX = viewport.width / 2 - 116 * scale * zoom;
-  const startY = viewport.height / 2 - 235 * scale * zoom;
+  const startY = viewport.height / 2 - 285 * scale * zoom;
   Object.assign(widePhoto.style,{width:w+'px',height:h+'px'});
   const time = facadeHold + retreatTime;
   previewMove = widePhoto.animate([
@@ -430,10 +444,19 @@ function startPhotoTour() {
   previewFade = closePhoto.animate([{opacity:1},{opacity:0}],{delay:facadeHold,duration:620,fill:'forwards'});
   previewMove.onfinish = () => { if (phase === 'photo-tour') enterGallery(); };
 }
-skipPreview.addEventListener('click', enterGallery);
+skipPreview.addEventListener('click', skipWalk);
 function beginEntrance() {
   if (phase !== 'opening') return;
   prepareModel();
+  phase='address';
+  closePhoto.hidden=false;widePhoto.hidden=true;preview.hidden=false;address.hidden=false;
+  preview.classList.add('reading-address');opening.classList.add('waiting-facade');
+  address.querySelector('h2').focus({preventScroll:true});
+}
+address.querySelector('#skip-walk').addEventListener('click',skipWalk);
+address.querySelector('#start-walk').addEventListener('click',()=>{
+  if(phase!=='address')return;
+  walkRequested=true;address.hidden=true;preview.classList.remove('reading-address');
   if (reducedMotion.matches) { enterGallery(); return; }
   if (model.loaded && !viewerError) { playTour(); return; }
   phase = 'waiting';
@@ -444,7 +467,7 @@ function beginEntrance() {
   skipPreview.focus({preventScroll:true});
   previewDeadline = setTimeout(startPhotoTour, 6500);
   prepareArrivalFilm();
-}
+});
 enter.addEventListener('click', beginEntrance);
 
 if (document.documentElement.classList.contains('direct-gallery')) {

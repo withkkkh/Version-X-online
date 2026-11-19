@@ -16,7 +16,7 @@ export function installTeamHotspots(model, stage, openMap) {
   function spaceMarkers() {
     layoutFrame = undefined;
     if (!model.classList.contains('model-loaded') || !document.body.classList.contains('gallery-ready')) return;
-    const points = links.map(link => {
+    const points = (input.matches ? [...links,...zones.values()] : links).map(link => {
       const rect = link.getBoundingClientRect();
       const previous = offsets.get(link) || [0, 0];
       const x = rect.left + rect.width / 2 - previous[0];
@@ -206,21 +206,21 @@ export function installTeamHotspots(model, stage, openMap) {
       openMap(link.href);
     } else {
       show(link);
-      focusCamera(link);
+      if (!link.dataset.zone) focusCamera(link);
     }
   }
 
   for (const link of [...links, ...zones.values()]) {
-    link.addEventListener('focus', () => { if (link.matches(':focus-visible')) show(link); });
+    link.addEventListener('focus', () => { if (!input.matches && link.matches(':focus-visible')) show(link); });
     link.addEventListener('blur', () => {
       if (!input.matches && !link.matches(':hover')) hideSoon();
     });
-    link.addEventListener('pointerdown', event => event.stopPropagation());
+    link.addEventListener('pointerdown', event => { dragged=false; event.stopPropagation(); });
     link.addEventListener('click', event => {
-      if (link.dataset.zone || !input.matches || event.detail === 0 || active === link || !model.loaded) return;
+      if (!input.matches || event.detail === 0 || active === link || !model.loaded) return;
       event.preventDefault();
       show(link);
-      focusCamera(link);
+      if (!link.dataset.zone) focusCamera(link);
     });
   }
 
@@ -230,8 +230,6 @@ export function installTeamHotspots(model, stage, openMap) {
       gesture = [event.clientX, event.clientY];
       dragged = false;
     } else dragged = true;
-    const hit = event.pointerType === 'touch' && fingers.size === 1 ? terminalAt(event.clientX, event.clientY) : null;
-    if (hit?.dataset.zone) show(hit);
   });
   model.addEventListener('pointermove', event => {
     if (gesture && Math.hypot(event.clientX - gesture[0], event.clientY - gesture[1]) >= 7) {
@@ -240,7 +238,7 @@ export function installTeamHotspots(model, stage, openMap) {
     }
     if (event.pointerType === 'touch' || event.buttons || fingers.size) return;
     cancelAnimationFrame(hoverFrame);
-    if (event.target.closest('.map-sign')) { clear(); return; }
+    if (input.matches) return;
     const label = event.target.closest('.team-hotspot.is-active');
     hoverFrame = requestAnimationFrame(() => {
       const link = label || terminalAt(event.clientX, event.clientY) ||
@@ -271,7 +269,10 @@ export function installTeamHotspots(model, stage, openMap) {
     if (dragged && event.detail !== 0) { event.preventDefault(); return; }
     if (event.detail === 0 || event.target.closest('.team-hotspot, [data-view]')) return;
     const link = terminalAt(event.clientX, event.clientY);
-    if (link?.dataset.zone) window.location.assign(link.href);
+    if (link?.dataset.zone) {
+      if (input.matches && active !== link) show(link);
+      else window.location.assign(link.href);
+    }
     else if (link) enterTerminal(link);
     else if (input.matches && active) clear(true);
   });
