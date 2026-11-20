@@ -1,0 +1,92 @@
+/* Project objects sit directly on the exhibition grid. */
+.project-index,.project-page{--folio-ink:#18212b;--folio-line:#e2e8eb;--folio-mono:"IBM Plex Mono","Cascadia Mono",Consolas,monospace;color:var(--folio-ink);font-family:"Inter","PingFang SC","Microsoft YaHei",sans-serif}
+/* One viewport-sized sheet behind the narrative and its project collection. */
+body.has-project-index {
+  isolation:isolate;
+  background:#fdfdfc;
+}
+body.has-project-index::before {
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:url("./assets/exhibition-grid.svg") center / 100% 100% no-repeat;
+}
+.project-index {position:relative; padding-bottom:3.5rem}
+@media (prefers-reduced-motion:no-preference) {
+  html:has(body.has-project-index) {scroll-behavior:smooth}
+}
+@font-face {
+  font-family: "Index Haas";
+  src: local("Neue Haas Grotesk Display Pro 55 Roman"), local("Neue Haas Grotesk Display Pro"),
+       local("Neue Haas Grotesk Text Pro"), local("Helvetica Neue");
+  font-style: normal;
+  font-weight: 400;
+}
+.folio-head { padding:clamp(30px,3.8vw,70px) 16px clamp(22px,2.9vw,52px); text-align:center }
+.folio-head h2 {
+  margin:0; color:#090a0b; font:400 clamp(2.5rem,4.1vw,5rem)/.9 "Index Haas","Helvetica Neue",Helvetica,Arial,sans-serif;
+  letter-spacing:-.04em;
+}
+.folio-head p {
+  margin:.78rem 0 0; font:500 clamp(.72rem,.81vw,1rem)/1.2 "Cascadia Mono",Consolas,monospace;
+  color:#171819; text-transform:uppercase; letter-spacing:0;
+}
+.folio-toplink{font:500 .85rem var(--mono);text-decoration:underline;text-underline-offset:4px}
+.project-array {
+  display:grid; grid-template-columns:repeat(24,minmax(0,1fr)); align-items:start;
+  max-width:1880px; margin:0 auto; padding:0 clamp(18px,3.8vw,72px) 28px;
+  row-gap:clamp(16px,1.65vw,34px); list-style:none;
+}
+.project-array li {
+  grid-area:var(--row) / var(--col) / auto / span 5; min-width:0;
+  padding-top:calc(var(--offset) * clamp(1px,.11vw,2px));
+  --art-width:clamp(100px,12.5vw,225px); --art-height:clamp(90px,10.4vw,180px); --angle:0deg;
+}
+.object-link {
+  width:100%; max-width:16rem; min-width:44px; min-height:44px; margin:auto; padding:5px 4px;
+  display:flex; align-items:center; flex-direction:column; text-decoration:none!important; color:inherit; outline-offset:4px;
+}
+.object-picture {
+  position:relative; display:block;
+  width:min(calc(var(--art-width)*var(--scale)),calc(var(--art-height)*var(--scale)*var(--aspect)));
+  max-width:100%; aspect-ratio:var(--aspect);
+}
+#object-vx-001 img {mask:url("./assets/projects/1-silhouette.png") center/contain no-repeat}
+#object-vx-012 img {mask:url("./assets/projects/12-silhouette.png") center/contain no-repeat}
+#object-vx-053 img {clip-path:inset(0 3% 0 0 round 3px)}
+.object-picture img{position:absolute;inset:0;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;transform:rotate(var(--angle));transition:transform .28s cubic-bezier(.22,.9,.29,1),filter .3s;filter:drop-shadow(0 3px 2px #293c4910)}
+.object-picture .swap{opacity:0;transition:opacity .2s}
+.object-id{position:absolute;z-index:1;top:0;left:calc(100% + .12rem);padding:1px 3px;background:transparent;color:#162331;font:500 clamp(.78rem,1vw,.96rem)/1.15 var(--folio-mono)}
+.object-label{margin:.6rem .2rem 0;text-align:center;font:500 clamp(.79rem,.97vw,.94rem)/1.45 "Cascadia Mono","Microsoft YaHei","PingFang SC",monospace;overflow-wrap:anywhere;max-width:25ch}
+.object-link:focus-visible .object-label,.object-link:hover .object-label{text-decoration:underline;text-underline-offset:4px}
+@media(hover:hover){.object-link:hover img{transform:translateY(-6px) rotate(calc(var(--angle) * -1)) scale(1.06);filter:drop-shadow(0 12px 6px #203b4f25)}.object-link:hover .swap{opacity:1}.object-link:hover .has-swap{opacity:0}}
+.index-end{display:block;width:max-content;margin:1rem auto 0;color:#445366;font:500 .82rem var(--folio-mono);text-decoration:underline;text-underline-offset:.35em}
+.project-page{margin:0;min-height:100svh;background:linear-gradient(90deg,#e8ecef 1px,transparent 1px) center/25% 100%,#fcfdfd}
+.project-page *{box-sizing:border-box}.project-page a{color:inherit}
+.project-bar{display:flex;justify-content:space-between;align-items:center;padding:18px clamp(18px,4vw,70px);border-bottom:1px solid var(--folio-line);font:500 .85rem/1.6 var(--folio-mono)}
+.project-bar a,.series-nav a{text-underline-offset:.28em}.project-bar strong{letter-spacing:.08em}
+.project-article{margin:auto;max-width:1340px;padding:clamp(42px,6vw,98px) clamp(20px,5vw,82px)}
+.project-hero{display:grid;grid-template-columns:1fr 1fr;gap:clamp(22px,6vw,100px);align-items:center;margin:0 0 54px}
+.project-hero figure{order:2;min-width:0;margin:0;text-align:center}
+.project-hero figure img{width:100%;max-width:410px;height:clamp(170px,23vw,350px);object-fit:contain}
+.project-hero figcaption,.work-plate figcaption{margin-top:10px;color:#536170;font:normal .8rem/1.6 var(--folio-mono)}
+.project-kicker{font:500 .88rem/1.5 var(--folio-mono);letter-spacing:.06em}
+.project-hero h1{font-weight:530;font-size:clamp(2.2rem,4.6vw,5rem);letter-spacing:-.055em;line-height:1.12;margin:1rem 0;overflow-wrap:anywhere}
+.project-intro{max-width:45em;margin:auto;font-size:1rem;line-height:1.95;overflow-wrap:anywhere}.project-intro p{margin:.8em 0}
+.work-plate{max-width:54rem;padding-top:24px;margin:32px auto;text-align:center;border-top:1px solid var(--folio-line)}.work-plate img{max-width:100%;max-height:70vh;object-fit:contain}
+.series-nav{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;border-top:1px solid #aeb9c0;padding-top:20px;margin:52px auto 0;font:500 .88rem/1.7 var(--folio-mono)}
+@media(max-width:760px){
+
+.project-array { grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.4rem 1rem; padding:6px 19px 26px }
+.project-array li { grid-area:auto; padding-top:0; --art-width:clamp(90px,30vw,165px); --art-height:clamp(82px,24vw,132px) }
+.project-array li:nth-child(even) { padding-top:1.2rem }
+.project-array li:last-child:nth-child(odd) {grid-column:1 / -1; justify-self:center; width:50%}
+.folio-head {padding:44px 12px 32px}
+.folio-head h2 {font-size:clamp(2.5rem,9vw,3.75rem)}
+.object-id {left:100%}
+.project-hero{grid-template-columns:1fr;gap:24px;margin-bottom:28px}.project-hero figure{order:0}.project-hero figure img{height:210px}
+.project-array .object-label{font-size:.82rem}.folio-toplink{font-size:.79rem}.mast nav{flex-wrap:wrap;justify-content:flex-end;row-gap:4px}
+}
+@media(prefers-reduced-motion:reduce){.object-picture img{transition:none!important;transform:none!important}}

@@ -234,7 +234,7 @@
   preference.addEventListener('change',()=>{paused=preference.matches;pointer=null;updateMotion();});
   document.addEventListener('visibilitychange',()=>{last=0;schedule();});
   const observer=new ResizeObserver(measure);observer.observe(stage);observer.observe(canvas);notes.forEach(n=>observer.observe(n));
-  new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(visible)schedule();}).observe(stage);
+  new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(visible)schedule();}).observe(document.body.classList.contains("has-project-index") ? canvas : stage);
   compact.addEventListener('change', measure);
   measure();updateMotion();
 })();
