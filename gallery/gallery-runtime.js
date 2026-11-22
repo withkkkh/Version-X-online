@@ -1,9 +1,9 @@
 const mobile = matchMedia('(max-width: 760px), (pointer: coarse)').matches;
 
-async function getModelSource(fullSource) {
+async function getModelSource(fullSource, mobileSource) {
   if (!mobile || typeof DecompressionStream !== 'function') return fullSource;
   try {
-    const response = await fetch(new URL('./assets/gallery-mobile-v31.bin', import.meta.url));
+    const response = await fetch(new URL(mobileSource || './assets/gallery-mobile-v31.bin', import.meta.url));
     if (!response.ok) return fullSource;
     const file = await response.blob();
     const prefix = new Uint8Array(await file.slice(0, 4).arrayBuffer());
@@ -23,7 +23,7 @@ async function getModelSource(fullSource) {
 export async function startModel(model) {
   const fullSource = model.dataset.src;
   const [source] = await Promise.all([
-    getModelSource(fullSource),
+    getModelSource(fullSource, model.dataset.mobileSrc),
     import('./assets/model-viewer-4.4.0.min.js')
   ]);
   if (mobile) model.setAttribute('shadow-intensity', '0');

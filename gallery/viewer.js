@@ -1,8 +1,16 @@
 import { installWalk } from './walk.js?v=40';
-import { startModel } from './gallery-runtime.js?v=31';
+import { startModel } from './gallery-runtime.js?v=study1';
 import { installTeamHotspots } from './team-hotspots.js?v=40';
 
 const model = document.querySelector('#model');
+// Local material study; ?look=original preserves the exact previous model for comparison.
+if (new URL(location.href).searchParams.get('look') !== 'original') {
+  model.dataset.src = './assets/version-x-gallery-study.glb';
+  model.dataset.mobileSrc = './assets/gallery-mobile-study.bin';
+  model.setAttribute('exposure', '.80');
+  model.setAttribute('shadow-intensity', '1');
+  model.setAttribute('shadow-softness', '.75');
+}
 customElements.whenDefined('model-viewer').then(() => {
   const style = document.createElement('style');
   style.textContent = '@media (any-pointer:fine){:host *{cursor:var(--exhibition-cursor)!important}}';
