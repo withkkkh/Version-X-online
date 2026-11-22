@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VERSION X · 版本之外</title>
 <meta name="description" content="从各个角度探索 VERSION X 三维展馆。">
-<link rel="stylesheet" href="./style.css?v=45">
+<link rel="stylesheet" href="./style.css?v=46">
 <link rel="stylesheet" href="./open-layout.css?v=1">
 <script type="module" src="./viewer.js?v=study1"></script>
 <noscript><style>.opening{display:none!important}body.opening-active{overflow:auto}</style></noscript>
@@ -23,14 +23,17 @@
 <body class="opening-active exhibit">
 <section class="opening" id="opening" role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="opening-title">
   <div class="opening-art">
-    <picture><img src="./assets/version-x-opening.webp" alt="版本之外 VERSION X 展览主海报" width="896" height="1200" fetchpriority="high"></picture>
+    <picture>
+      <source media="(max-width:680px), (max-height:520px) and (pointer:coarse)" srcset="./assets/mobile-fold-cover.png" width="682" height="1448">
+      <img src="./assets/version-x-opening.webp" alt="VERSION X 展览海报" width="896" height="1200" fetchpriority="high">
+    </picture>
   </div>
   <div class="opening-glass">
     <img class="opening-mark" src="./assets/version-x-chrome-2.png" alt="" aria-hidden="true">
     <div class="opening-copy">
       <p class="opening-organizer">浙江大学未来学习中心</p>
       <div class="opening-editorial">
-      <h2 id="opening-title">版本<span class="opening-title-slash" aria-hidden="true">／</span>之外</h2>
+      <h2 id="opening-title"><span class="desktop-cover-name">版本<span class="opening-title-slash" aria-hidden="true">／</span>之外</span><span class="mobile-cover-name">VERSION X · 未完之境</span></h2>
       <p class="opening-description">每件作品都有一个当前版本。沿着它的迭代往回看，最初的问题、试过的办法和暂时搁置的想法，都是展览的一部分。</p>
       <div class="opening-actions">
         <button type="button" id="open-gallery"><span>进入展馆</span><span class="opening-arrow" aria-hidden="true">↗</span></button>
@@ -43,7 +46,23 @@
   <div class="facade-preview" hidden>
     <img class="facade-wide" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-overview-clean.webp">
     <img class="facade-close" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-facade.jpg">
-    <section class="opening-address" hidden aria-labelledby="address-title"><div><h2 id="address-title" tabindex="-1">开幕展言</h2><p>一件作品摆上展台时，往往只剩下最后的样子。那些拆掉重装的零件、画到一半放弃的草图，还有一句让团队改了方向的追问，去了哪里？</p><p>欢迎来到「版本之外」。从这面玻璃向里走，听四个团队讲讲，眼前这个版本是怎样发生的。</p><div class="address-actions"><button type="button" id="start-walk">继续导览</button><button type="button" id="skip-walk">跳过导览</button></div></div></section>
+    <section class="opening-address" hidden aria-labelledby="address-title">
+      <div class="address-reader" tabindex="0" role="region" aria-labelledby="address-title">
+        <header><h2 id="address-title" tabindex="-1">策展导言</h2><span lang="en">Exhibition Introduction</span></header>
+        <p>一件作品，何时才算真正完成？</p>
+        <p>当想法有了形态，当程序开始运行，当设计成为体验，我们似乎抵达了某个阶段的终点。然而，每一件作品背后，仍有未被看见的探索、尚未解答的疑问，以及持续发生的改变。</p>
+        <p>本次展览汇集 X-Lab 软件、硬件、设计、运营四个团队在暑期训练营中的创造与实践成果。来自不同学科背景的成员，从好奇与需求出发，在学习中积累知识，在实践中探索方法，在协作中调整判断，将最初的想法逐渐转化为可以被看见、体验和讨论的作品。</p>
+        <p>我们把这里称作「未完之境」。</p>
+        <p>“未完”并非成果的缺憾，而是创造持续生成的状态。每件作品背后，都有创造者与问题相遇、与伙伴交流、与自身局限磨合的经历。从动手尝试到反复调试，从获得反馈到重新判断，知识在实践中转化为能力，对“不够好”的觉察也成为改变的动力。作品逐渐成形的过程，同样是创造者认识自我、突破边界的过程。</p>
+        <p>四周展区呈现这些真实的创造故事，中央装置与 X-Lab 知识图谱则将不同的学习路径连接起来。软件、硬件、设计与运营在此交汇，不同的思维方式和专业能力通过交流与协作，共同构成开放的学习网络。</p>
+        <p>展览也希望成为一处持续发生交流的现场。蓝白便签构成开放的问答界面：参展者提出尚在思考的问题，观众留下疑问、回应与建议。不断增加的便签如同穿梭于作品之间的弹幕，让新的观点与可能在对话中产生。</p>
+        <p>1900 年，数学家希尔伯特提出 23 个尚待解决的问题，为此后数学研究的发展指引了方向。这份面向未知的追问提醒我们，探索的意义不仅在于获得答案，也在于不断发现值得思考的问题。</p>
+        <p>VERSION X，既记录着 X-Laber 已经走过的学习与创造之路，也指向尚未确定的下一种可能。作品之外，思考、交流与提问仍将继续。</p>
+        <p><strong>未完，不是终点的缺席，而是下一次创造的开始。</strong></p>
+        <p>愿每一位走入「未完之境」的人，都能在问题与回应之间，参与书写它尚未到来的下一页。</p>
+      </div>
+      <div class="address-actions"><button type="button" id="start-walk">继续导览</button><button type="button" id="skip-walk">跳过导览</button></div>
+    </section>
     <div class="facade-actions"><span class="loading-marks" aria-hidden="true"><img src="./assets/version-x-chrome-1.png" alt=""><img src="./assets/version-x-chrome-2.png" alt=""><img src="./assets/version-x-chrome-3.png" alt=""></span><span role="status">正在准备入馆镜头…</span><button type="button" id="skip-facade">跳过导览</button></div>
   </div>
 </section>
