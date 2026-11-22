@@ -72,9 +72,10 @@ function applyCamera({ target, orbit: [azimuth, elevation, radius], fov }, immed
 }
 
 function fittedView(view, { width, height }) {
-  // Leave room around the wider overview on narrow screens after zooming in.
+  // A tall full-page canvas must not push the whole gallery too far away on phones.
   const frameAspect = view === views.overview ? 1.48 : 1.40;
-  const multiplier = height > 0 && width > 0 ? Math.max(1, frameAspect * height / width) : 1;
+  const aspectFit = height > 0 && width > 0 ? Math.max(1, frameAspect * height / width) : 1;
+  const multiplier = view === views.overview || view === views.top ? Math.min(1.65, aspectFit) : aspectFit;
   if (view.fitByFov) {
     const fov = Math.atan(multiplier * Math.tan(view.fov * Math.PI / 360)) * 360 / Math.PI;
     return { ...view, fov };
