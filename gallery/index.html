@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VERSION X · 版本之外</title>
+<title>VERSION X · 未完之境</title>
 <meta name="description" content="从各个角度探索 VERSION X 三维展馆。">
 <link rel="stylesheet" href="./style.css?v=46">
 <link rel="stylesheet" href="./open-layout.css?v=1">
@@ -19,22 +19,22 @@
   }
 </script>
 <link rel="stylesheet" href="./cursor.css?v=44"><script defer src="./cursor.js?v=44"></script>
+<link rel="stylesheet" href="./exhibition-vi.css?v=1">
 </head>
 <body class="opening-active exhibit">
 <section class="opening" id="opening" role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="opening-title">
   <div class="opening-art">
     <picture>
       <source media="(max-width:680px), (max-height:520px) and (pointer:coarse)" srcset="./assets/mobile-fold-cover.png" width="682" height="1448">
-      <img src="./assets/version-x-opening.webp" alt="VERSION X 展览海报" width="896" height="1200" fetchpriority="high">
+      <img src="./assets/version-x-chrome-2.png" alt="" width="704" height="704" fetchpriority="high">
     </picture>
   </div>
   <div class="opening-glass">
-    <img class="opening-mark" src="./assets/version-x-chrome-2.png" alt="" aria-hidden="true">
     <div class="opening-copy">
       <p class="opening-organizer">浙江大学未来学习中心</p>
       <div class="opening-editorial">
-      <h2 id="opening-title"><span class="desktop-cover-name">版本<span class="opening-title-slash" aria-hidden="true">／</span>之外</span><span class="mobile-cover-name">VERSION X · 未完之境</span></h2>
-      <p class="opening-description">每件作品都有一个当前版本。沿着它的迭代往回看，最初的问题、试过的办法和暂时搁置的想法，都是展览的一部分。</p>
+      <h2 id="opening-title"><img class="exhibition-wordmark cover-wordmark" src="./assets/exhibition-wordmark.png" alt="VERSION X · 未完之境" width="275" height="104"></h2>
+      <div class="invitation-text"><p>诚邀您莅临“未完之境 VERSION X——X-Lab 训练营作品展暨浙江大学未来学习中心学生创造成果展”。</p><p>软件、硬件、设计、商业四个方向的大一同学，把从好奇与需求出发的灵感，创作成了可以被看见、被体验、被讨论的作品。</p><p>我们取名“未完之境”，意在如实呈现创造尚未收束的那一面：1900 年，希尔伯特没有清点已经完成的成就，而是以23个尚未解决的问题开启新世纪；眼前这些作品同样是“版本之外”的呈现，每一件都还遗留着尚没有答案的部分。</p><p>我们希望借这个展览，让创造被看见，也让仍在生长的想法，被认真地期待。</p></div>
       <div class="opening-actions">
         <button type="button" id="open-gallery"><span>进入展馆</span><span class="opening-arrow" aria-hidden="true">↗</span></button>
 
@@ -48,7 +48,8 @@
     <img class="facade-close" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-facade.jpg">
     <section class="opening-address" hidden aria-labelledby="address-title">
       <div class="address-reader" tabindex="0" role="region" aria-labelledby="address-title">
-        <header><h2 id="address-title" tabindex="-1">策展导言</h2><span lang="en">Exhibition Introduction</span></header>
+        <header class="address-heading"><img class="address-metal" src="./assets/version-x-chrome-2.png" alt="" width="704" height="704"><h2 id="address-title" tabindex="-1">策展导言</h2><span lang="en">Exhibition Introduction</span></header>
+        <div class="address-prose">
         <p>一件作品，何时才算真正完成？</p>
         <p>当想法有了形态，当程序开始运行，当设计成为体验，我们似乎抵达了某个阶段的终点。然而，每一件作品背后，仍有未被看见的探索、尚未解答的疑问，以及持续发生的改变。</p>
         <p>本次展览汇集 X-Lab 软件、硬件、设计、运营四个团队在暑期训练营中的创造与实践成果。来自不同学科背景的成员，从好奇与需求出发，在学习中积累知识，在实践中探索方法，在协作中调整判断，将最初的想法逐渐转化为可以被看见、体验和讨论的作品。</p>
@@ -60,6 +61,7 @@
         <p>VERSION X，既记录着 X-Laber 已经走过的学习与创造之路，也指向尚未确定的下一种可能。作品之外，思考、交流与提问仍将继续。</p>
         <p><strong>未完，不是终点的缺席，而是下一次创造的开始。</strong></p>
         <p>愿每一位走入「未完之境」的人，都能在问题与回应之间，参与书写它尚未到来的下一页。</p>
+        </div>
       </div>
       <div class="address-actions"><button type="button" id="start-walk">继续导览</button><button type="button" id="skip-walk">跳过导览</button></div>
     </section>
@@ -77,8 +79,7 @@
 <section class="intro" aria-labelledby="title">
 <img class="version-mark" src="./assets/version-x-chrome-2.png" alt="" aria-hidden="true" width="704" height="704">
 <div class="wordmark">
-  <h1 id="title" aria-label="VERSION X"><span lang="en">VERSION</span><span lang="en">X <b aria-hidden="true">/</b></span></h1>
-  <p>版本之外</p>
+  <h1 id="title"><img class="exhibition-wordmark" src="./assets/exhibition-wordmark.png" alt="VERSION X · 未完之境" width="275" height="104"></h1>
 </div>
 </section>
 <section id="stage" class="stage" aria-label="展馆交互预览">
