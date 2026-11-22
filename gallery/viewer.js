@@ -1,4 +1,4 @@
-import { installWalk } from './walk.js?v=40';
+import { installWalk } from './walk.js?v=41';
 import { startModel } from './gallery-runtime.js?v=study1';
 import { installTeamHotspots } from './team-hotspots.js?v=40';
 
@@ -56,7 +56,15 @@ let settleAnimation;
 let tourImage;
 
 installTeamHotspots(model, stage, openMap);
-const startWalk=installWalk(stage,model,setView);
+const phoneLayout = matchMedia('(max-width:760px), (max-height:520px) and (pointer:coarse)');
+const walkPanel = stage.querySelector('.walk-panel');
+function updateCameraControls() {
+  const guidedOnPhone = phoneLayout.matches && !walkPanel.hidden;
+  model.toggleAttribute('camera-controls', phase !== 'tour' && !guidedOnPhone);
+  model.setAttribute('touch-action', guidedOnPhone ? 'pan-y' : 'none');
+}
+phoneLayout.addEventListener('change', updateCameraControls);
+const startWalk=installWalk(stage,model,setView,updateCameraControls);
 const address=preview.querySelector('.opening-address');
 let walkRequested=false;
 function afterArrival(){
@@ -169,7 +177,7 @@ function finishTour() {
   model.inert = false;
   model.setAttribute('min-camera-orbit', defaultLimits[0]);
   model.setAttribute('max-camera-orbit', defaultLimits[1]);
-  model.setAttribute('camera-controls', '');
+  updateCameraControls();
   stage.classList.remove('entering', 'waiting-for-tour');
   const image = tourImage;
   const settled = image && settleAnimation?.playState === 'finished';

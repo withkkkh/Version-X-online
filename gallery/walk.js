@@ -11,7 +11,7 @@ const stops = [
   ['自由参观', '右下方「导览入口」收录全部团队故事与知识图谱，也可以从那里重新开始导览。']
 ];
 
-export function installWalk(stage, model, setView) {
+export function installWalk(stage, model, setView, updateCameraControls) {
   const panel=stage.querySelector('.walk-panel');
   const title=panel.querySelector('h2');
   const next=panel.querySelector('.walk-next');
@@ -60,7 +60,7 @@ export function installWalk(stage, model, setView) {
   }
   function finish(){
     if(index<0)return;
-    index=-1;panel.hidden=true;clearMark();
+    index=-1;panel.hidden=true;updateCameraControls();clearMark();
     setView('overview',true);
     directory.querySelector('summary').focus({preventScroll:true});
   }
@@ -78,6 +78,7 @@ export function installWalk(stage, model, setView) {
     title.textContent=name;panel.querySelector('p').textContent=copy;
     next.textContent=i===stops.length-1?'开始自由参观':'下一站';
     panel.hidden=false;
+    updateCameraControls();
   }
   model.addEventListener('load',()=>{if(index>=0)render(index)});
   next.addEventListener('click',()=>index===stops.length-1?finish():render(index+1));
