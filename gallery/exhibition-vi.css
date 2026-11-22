@@ -141,3 +141,46 @@
 @media(max-height:520px) and (pointer:coarse) {
   .opening-art picture img {width:100%;height:100%;max-width:none}
 }
+/* Quiet silver-blue details shared by the gallery's reading pages. */
+:where(body[data-team],.has-project-index,.project-page,.knowledge-page) {
+  --exhibition-ink:#223d5e;
+  --exhibition-muted:#496681;
+  --exhibition-rule:#c8d7e2;
+  --exhibition-glass:linear-gradient(158deg,#ffffffc9,#e0ecf4aa);
+}
+body[data-team] .mast, .project-page .project-bar,.knowledge-page .mast {
+  color:var(--exhibition-ink);
+  background:linear-gradient(180deg,#f2f7fbe6,#f6f9fb99);
+  border-bottom:1px solid #d3dfe880;
+}
+body[data-team] .mast nav a:first-child,.project-bar a,.knowledge-page .knowledge-back {
+  display:inline-flex;align-items:center;justify-content:center;min-height:34px;
+  width:max-content;max-width:100%;margin-block:0;padding:5px 13px;
+  border:1px solid #c6d7e3;border-top-color:#f9fcff;border-radius:999px;
+  color:var(--exhibition-ink);background:var(--exhibition-glass);box-shadow:inset 0 1px 0 #fff;
+  font:500 .82rem/1.45 "Inter","PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing:.025em;text-decoration:none;
+}
+body[data-team] .note h2,.project-page .project-hero h1,.project-index .folio-head h2 {color:var(--exhibition-ink)}
+body[data-team] .ordinal,body[data-team] .note h2 small,
+.project-index .object-id,.project-index .folio-head p,.project-page .project-kicker {color:var(--exhibition-muted)}
+body.has-project-index {background-color:#f5f8fb}
+.project-page {
+  --folio-ink:var(--exhibition-ink);--folio-line:var(--exhibition-rule);
+  background:radial-gradient(ellipse at 10% 0,#e3edf5 0,transparent 42rem),#f8fafc
+}
+.project-page .project-kicker {display:flex;align-items:center;gap:10px}
+.project-page .project-kicker::before {content:"";width:24px;height:1px;background:#91adbf;flex:none}
+.project-page .series-nav {border-color:var(--exhibition-rule)}
+.project-page .series-nav a {color:#305674}
+.knowledge-page .map-tools button,.knowledge-page .map-navigator button {border-radius:999px}
+@media(hover:hover) {
+  body[data-team] .mast nav a:first-child:hover,.project-bar a:hover,.knowledge-page .knowledge-back:hover {
+    color:#173553;background:#edf5fa;border-color:#9eb7c9
+  }
+}
+@media(max-width:680px){
+  body[data-team] .mast nav {gap:4px 9px}
+  body[data-team] .mast nav a:first-child,.project-bar a,.knowledge-page .knowledge-back {min-height:38px;padding-inline:10px}
+  body[data-team] .mast .brand .exhibition-wordmark {width:76px}
+}
