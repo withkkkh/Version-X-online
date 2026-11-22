@@ -1,0 +1,63 @@
+name: Publish exhibition to ECS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'gallery/**'
+      - '.github/workflows/publish-gallery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-versionx-ecs
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' && vars.VERSIONX_ECS_HOST != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Publish the gallery as the site root
+        shell: bash
+        env:
+          ECS_HOST: ${{ vars.VERSIONX_ECS_HOST }}
+          SSH_KEY: ${{ secrets.VERSIONX_DEPLOY_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VERSIONX_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -s gallery/index.html
+          test -s gallery/assets/version-x-gallery-study.glb
+          test -n "$SSH_KEY" && test -n "$KNOWN_HOSTS"
+          [[ "$ECS_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]]
+          install -d -m 700 ~/.ssh
+          umask 077
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          export RSYNC_RSH='ssh -o BatchMode=yes -o StrictHostKeyChecking=yes'
+          remote="versionx-deploy@$ECS_HOST"
+          # Nginx serves /srv/versionx/current. Stage into the inactive directory.
+          slot=$(ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "$remote" '
+            set -eu
+            cd /srv/versionx
+            case "$(readlink current || true)" in
+              blue) echo green ;;
+              green|"") echo blue ;;
+              *) echo "Unexpected current deployment path" >&2; exit 1 ;;
+            esac')
+          case "$slot" in blue|green) ;; *) exit 1 ;; esac
+          rsync -rltzc --delete-delay --chmod=D755,F644 gallery/ "$remote:/srv/versionx/$slot/"
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "$remote" "
+            set -eu
+            cd /srv/versionx
+            test -s '$slot/index.html'
+            ln -sfn '$slot' current.next
+            mv -Tf current.next current"
