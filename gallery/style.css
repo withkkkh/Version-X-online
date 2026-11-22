@@ -151,8 +151,8 @@ model-viewer.model-loaded::part(default-progress-bar){display:none}
 .exhibit .version-mark { width:clamp(42px,5vw,65px); color:#254e76; }
 .wordmark h1 { display:flex; gap:.27em; color:#183657; letter-spacing:.12em; }
 .wordmark h1 b { color:#6d84ac; }
-.exhibit .stage:not(.entering) { border:1px solid var(--rule); background:#f9fbfd; }
-.exhibit .stage:not(.entering)::after, .opening-glass .opening-copy::after {
+.exhibit .stage:not(.entering) { background:#f9fbfd; }
+.opening-glass .opening-copy::after {
   content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
   background:var(--corner) left top,var(--corner) right top,var(--corner) left bottom,var(--corner) right bottom,
     var(--corner) left top,var(--corner) right top,var(--corner) left bottom,var(--corner) right bottom;
@@ -265,3 +265,20 @@ body:has(.gallery-map[open]) {overflow:hidden}
 @media(prefers-reduced-motion:reduce){.opening-address{animation:none}}
 
 .stage .walk-buttons .walk-next:hover,.stage .walk-buttons .walk-next:focus-visible{background:#173b5e;color:white}
+
+/* The three exhibition marks indicate real resource loading. */
+.version-mark,.opening-mark{height:auto;object-fit:contain}
+model-viewer::part(default-progress-bar){display:none}
+.model-loading{position:absolute;z-index:1;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;pointer-events:none;background:rgba(246,248,251,.88)}
+.model-loading[hidden]{display:none}
+.loading-marks{display:flex;align-items:center;justify-content:center;gap:8px}
+.loading-marks img{display:block;width:clamp(46px,5vw,68px);height:auto;aspect-ratio:1;object-fit:contain;animation:x-loading-hop 1.2s ease-in-out infinite}
+.loading-marks img:nth-child(2){animation-delay:.14s}
+.loading-marks img:nth-child(3){animation-delay:.28s}
+.model-loading .status{position:static;transform:none;border:0;background:transparent;margin:0;font-size:.875rem;pointer-events:auto}
+.model-loading.has-error .loading-marks{display:none}
+.facade-actions .loading-marks{gap:2px}
+.facade-actions .loading-marks img{width:30px}
+.facade-actions:has([role="status"]:empty) .loading-marks{display:none}
+@keyframes x-loading-hop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-12px)}}
+@media(prefers-reduced-motion:reduce){.loading-marks img{animation:none}}

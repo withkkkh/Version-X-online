@@ -9,6 +9,8 @@ customElements.whenDefined('model-viewer').then(() => {
   model.shadowRoot?.append(style);
 });
 const status = document.querySelector('#status');
+const loading = document.querySelector('#model-loading');
+const screen = document.querySelector('.screen');
 const stage = document.querySelector('#stage');
 const expand = document.querySelector('#expand');
 const opening = document.querySelector('#opening');
@@ -23,7 +25,7 @@ const views = {
   'rack-software': { target: [0, 1.33, 6.36], orbit: [188, 60, 5.5], fov: 39, fitByFov: true },
   'rack-hardware': { target: [7.57, 1.33, 0], orbit: [-82, 67, 5.8], fov: 39, fitByFov: true },
   'rack-operations': { target: [-7.57, 1.33, 0], orbit: [82, 67, 5.8], fov: 39, fitByFov: true },
-  overview: { target: [0, .35, 0], orbit: [24, 58, 37], fov: 42 },
+  overview: { target: [0, -1.5, 0], orbit: [24, 58, 34], fov: 42 },
   top: { target: [0, 0, 0], orbit: [0, 3, 40], fov: 42 },
   sculpture: { target: [0, 5.99, 0], orbit: [0, .1, 7], fov: 32 },
   facade: { target: [-6.32, .94, 9.11], orbit: [12, 85, 6.5], fov: 36 },
@@ -70,7 +72,9 @@ function applyCamera({ target, orbit: [azimuth, elevation, radius], fov }, immed
 }
 
 function fittedView(view, { width, height }) {
-  const multiplier = height > 0 && width > 0 ? Math.max(1, 1.40 * height / width) : 1;
+  // Leave room around the wider overview on narrow screens after zooming in.
+  const frameAspect = view === views.overview ? 1.48 : 1.40;
+  const multiplier = height > 0 && width > 0 ? Math.max(1, frameAspect * height / width) : 1;
   if (view.fitByFov) {
     const fov = Math.atan(multiplier * Math.tan(view.fov * Math.PI / 360)) * 360 / Math.PI;
     return { ...view, fov };
@@ -328,6 +332,8 @@ function onLoaded() {
   clearTimeout(waitNotice);
   replay.hidden = false;
   status.hidden = true;
+  loading.hidden = true;
+  screen.setAttribute('aria-busy', 'false');
   model.classList.add('model-loaded');
   viewerError = false;
   if (phase === 'waiting') playTour();
@@ -336,6 +342,9 @@ function loadingError() {
   viewerError = true;
   model.classList.remove('model-loaded');
   status.hidden = false;
+  loading.hidden = false;
+  loading.classList.add('has-error');
+  screen.setAttribute('aria-busy', 'false');
   clearTimeout(waitNotice);
   showRetry('三维模型暂时无法显示，可从下方「导览入口」继续参观。');
 }

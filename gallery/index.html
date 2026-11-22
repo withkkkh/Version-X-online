@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VERSION X · 版本之外</title>
 <meta name="description" content="从各个角度探索 VERSION X 三维展馆。">
-<link rel="stylesheet" href="./style.css?v=40">
-<script type="module" src="./viewer.js?v=40"></script>
+<link rel="stylesheet" href="./style.css?v=45">
+<script type="module" src="./viewer.js?v=45"></script>
 <noscript><style>.opening{display:none!important}body.opening-active{overflow:auto}</style></noscript>
 <script>
   const entryUrl = new URL(location.href);
@@ -25,7 +25,7 @@
     <picture><img src="./assets/version-x-opening.webp" alt="版本之外 VERSION X 展览主海报" width="896" height="1200" fetchpriority="high"></picture>
   </div>
   <div class="opening-glass">
-    <svg class="opening-mark" aria-hidden="true" viewBox="0 0 624 624"><path d="M120 120L388 388M56 568L447 172" fill="none" stroke="currentColor" stroke-width="5"/><path fill="currentColor" d="M2 2h120v120H2zM446 2h176v176H446zM386 386h236v236H386zM2 566h58v56H2z"/></svg>
+    <img class="opening-mark" src="./assets/version-x-chrome-2.png" alt="" aria-hidden="true">
     <div class="opening-copy">
       <p class="opening-organizer">浙江大学未来学习中心</p>
       <div class="opening-editorial">
@@ -43,7 +43,7 @@
     <img class="facade-wide" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-overview-clean.webp">
     <img class="facade-close" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-facade.jpg">
     <section class="opening-address" hidden aria-labelledby="address-title"><div><h2 id="address-title" tabindex="-1">开幕展言</h2><p>一件作品摆上展台时，往往只剩下最后的样子。那些拆掉重装的零件、画到一半放弃的草图，还有一句让团队改了方向的追问，去了哪里？</p><p>欢迎来到「版本之外」。从这面玻璃向里走，听四个团队讲讲，眼前这个版本是怎样发生的。</p><div class="address-actions"><button type="button" id="start-walk">继续导览</button><button type="button" id="skip-walk">跳过导览</button></div></div></section>
-    <div class="facade-actions"><span role="status">正在准备入馆镜头…</span><button type="button" id="skip-facade">跳过导览</button></div>
+    <div class="facade-actions"><span class="loading-marks" aria-hidden="true"><img src="./assets/version-x-chrome-1.png" alt=""><img src="./assets/version-x-chrome-2.png" alt=""><img src="./assets/version-x-chrome-3.png" alt=""></span><span role="status">正在准备入馆镜头…</span><button type="button" id="skip-facade">跳过导览</button></div>
   </div>
 </section>
 <header class="mast">
@@ -55,7 +55,7 @@
 </header>
 <main>
 <section class="intro" aria-labelledby="title">
-<svg class="version-mark" aria-hidden="true" viewBox="0 0 624 624"><path d="M120 120L388 388M56 568L447 172" fill="none" stroke="currentColor" stroke-width="5"/><path fill="currentColor" d="M2 2h120v120H2zM446 2h176v176H446zM386 386h236v236H386zM2 566h58v56H2z"/></svg>
+<img class="version-mark" src="./assets/version-x-chrome-2.png" alt="" aria-hidden="true" width="704" height="704">
 <div class="wordmark">
   <h1 id="title" aria-label="VERSION X"><span lang="en">VERSION</span><span lang="en">X <b aria-hidden="true">/</b></span></h1>
   <p>版本之外</p>
@@ -70,12 +70,12 @@
 </div>
 <button id="expand" type="button" class="expand" aria-label="放大预览" aria-pressed="false"><span aria-hidden="true">⛶</span><span class="expand-text">放大</span></button>
 </div>
-<div class="screen">
+<div class="screen" aria-busy="true">
 <model-viewer id="model" data-src="./assets/version-x-gallery-v30.glb"
   alt="VERSION X 展馆，中央雕塑、四个展区和乳白竖纹磨砂玻璃外墙"
   loading="eager" animation-crossfade-duration="0" camera-controls touch-action="none" interaction-prompt="none"
   environment-image="neutral" exposure=".87" shadow-intensity=".65"
-  min-camera-orbit="auto auto 5m" max-camera-orbit="auto auto 130m" camera-target="0m 1m 0m" camera-orbit="24deg 58deg 35m" field-of-view="42deg">
+  min-camera-orbit="auto auto 5m" max-camera-orbit="auto auto 130m" camera-target="0m -1.5m 0m" camera-orbit="24deg 58deg 34m" field-of-view="42deg">
   <a class="team-hotspot" slot="hotspot-team-design" data-team="design" data-position="-1.049m 1.52m -0.859m" href="./knowledge.html?team=design" aria-label="设计团队知识图谱">
     <span class="team-hotspot-dot" aria-hidden="true"></span><span class="team-hotspot-label" aria-hidden="true">设计团队知识图谱 <span>↗</span></span>
   </a>
@@ -94,7 +94,10 @@
   <a class="team-hotspot zone-link" data-zone="operations" slot="hotspot-zone-operations" data-position="-7.57m 2.4m 0m" href="./story-operations.html" aria-label="进入运营团队叙事页"><span class="team-hotspot-dot" aria-hidden="true"></span><span class="team-hotspot-label" aria-hidden="true">运营展区 ↗</span></a>
 </model-viewer>
 <img class="gallery-still" src="./assets/gallery-overview-clean.webp" alt="" fetchpriority="low">
-<div id="status" class="status" role="status">正在准备三维展馆，可先浏览下方「展区入口」。</div>
+<div id="model-loading" class="model-loading">
+  <div class="loading-marks" aria-hidden="true"><img src="./assets/version-x-chrome-1.png" alt="" width="704" height="704"><img src="./assets/version-x-chrome-2.png" alt="" width="704" height="704"><img src="./assets/version-x-chrome-3.png" alt="" width="704" height="704"></div>
+  <div id="status" class="status" role="status">正在准备三维展馆，可先浏览下方「导览入口」。</div>
+</div>
 <noscript><p class="status">开启 JavaScript 后即可旋转展馆。</p></noscript>
 </div>
 <button type="button" class="tour-skip" id="tour-skip" hidden>跳过导览</button>
