@@ -1,8 +1,8 @@
-展馆材质与光影本地试版
+展馆材质与光影优化
 
-此分支基于开放式布局 PR。尚未推送或发布。
+包含开放式布局及用户确认发布的材质、光影和展品比例调整。
 
-对比入口（使用本机静态预览服务）：
+对比入口：
 优化版：/gallery/?entry=return-from-map&look=study
 原版：/gallery/?entry=return-from-map&look=original
 

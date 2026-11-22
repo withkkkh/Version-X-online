@@ -3,7 +3,7 @@ import { startModel } from './gallery-runtime.js?v=study1';
 import { installTeamHotspots } from './team-hotspots.js?v=40';
 
 const model = document.querySelector('#model');
-// Local material study; ?look=original preserves the exact previous model for comparison.
+// ?look=original preserves the previous model for visual comparison.
 if (new URL(location.href).searchParams.get('look') !== 'original') {
   model.dataset.src = './assets/version-x-gallery-study.glb';
   model.dataset.mobileSrc = './assets/gallery-mobile-study.bin';
