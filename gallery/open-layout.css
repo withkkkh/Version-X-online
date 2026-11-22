@@ -58,13 +58,14 @@
   .exhibit .presets{gap:16px}
 }
 
-.web-credits {margin-top:10px;padding-top:8px;border-top:1px solid #c8d7e2;color:#526a7b}
+.exhibit .stage-foot {flex-wrap:wrap;row-gap:5px}
+.web-credits {flex:0 0 100%;text-align:right;color:#526a7b}
 .web-credits small {font:400 12px/1.65 system-ui,sans-serif}
 
 @media(max-width:760px),(max-height:520px) and (pointer:coarse){
   .exhibit .mast-label {display:none}
   .exhibit .stage:has(.walk-panel:not([hidden])) :is(.toolbar,#visit-tip,#reset) {display:none}
   .exhibit .stage:has(.walk-panel:not([hidden])) .stage-foot {justify-content:flex-end}
-  .exhibit .walk-panel {bottom:max(80px,calc(64px + env(safe-area-inset-bottom)))}
+  .exhibit .walk-panel {bottom:max(104px,calc(88px + env(safe-area-inset-bottom)))}
   .exhibit .directory-panel {max-height:65svh;overflow-y:auto}
 }
