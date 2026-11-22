@@ -20,7 +20,8 @@
   .opening-organizer {color:#3f6080}
   .invitation-text {display:block;color:#293f5a;font:400 clamp(15px,1.1vw,18px)/1.78 "Microsoft YaHei","PingFang SC",sans-serif}
   .invitation-text p {margin:0 0 .86em}
-  .invitation-text p:first-child {color:#193b6a;font-weight:560}
+  .exhibition-subtitle {margin:0 0 1.25em;color:#193b6a;font:550 clamp(18px,1.45vw,23px)/1.52 "Microsoft YaHei","PingFang SC",sans-serif;letter-spacing:.025em}
+  .exhibition-subtitle span {display:block}
   .opening-editorial .opening-actions {margin-top:24px}
 }
 .opening-address {
@@ -78,4 +79,65 @@
   .opening .opening-copy {display:block;height:auto;padding:0}
   .opening-editorial .opening-actions {margin:0 auto}
   .exhibit .opening #open-gallery {min-width:148px}
+}
+
+/* Shared glass surfaces for the entrance and the guided walk. */
+.exhibit {
+  --guide-glass:linear-gradient(152deg,rgba(255,255,255,.93),rgba(235,243,249,.75) 56%,rgba(216,231,241,.83));
+  --guide-rim:inset 0 1px 0 #fff, inset 0 -1px 0 #9bb4c465, 0 8px 23px #354d681c;
+}
+.exhibit .walk-panel,.exhibit .directory-panel {
+  border:1px solid #e9f3fa;border-bottom-color:#a6bdce;border-radius:22px;
+  background:var(--guide-glass);box-shadow:var(--guide-rim);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)
+}
+.exhibit .walk-panel {gap:14px;padding:20px 22px}
+.exhibit .walk-panel[hidden] {display:none}
+.exhibit .walk-count {letter-spacing:.07em;color:#426081}
+.exhibit .directory-panel {width:min(344px,calc(100vw - 36px));padding:12px 18px}
+.exhibit .directory summary,
+.exhibit :is(.walk-buttons button,.facade-actions button,.tour-skip,#tour-replay),
+.exhibit .opening-address .address-actions button {
+  border:1px solid #c3d4e1;border-top-color:#fff;border-radius:999px;
+  min-height:44px;padding:9px 20px;background:var(--guide-glass);color:#294a67;
+  box-shadow:inset 0 1px 1px #fff,0 2px 6px #425d741c;font-weight:530;
+}
+.exhibit .directory summary {padding-inline:18px}
+.exhibit .stage .walk-buttons .walk-next,.exhibit .opening-address .address-actions #start-walk {
+  color:#133754;border-radius:999px;border:1px solid transparent;
+  background:linear-gradient(160deg,#f2f9ff 6%,#b9cede 57%,#e7f2f9 96%) padding-box,
+             linear-gradient(140deg,#fff 12%,#869fb5 52%,#e3edf6 75%,#96adc1) border-box;
+  box-shadow:inset 0 1px 2px white,inset 0 -1px 1px #e7f4ff,0 3px 7px #27486726
+}
+.exhibit .opening-address > .address-actions {
+  justify-self:end;width:max-content;max-width:calc(100% - 24px);
+  border:1px solid #edf6fb;border-radius:999px;gap:5px;padding:4px;
+  margin:8px max(4vw,12px) max(16px,env(safe-area-inset-bottom));
+  background:var(--guide-glass);box-shadow:var(--guide-rim)
+}
+.exhibit .opening-address .address-actions #skip-walk {border-color:transparent;background:transparent;box-shadow:none}
+.exhibit :is(.directory summary,.walk-buttons button,.address-actions button):focus-visible {outline:2px solid #315879;outline-offset:3px}
+@media (hover:hover) {
+  .exhibit :is(.directory summary,.walk-buttons button,.address-actions button):hover {filter:brightness(.96)}
+}
+@media(max-width:799px){
+  .exhibit .opening-address > .address-actions {justify-self:center;margin-inline:0}
+  .exhibit .walk-panel {padding:16px;gap:10px}
+}
+@media(min-width:681px) {
+  .opening-art::before {background-image:url("./assets/fold-screen.svg");opacity:1}
+  .opening-art picture {display:grid;place-items:center}
+  .opening-art picture img {width:min(100%,540px);height:auto;max-height:100%;filter:none}
+}
+@media(min-width:681px) and (min-resolution:1.5dppx) {
+  .opening-art picture img {width:min(100%,410px)}
+}
+@media(min-width:681px) and (min-resolution:2dppx) {
+  .opening-art picture img {width:min(100%,362px)}
+}
+@media(min-width:681px) and (min-resolution:3dppx) {
+  .opening-art picture img {width:min(100%,241px)}
+}
+@media(max-height:520px) and (pointer:coarse) {
+  .opening-art picture img {width:100%;height:100%;max-width:none}
 }
