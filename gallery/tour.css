@@ -17,7 +17,6 @@
 .tour-active .toolbar{visibility:hidden;pointer-events:none}
 .tour-player[data-state="paused"] .tour-eyebrow::after{content:" · 已暂停";letter-spacing:.03em}
 .tour-player[data-state="paused"] .tour-eyebrow{display:inline}
-.exhibit .stage.tour-active:not(.entering) .screen{height:calc(100% - 200px);mask-image:linear-gradient(#000 0%,#000 calc(100% - 70px),transparent 100%)}
 .tour-active [data-tour-highlight] .team-hotspot-dot{opacity:1;width:12px;height:12px;background:#2d77b5;box-shadow:0 0 0 7px #77b5e633,0 0 20px #78b9e680}
 .tour-active .still-points [data-tour-highlight] .team-hotspot-dot{opacity:1}
 @media(max-width:760px){
@@ -36,3 +35,10 @@
 .exhibit #tour-next:hover{background:#193c5b}
 .exhibit #tour-exit{margin-right:auto;color:#5d758c;order:-1}
 .tour-active .zone-link{visibility:hidden}
+
+/* Keep the normal canvas size; only the captions overlay it. */
+.tour-active .screen{overflow:hidden;mask-image:linear-gradient(#000 0%,#000 calc(100% - 70px),transparent 100%)}
+.tour-slide-frame{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;background:var(--paper);object-fit:fill;will-change:transform}
+.tour-player[data-scene="0"] .tour-caption{display:none}
+.exhibit .tour-player[data-scene="0"]{background:transparent;border-color:transparent;box-shadow:none}
+.tour-player[data-scene="0"] .tour-controls{padding:6px;background:rgba(247,251,254,.9);border-radius:10px}

@@ -1,4 +1,4 @@
-import { installWalk } from './walk.js?v=tour2';
+import { installWalk } from './walk.js?v=tour3';
 import { installStillHotspots } from './still-hotspots.js?v=1';
 import { startModel } from './gallery-runtime.js?v=study1';
 import { installTeamHotspots } from './team-hotspots.js?v=tour1';
@@ -45,7 +45,7 @@ function setView(name,immediate=false){
   applyCamera(fittedView(view),immediate);presetButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===name)));
 }
 installTeamHotspots(model,stage,openMap);installStillHotspots(stage,model);
-const walk=installWalk(stage,model,setView,view=>{model.setAttribute('max-field-of-view','110deg');applyCamera(view,true);presetButtons.forEach(b=>b.setAttribute('aria-pressed','false'));},view=>fittedView({...view,tour:true}));
+const walk=installWalk(stage,model,setView,view=>{model.setAttribute('max-field-of-view','110deg');applyCamera(view,true);presetButtons.forEach(b=>b.setAttribute('aria-pressed','false'));},view=>view.overview?fittedView(views.overview):fittedView({...view,tour:true}));
 function closeDirectory(restoreFocus=false){directory.open=false;if(restoreFocus)directory.querySelector('summary').focus({preventScroll:true});}
 presetButtons.forEach(b=>b.addEventListener('click',()=>{setView(b.dataset.view);if(directory.contains(b))closeDirectory(true);}));
 document.querySelector('#reset').addEventListener('click',()=>setView('overview',true));
