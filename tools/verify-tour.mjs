@@ -1,20 +1,32 @@
 import assert from 'node:assert/strict';
-import { tourFrame, TOUR_DURATION } from '../gallery/tour-timeline.js';
+import { TOUR_SCENES, TOUR_DURATION, sceneFrame, OVERVIEW } from '../gallery/tour-timeline.js';
 
-assert.equal(TOUR_DURATION, 30);
-for (const boundary of [4,8,12,16,20,26]) {
-  const before = tourFrame(boundary - .00001).view;
-  const after = tourFrame(boundary).view;
-  for (let axis = 0; axis < 3; axis++) {
-    assert.ok(Math.abs(before.target[axis] - after.target[axis]) < .001, 'Target jumps at '+boundary);
-    assert.ok(Math.abs(before.orbit[axis] - after.orbit[axis]) < .001, 'Orbit jumps at '+boundary);
+assert.ok(TOUR_DURATION >= 30 && TOUR_DURATION <= 40);
+let from=TOUR_SCENES[0].camera;
+for (let index=0;index<TOUR_SCENES.length;index++) {
+  const scene=TOUR_SCENES[index];
+  const start=sceneFrame(index,0,from);
+  for(const key of ['target','orbit'])for(let axis=0;axis<3;axis++)assert.ok(Math.abs(start[key][axis]-from[key][axis])<1e-8,`Scene ${index} jumps on arrival`);
+  for(let time=0;time<=scene.move+scene.hold;time+=.02){
+    const view=sceneFrame(index,time,from);
+    assert.ok([...view.target,...view.orbit,view.fov].every(Number.isFinite));
+    assert.ok(view.orbit[2]>=2);
   }
+  const end=sceneFrame(index,scene.move+scene.hold,from);
+  const held=sceneFrame(index,scene.move+.1,from);
+  assert.deepEqual(end,held,'Reading interval must hold the camera still');
+  // An early Next must start at the partially completed camera pose.
+  if(index<TOUR_SCENES.length-1){
+    const partial=sceneFrame(index,scene.move*.3,from);
+    const next=sceneFrame(index+1,0,partial);
+    for(const key of ['target','orbit'])for(let axis=0;axis<3;axis++)assert.ok(Math.abs(next[key][axis]-partial[key][axis])<1e-8,'Early Next jumps');
+  }
+  from=end;
 }
-for (let time = 0; time <= 30; time += .05) {
-  const {view} = tourFrame(time);
-  assert.ok([...view.target,...view.orbit,view.fov].every(Number.isFinite));
-  assert.ok(view.orbit[2] >= 12);
+assert.deepEqual(from.target,OVERVIEW.target);
+assert.ok(Math.abs((from.orbit[0]-OVERVIEW.orbit[0])%360)<1e-8);
+for(const scene of TOUR_SCENES.slice(2,6)) {
+  assert.equal(scene.camera.orbit[1],88,'Exhibits should be viewed straight on');
+  assert.ok(scene.camera.orbit[2]<4,'Camera must be in front of the sculpture');
 }
-assert.equal((tourFrame(30).view.orbit[0] - tourFrame(0).view.orbit[0]) % 360, 0);
-assert.deepEqual(tourFrame(30).view.target, tourFrame(0).view.target);
-console.log('Tour camera continuity, bounds, and return-to-overview checks passed.');
+console.log('Tour continuity, early Next, still reading intervals, frontal views and final overview passed.');

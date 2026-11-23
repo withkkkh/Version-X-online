@@ -1,4 +1,4 @@
-import { installWalk } from './walk.js?v=tour1';
+import { installWalk } from './walk.js?v=tour2';
 import { installStillHotspots } from './still-hotspots.js?v=1';
 import { startModel } from './gallery-runtime.js?v=study1';
 import { installTeamHotspots } from './team-hotspots.js?v=tour1';
@@ -25,6 +25,11 @@ const views={
 };
 function fittedView(view){
   const {width,height}=model.getBoundingClientRect();
+  if(view.tour&&view.fitByFov){
+    // model-viewer preserves the smaller-axis field of view in portrait.
+    const aspect=Math.max(1,width/Math.max(1,height));
+    return {...view,fov:Math.min(110,Math.max(view.fov,Math.atan(view.frameWidth/(2*view.orbit[2]*.9*aspect))*360/Math.PI))};
+  }
   const fit=width>0&&height>0?Math.max(1,(view===views.overview?1.48:1.4)*height/width):1;
   const multiplier=view===views.overview||view===views.top||view.tour?Math.min(1.65,fit):fit;
   if(view.fitByFov)return {...view,fov:Math.atan(multiplier*Math.tan(view.fov*Math.PI/360))*360/Math.PI};
@@ -40,7 +45,7 @@ function setView(name,immediate=false){
   applyCamera(fittedView(view),immediate);presetButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===name)));
 }
 installTeamHotspots(model,stage,openMap);installStillHotspots(stage,model);
-const walk=installWalk(stage,model,setView,view=>{model.removeAttribute('max-field-of-view');applyCamera(fittedView(view),true);presetButtons.forEach(b=>b.setAttribute('aria-pressed','false'));});
+const walk=installWalk(stage,model,setView,view=>{model.setAttribute('max-field-of-view','110deg');applyCamera(view,true);presetButtons.forEach(b=>b.setAttribute('aria-pressed','false'));},view=>fittedView({...view,tour:true}));
 function closeDirectory(restoreFocus=false){directory.open=false;if(restoreFocus)directory.querySelector('summary').focus({preventScroll:true});}
 presetButtons.forEach(b=>b.addEventListener('click',()=>{setView(b.dataset.view);if(directory.contains(b))closeDirectory(true);}));
 document.querySelector('#reset').addEventListener('click',()=>setView('overview',true));

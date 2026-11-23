@@ -9,22 +9,15 @@
 .tour-eyebrow{display:none;font-size:.8125rem;letter-spacing:.09em;color:#5d758c}
 .tour-caption h2{font-size:1.25rem;line-height:1.4;margin:4px 0 5px;font-weight:580;letter-spacing:.025em}
 .tour-caption p{font-size:1rem;line-height:1.65;margin:0;min-height:1.65em}
-.tour-controls{display:flex;align-items:center;gap:8px}
-#tour-time{font:14px/1.5 Consolas,monospace;letter-spacing:.04em;color:#5d758c;margin-right:auto;white-space:nowrap}
+.tour-controls{display:flex;align-items:center;gap:8px;justify-content:flex-end}
 .exhibit .tour-controls button{font-size:.875rem;min-height:44px;border:0;padding:8px 12px;background:transparent;border-radius:6px}
 .exhibit .tour-controls button:hover{background:#dfeaf3}
 .exhibit .tour-controls button:disabled{opacity:.5;cursor:wait}
-#tour-progress{display:block;width:100%;height:20px;margin:0;border:0;appearance:none;background:transparent;cursor:pointer;accent-color:#567f9e}
-#tour-progress::-webkit-slider-runnable-track{height:3px;background:#a8c0d3;border-radius:4px}
-#tour-progress::-webkit-slider-thumb{appearance:none;margin-top:-4px;width:11px;height:11px;background:#476f91;border:2px solid #f7fbfe;border-radius:50%;box-shadow:0 0 0 1px #6385a0}
-#tour-progress::-moz-range-track{height:3px;background:#a8c0d3;border-radius:4px}
-#tour-progress::-moz-range-thumb{width:9px;height:9px;background:#476f91;border:2px solid #f7fbfe;border-radius:50%}
-#tour-progress:focus-visible{outline:2px solid #315879;outline-offset:4px}
 .tour-active #visit-tip,.tour-active #tour-replay{visibility:hidden;pointer-events:none}
 .tour-active .toolbar{visibility:hidden;pointer-events:none}
 .tour-player[data-state="paused"] .tour-eyebrow::after{content:" · 已暂停";letter-spacing:.03em}
 .tour-player[data-state="paused"] .tour-eyebrow{display:inline}
-.exhibit .stage.tour-active:not(.entering) .screen{height:calc(100% - 230px);mask-image:linear-gradient(#000 0%,#000 calc(100% - 70px),transparent 100%)}
+.exhibit .stage.tour-active:not(.entering) .screen{height:calc(100% - 200px);mask-image:linear-gradient(#000 0%,#000 calc(100% - 70px),transparent 100%)}
 .tour-active [data-tour-highlight] .team-hotspot-dot{opacity:1;width:12px;height:12px;background:#2d77b5;box-shadow:0 0 0 7px #77b5e633,0 0 20px #78b9e680}
 .tour-active .still-points [data-tour-highlight] .team-hotspot-dot{opacity:1}
 @media(max-width:760px){
@@ -37,4 +30,9 @@
   .exhibit .visit-actions{flex-wrap:wrap;justify-content:flex-end;gap:6px 16px}
   .exhibit .tour-active .toolbar{opacity:.65}
 }
-@media(max-width:360px){.exhibit .tour-player{left:12px;right:12px;padding-inline:13px}#tour-time{font-size:13px}}
+@media(max-width:360px){.exhibit .tour-player{left:12px;right:12px;padding-inline:13px}}
+
+.exhibit #tour-next{background:#294c6c;color:#fff;padding-inline:20px}
+.exhibit #tour-next:hover{background:#193c5b}
+.exhibit #tour-exit{margin-right:auto;color:#5d758c;order:-1}
+.tour-active .zone-link{visibility:hidden}

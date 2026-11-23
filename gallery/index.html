@@ -7,7 +7,7 @@
 <meta name="description" content="从各个角度探索 VERSION X 三维展馆。">
 <link rel="stylesheet" href="./style.css?v=46">
 <link rel="stylesheet" href="./open-layout.css?v=3">
-<script type="module" src="./viewer.js?v=tour1"></script>
+<script type="module" src="./viewer.js?v=tour2"></script>
 <noscript><style>.opening{display:none!important}body.opening-active{overflow:auto}</style></noscript>
 <script>
   const entryUrl = new URL(location.href);
@@ -20,7 +20,7 @@
 </script>
 <link rel="stylesheet" href="./cursor.css?v=44"><script defer src="./cursor.js?v=44"></script>
 <link rel="stylesheet" href="./exhibition-vi.css?v=3">
-<link rel="stylesheet" href="./tour.css?v=1">
+<link rel="stylesheet" href="./tour.css?v=2">
 </head>
 <body class="opening-active exhibit">
 <section class="opening" id="opening" role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="opening-title">
@@ -39,7 +39,7 @@
         <h3 class="exhibition-subtitle">X-Lab 训练营作品展<span>暨浙江大学未来学习中心学生创造成果展</span></h3>
         <p>软件、硬件、设计、商业四个方向的大一同学，把从好奇与需求出发的灵感，创作成了可以被看见、被体验、被讨论的作品。</p><p>我们取名“未完之境”，意在如实呈现创造尚未收束的那一面：1900 年，希尔伯特没有清点已经完成的成就，而是以23个尚未解决的问题开启新世纪；眼前这些作品同样是“版本之外”的呈现，每一件都还遗留着尚没有答案的部分。</p><p>我们希望借这个展览，让创造被看见，也让仍在生长的想法，被认真地期待。</p></div>
       <div class="opening-actions">
-        <button type="button" id="open-gallery">30秒认识展馆</button>
+        <button type="button" id="open-gallery">自动导览</button>
         <button type="button" id="explore-gallery">直接参观</button>
         <button type="button" id="read-introduction">策展导言</button>
 
@@ -68,7 +68,7 @@
         <p>愿每一位走入「未完之境」的人，都能在问题与回应之间，参与书写它尚未到来的下一页。</p>
         </div>
       </div>
-      <div class="address-actions"><button type="button" id="start-walk">30秒认识展馆</button><button type="button" id="skip-walk">直接参观</button></div>
+      <div class="address-actions"><button type="button" id="start-walk">自动导览</button><button type="button" id="skip-walk">直接参观</button></div>
     </section>
     <div class="facade-actions"><span class="loading-marks" aria-hidden="true"><img src="./assets/version-x-chrome-1.png" alt=""><img src="./assets/version-x-chrome-2.png" alt=""><img src="./assets/version-x-chrome-3.png" alt=""></span><span role="status">正在准备入馆镜头…</span><button type="button" id="skip-facade">跳过导览</button></div>
   </div>
@@ -127,14 +127,13 @@
 <noscript><p class="status">开启 JavaScript 后即可旋转展馆。</p></noscript>
 </div>
 <section class="tour-player" id="tour-player" aria-label="自动导览播放器" hidden data-state="idle">
-  <div class="tour-caption" aria-live="polite" aria-atomic="true"><span class="tour-eyebrow">30秒认识展馆</span><h2 id="tour-title">欢迎来到未完之境</h2><p id="tour-caption"></p></div>
-  <div class="tour-controls"><span id="tour-time" aria-hidden="true">00:00 / 00:30</span><button type="button" id="tour-pause">暂停</button><button type="button" id="tour-exit">跳过导览</button></div>
-  <input id="tour-progress" type="range" min="0" max="30" step="1" value="0" aria-label="导览播放进度">
+  <div class="tour-caption" aria-live="polite" aria-atomic="true"><span class="tour-eyebrow">自动导览</span><h2 id="tour-title">欢迎来到未完之境</h2><p id="tour-caption"></p></div>
+  <div class="tour-controls"><button type="button" id="tour-pause">暂停</button><button type="button" id="tour-next">下一幕</button><button type="button" id="tour-exit">跳过导览</button></div>
 </section>
 <div class="stage-foot">
   <p id="visit-tip"><span class="mouse-tip">悬停预览，点击展区进入团队故事。中央四座蓝色节点展台通往知识图谱。</span><span class="touch-tip">轻点展区或展台的标记查看展签，再点一次进入。</span></p>
   <div class="visit-actions">
-    <button type="button" id="tour-replay">30秒认识展馆</button>
+    <button type="button" id="tour-replay">自动导览</button>
     <button type="button" id="reset">重置视角 <span aria-hidden="true">↺</span></button>
     <details class="directory">
       <summary>展区目录</summary>

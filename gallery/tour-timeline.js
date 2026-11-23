@@ -1,34 +1,31 @@
-// Seconds are measured only while playing; tab switches and manual pauses do not consume time.
-export const TOUR_DURATION = 30;
-const camera = (target, orbit, fov = 42) => ({ target, orbit, fov });
+const camera = (target, orbit, fov = 44) => ({ target, orbit, fov });
+export const OVERVIEW = camera([0,-1.5,0],[24,58,34],42);
+// Every arrival is followed by a still reading interval. Timing stays internal.
 export const TOUR_SCENES = [
-  { at: 0, title: '欢迎来到未完之境', text: '四个展区，四种创造路径。在这里，看见作品，也看见它们怎样发生。', keys: [], camera: camera([0,-1.5,0],[24,58,34]) },
-  { at: 4, title: '软件 · 把想法运行起来', text: '从真实需求出发，探索代码如何成为可用的作品。', keys: ['zone-software'], camera: camera([0,1.25,6.36],[12,62,12]) },
-  { at: 8, title: '硬件 · 让构想动起来', text: '从结构到电路，让一个想法在反复调试中成形。', keys: ['zone-hardware'], camera: camera([7.57,1.25,0],[90,62,12]) },
-  { at: 12, title: '设计 · 让问题有新解', text: '从观察到取舍，寻找设计与真实生活的连接。', keys: ['zone-design'], camera: camera([0,1.25,-6.36],[180,62,12]) },
-  { at: 16, title: '运营 · 让创造被看见', text: '连接内容与人，让一次想法成为持续发生的交流。', keys: ['zone-operations'], camera: camera([-7.57,1.25,0],[270,62,12]) },
-  { at: 20, title: '作品背后，还有知识的连接', text: '中央四座蓝色展台，通往各团队的知识图谱。', keys: ['team-design','team-software','team-hardware','team-operations'], camera: camera([0,2.3,0],[335,65,15]) },
-  { at: 26, title: '接下来，由你探索', text: '点击展区看作品与故事；拖动旋转，找到你感兴趣的方向。', keys: [], camera: camera([0,-1.5,0],[384,58,34]) },
+  { title:'VERSION X · 未完之境', text:'从这张海报出发，走进仍在生长的创造现场。', keys:[], move:.8, hold:1.6, camera:{...camera([-6.32,.94,9.11],[4,88,3.6],36),fitByFov:true,frameWidth:3.5} },
+  { title:'四种路径，一个创造现场', text:'软件、硬件、设计与运营，围绕中央雕塑展开。', keys:[], move:2.8, hold:1.8, camera:OVERVIEW },
+  { title:'软件 · 把想法运行起来', text:'从真实需求出发，探索代码如何成为可用的作品。', keys:['zone-software'], move:2, hold:3.2, camera:{...camera([0,1.55,6.0],[180,88,3.8]),fitByFov:true,frameWidth:6.4} },
+  { title:'硬件 · 让构想动起来', text:'从结构到电路，让一个想法在反复调试中成形。', keys:['zone-hardware'], move:2.2, hold:3.2, camera:{...camera([7.2,1.55,0],[270,88,3.8]),fitByFov:true,frameWidth:6.4} },
+  { title:'设计 · 让问题有新解', text:'从观察到取舍，寻找设计与真实生活的连接。', keys:['zone-design'], move:2.2, hold:3.2, camera:{...camera([0,1.55,-6.0],[360,88,3.8]),fitByFov:true,frameWidth:6.4} },
+  { title:'运营 · 让创造被看见', text:'连接内容与人，让一次想法成为持续发生的交流。', keys:['zone-operations'], move:2.2, hold:3.2, camera:{...camera([-7.2,1.55,0],[450,88,3.8]),fitByFov:true,frameWidth:6.4} },
+  { title:'作品背后，还有知识的连接', text:'中央四座蓝色展台，通往各团队的知识图谱。', keys:['team-design','team-software','team-hardware','team-operations'], move:2.2, hold:3, camera:camera([0,2.3,0],[384,65,15],42) },
+  { title:'接下来，由你探索', text:'点击展区看作品与故事；也可以拖动模型，自由选择方向。', keys:[], move:2.4, hold:1.8, camera:{...OVERVIEW,orbit:[384,58,34]} },
 ];
-
-export function tourFrame(seconds) {
-  const time = Math.max(0, Math.min(TOUR_DURATION, seconds));
-  let index = 0;
-  for (let i = 1; i < TOUR_SCENES.length; i++) if (time >= TOUR_SCENES[i].at) index = i;
-  const scene = TOUR_SCENES[index];
-  const previous = TOUR_SCENES[Math.max(0, index - 1)].camera;
-  const from = index === 1 ? {...previous,orbit:[12,...previous.orbit.slice(1)]} : previous;
-  const duration = index === 5 ? 2.3 : index === 6 ? 2.5 : 1.8;
-  const p = Math.min(1, (time - scene.at) / duration);
-  const eased = p * p * (3 - 2 * p);
-  const mix = (a,b) => a + (b-a)*eased;
-  // Unwrapped azimuths keep the route moving around the room in one direction.
-  const view = {
-    target: scene.camera.target.map((v,i) => mix(from.target[i], v)),
-    orbit: scene.camera.orbit.map((v,i) => mix(from.orbit[i], v)),
-    fov: mix(from.fov, scene.camera.fov),
-    tour: true,
-  };
-  if (index === 0) view.orbit[0] = 24 - 12 * Math.min(1,time/4);
-  return { index, scene, view, progress: time / TOUR_DURATION };
+export const TOUR_DURATION = TOUR_SCENES.reduce((sum,s)=>sum+s.move+s.hold,0);
+const ease = p => p*p*(3-2*p);
+function blend(from,to,p) {
+  const mix=(a,b)=>a+(b-a)*p;
+  return {target:from.target.map((v,i)=>mix(v,to.target[i])),orbit:from.orbit.map((v,i)=>mix(v,to.orbit[i])),fov:mix(from.fov,to.fov)};
+}
+export function sceneFrame(index,seconds,from=TOUR_SCENES[Math.max(0,index-1)].camera,to=TOUR_SCENES[index].camera) {
+  const scene=TOUR_SCENES[index],p=scene.move?Math.max(0,Math.min(1,seconds/scene.move)):1;
+  const destination={...to,orbit:[...to.orbit]};
+  destination.orbit[0]=from.orbit[0]+((destination.orbit[0]-from.orbit[0]+540)%360)-180;
+  // Lift between racks, then descend to face the printed side from inside.
+  if(index>=3&&index<=6&&p<1){
+    const middle=blend(from,destination,.5);
+    middle.orbit[1]=48;middle.orbit[2]=Math.max(from.orbit[2],destination.orbit[2],12);middle.target[1]=2.5;
+    return p<.45?blend(from,middle,ease(p/.45)):blend(middle,destination,ease((p-.45)/.55));
+  }
+  return blend(from,destination,ease(p));
 }
