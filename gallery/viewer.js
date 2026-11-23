@@ -14,7 +14,7 @@ const stage=document.querySelector('#stage'),opening=document.querySelector('#op
 const chrome=[document.querySelector('.mast'),document.querySelector('main')];
 const status=document.querySelector('#status'),loading=document.querySelector('#model-loading'),screen=document.querySelector('.screen'),expand=document.querySelector('#expand');
 const presetButtons=[...document.querySelectorAll('[data-view]')],directory=stage.querySelector('.directory');
-let phase='opening';
+let phase='opening',introductionFromGallery=false;
 const views={
   'rack-design':{target:[0,1.33,-6.36],orbit:[9,60,5.5],fov:39,fitByFov:true},
   'rack-software':{target:[0,1.33,6.36],orbit:[188,60,5.5],fov:39,fitByFov:true},
@@ -56,19 +56,23 @@ function setExpanded(show){
   expand.setAttribute('aria-pressed',String(show));expand.setAttribute('aria-label',show?'退出放大预览':'放大预览');expand.querySelector('.expand-text').textContent=show?'退出放大':'放大';
 }
 expand.addEventListener('click',()=>setExpanded(!stage.classList.contains('expanded')));
-window.addEventListener('keydown',e=>{if(e.key!=='Escape'||e.defaultPrevented)return;if(directory.open)closeDirectory(true);else if(phase==='address')enterGallery();else if(stage.classList.contains('expanded'))setExpanded(false);});
+window.addEventListener('keydown',e=>{if(e.key!=='Escape'||e.defaultPrevented)return;if(directory.open)closeDirectory(true);else if(phase==='address'){if(introductionFromGallery)enterGallery();else showCover();}else if(stage.classList.contains('expanded'))setExpanded(false);});
 function enterGallery(guided=false){
   phase='gallery';opening.hidden=true;preview.hidden=true;address.hidden=true;opening.classList.remove('waiting-facade');preview.classList.remove('reading-address');
   document.body.classList.remove('opening-active');document.body.classList.add('gallery-ready');chrome.forEach(el=>el.inert=false);setView('overview',true);
   if(guided&&!viewerError)walk.start();else presetButtons[0].focus({preventScroll:true});
 }
+function showCover(){
+  phase='opening';preview.hidden=true;address.hidden=true;opening.classList.remove('waiting-facade');preview.classList.remove('reading-address');document.querySelector('#open-gallery').focus({preventScroll:true});
+}
 function showIntroduction(){
+  introductionFromGallery=phase==='gallery';
   document.documentElement.classList.remove('direct-gallery');
   walk.stop();closeDirectory();phase='address';opening.hidden=false;preview.hidden=false;address.hidden=false;
   opening.classList.add('waiting-facade');preview.classList.add('reading-address');document.body.classList.add('opening-active');chrome.forEach(el=>el.inert=true);address.querySelector('h2').focus({preventScroll:true});
 }
-document.querySelector('#open-gallery').addEventListener('click',()=>enterGallery(true));document.querySelector('#explore-gallery').addEventListener('click',()=>enterGallery());
-document.querySelector('#read-introduction').addEventListener('click',showIntroduction);document.querySelector('#read-introduction-again').addEventListener('click',showIntroduction);
+document.querySelector('#open-gallery').addEventListener('click',showIntroduction);
+document.querySelector('#read-introduction-again').addEventListener('click',showIntroduction);
 address.querySelector('#start-walk').addEventListener('click',()=>enterGallery(true));address.querySelector('#skip-walk').addEventListener('click',()=>enterGallery());
 document.querySelector('#tour-replay').addEventListener('click',()=>walk.start());
 let waitNotice,lastProgress=-1,viewerError=false;
