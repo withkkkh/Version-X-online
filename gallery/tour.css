@@ -1,0 +1,40 @@
+.opening .opening-editorial .opening-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;width:100%;max-width:100%}
+.exhibit .opening #open-gallery{min-height:48px;padding:11px 22px;white-space:nowrap}
+.opening #explore-gallery,.opening #read-introduction{font:inherit;min-height:48px;padding:10px 18px;color:#294a67;background:transparent;border:1px solid #b9cbd9;border-radius:999px;white-space:nowrap}
+.opening #read-introduction{padding-inline:6px;border-color:transparent;font-size:.875rem}
+.opening #explore-gallery:hover,.opening #read-introduction:hover{background:#e5eef580}
+.opening #explore-gallery:focus-visible,.opening #read-introduction:focus-visible{outline:2px solid #315879;outline-offset:3px}
+.exhibit .tour-player{position:absolute;z-index:4;left:50%;bottom:126px;transform:translateX(-50%);width:min(600px,90%);padding:18px 22px 13px;border:1px solid #ffffffb0;border-radius:12px;background:rgba(247,251,254,.94);box-shadow:0 5px 28px #1b3d5912;color:#223d5e;display:grid;gap:12px}
+.exhibit .tour-player[hidden]{display:none}
+.tour-eyebrow{display:none;font-size:.8125rem;letter-spacing:.09em;color:#5d758c}
+.tour-caption h2{font-size:1.25rem;line-height:1.4;margin:4px 0 5px;font-weight:580;letter-spacing:.025em}
+.tour-caption p{font-size:1rem;line-height:1.65;margin:0;min-height:1.65em}
+.tour-controls{display:flex;align-items:center;gap:8px}
+#tour-time{font:14px/1.5 Consolas,monospace;letter-spacing:.04em;color:#5d758c;margin-right:auto;white-space:nowrap}
+.exhibit .tour-controls button{font-size:.875rem;min-height:44px;border:0;padding:8px 12px;background:transparent;border-radius:6px}
+.exhibit .tour-controls button:hover{background:#dfeaf3}
+.exhibit .tour-controls button:disabled{opacity:.5;cursor:wait}
+#tour-progress{display:block;width:100%;height:20px;margin:0;border:0;appearance:none;background:transparent;cursor:pointer;accent-color:#567f9e}
+#tour-progress::-webkit-slider-runnable-track{height:3px;background:#a8c0d3;border-radius:4px}
+#tour-progress::-webkit-slider-thumb{appearance:none;margin-top:-4px;width:11px;height:11px;background:#476f91;border:2px solid #f7fbfe;border-radius:50%;box-shadow:0 0 0 1px #6385a0}
+#tour-progress::-moz-range-track{height:3px;background:#a8c0d3;border-radius:4px}
+#tour-progress::-moz-range-thumb{width:9px;height:9px;background:#476f91;border:2px solid #f7fbfe;border-radius:50%}
+#tour-progress:focus-visible{outline:2px solid #315879;outline-offset:4px}
+.tour-active #visit-tip,.tour-active #tour-replay{visibility:hidden;pointer-events:none}
+.tour-active .toolbar{visibility:hidden;pointer-events:none}
+.tour-player[data-state="paused"] .tour-eyebrow::after{content:" · 已暂停";letter-spacing:.03em}
+.tour-player[data-state="paused"] .tour-eyebrow{display:inline}
+.exhibit .stage.tour-active:not(.entering) .screen{height:calc(100% - 230px);mask-image:linear-gradient(#000 0%,#000 calc(100% - 70px),transparent 100%)}
+.tour-active [data-tour-highlight] .team-hotspot-dot{opacity:1;width:12px;height:12px;background:#2d77b5;box-shadow:0 0 0 7px #77b5e633,0 0 20px #78b9e680}
+.tour-active .still-points [data-tour-highlight] .team-hotspot-dot{opacity:1}
+@media(max-width:760px){
+  .opening .opening-editorial .opening-actions{justify-content:center;gap:8px}
+  .opening #read-introduction{flex-basis:100%;min-height:36px}
+  .exhibit .tour-player{left:20px;right:20px;transform:none;width:auto;bottom:max(146px,calc(130px + env(safe-area-inset-bottom)));padding:15px 17px 12px;gap:8px}
+  .tour-caption h2{font-size:1.125rem}
+  .tour-caption p{font-size:1rem;line-height:1.6;min-height:3.2em}
+  .tour-controls{gap:4px}.exhibit .tour-controls button{padding-inline:8px}
+  .exhibit .visit-actions{flex-wrap:wrap;justify-content:flex-end;gap:6px 16px}
+  .exhibit .tour-active .toolbar{opacity:.65}
+}
+@media(max-width:360px){.exhibit .tour-player{left:12px;right:12px;padding-inline:13px}#tour-time{font-size:13px}}

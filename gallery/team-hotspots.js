@@ -137,6 +137,10 @@ export function installTeamHotspots(model, stage, openMap) {
   const zoneOrder = ['design', 'software', 'hardware', 'operations'];
   let floorMesh;
   let hoverFrame;
+  model.addEventListener('tour-start', () => {
+    cancelAnimationFrame(hoverFrame);
+    clear();
+  });
   const fingers = new Set();
 
   let dragged = false;
@@ -232,6 +236,7 @@ export function installTeamHotspots(model, stage, openMap) {
     } else dragged = true;
   });
   model.addEventListener('pointermove', event => {
+    if (model.hasAttribute('data-touring')) return;
     if (gesture && Math.hypot(event.clientX - gesture[0], event.clientY - gesture[1]) >= 7) {
       dragged = true;
       clear();

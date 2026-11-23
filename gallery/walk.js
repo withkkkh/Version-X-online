@@ -1,91 +1,61 @@
-const stops = [
-  ['展馆总览', '四组展架围绕中央雕塑展开。外围是团队故事，雕塑脚边的四座小展台通往知识图谱。'],
-  ['设计展区', '从一张草图到一个方案，去看设计团队怎样发散、取舍和收敛。','zone-design'],
-  ['软件展区', '沿着需求、选型和维护三个线索，看看团队为什么决定自己造一个轮子。','zone-software'],
-  ['硬件展区', '从第一张图纸到第一次跑通，听听硬件团队在哪一步改变了方案。','zone-hardware'],
-  ['运营展区', '一场活动或一项服务如何持续下去？这里记录团队发现需求、联结伙伴的过程。','zone-operations'],
-  ['设计知识图谱', '中央的设计展台连接设计团队的知识图谱。','team-design'],
-  ['软件知识图谱', '从这座展台进入软件团队的知识图谱。','team-software'],
-  ['硬件知识图谱', '这座展台通往硬件团队的知识图谱。','team-hardware'],
-  ['运营知识图谱', '这里可以打开运营团队的知识图谱。','team-operations'],
-  ['自由参观', '右下方「导览入口」收录全部团队故事与知识图谱，也可以从那里重新开始导览。']
-];
-
-export function installWalk(stage, model, setView, updateCameraControls) {
-  const panel=stage.querySelector('.walk-panel');
-  const title=panel.querySelector('h2');
-  const next=panel.querySelector('.walk-next');
-  const directory=stage.querySelector('.directory');
-  const hotspots=[...model.querySelectorAll('.team-hotspot')];
-  const interactive=matchMedia('(max-width:680px), (pointer:coarse), (hover:none)');
-  let index=-1;
-  // Coordinates in the 720 × 440 overview rendered by the exhibition camera.
-  const coordinates={'zone-design':[431,140],'zone-software':[272,273],'zone-hardware':[531,241],'zone-operations':[201,159],
-    'team-design':[343,191],'team-software':[323,217],'team-hardware':[392,191],'team-operations':[374,225]};
-  const plane=document.createElement('div');
-  plane.className='still-points';
-  const inner=document.createElement('div');
-  plane.append(inner);
-  stage.querySelector('.gallery-still').after(plane);
-  const copies=new Map();
-  let selected;
-  function clearStill(){
-    selected?.classList.remove('is-active');
-    selected=null;
+import { TOUR_DURATION, tourFrame } from './tour-timeline.js?v=1';
+export function installWalk(stage, model, setView, applyTourCamera) {
+  const player=stage.querySelector('#tour-player'),title=player.querySelector('#tour-title'),caption=player.querySelector('#tour-caption');
+  const progress=player.querySelector('#tour-progress'),clock=player.querySelector('#tour-time'),pauseButton=player.querySelector('#tour-pause');
+  const exit=player.querySelector('#tour-exit'),replay=stage.querySelector('#tour-replay');
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  let state='idle',elapsed=0,began=0,frame,sceneIndex=-1;
+  const now=()=>performance.now();
+  const currentTime=()=>state==='playing'?Math.min(TOUR_DURATION,elapsed+(now()-began)/1000):elapsed;
+  function changeState(next){
+    state=next;player.dataset.state=next;
+    stage.classList.toggle('tour-active',['playing','paused','waiting'].includes(next));
+    model.toggleAttribute('data-touring',next==='playing');
+    pauseButton.textContent=next==='playing'?'暂停':'继续播放';pauseButton.disabled=next==='waiting';progress.disabled=next==='waiting';
   }
-  for(const link of hotspots){
-    const key=link.slot.slice('hotspot-'.length);
-    const copy=link.cloneNode(true);
-    copy.removeAttribute('slot');
-    const [x,y]=coordinates[key];
-    copy.style.left=(100*x/720)+'%';
-    copy.style.top=(100*y/440)+'%';
-    if(key.startsWith('team-')){
-      copy.style.setProperty('--spread-x',(x<360?-1:1)*(key.endsWith('software')||key.endsWith('hardware')?22:4)+'px');
-      copy.style.setProperty('--spread-y',(y<205?-24:24)+'px');
+  function clearHighlight(){stage.querySelectorAll('[data-tour-highlight]').forEach(n=>n.removeAttribute('data-tour-highlight'));}
+  function render(time,forceCamera=false){
+    const result=tourFrame(time);
+    if(sceneIndex!==result.index){
+      sceneIndex=result.index;title.textContent=result.scene.title;caption.textContent=result.scene.text;clearHighlight();
+      for(const key of result.scene.keys){
+        const [kind,team]=key.split('-');
+        stage.querySelectorAll('[slot="hotspot-'+key+'"],.still-points [data-'+(kind==='team'?'team':'zone')+'="'+team+'"]').forEach(n=>n.setAttribute('data-tour-highlight',''));
+      }
     }
-    copy.addEventListener('click',event=>{
-      if(!interactive.matches || event.detail===0 || selected===copy)return;
-      event.preventDefault();
-      clearStill();
-      selected=copy;
-      copy.classList.add('is-active');
-    });
-    inner.append(copy);copies.set(key,copy);
+    progress.value=time;clock.textContent='00:'+String(Math.floor(time)).padStart(2,'0')+' / 00:30';
+    if(model.loaded&&(!reducedMotion.matches||forceCamera))applyTourCamera(result.view);
   }
-  stage.addEventListener('pointerdown',e=>{if(!e.target.closest('.team-hotspot'))clearStill()});
-  function clearMark(){
-    stage.querySelectorAll('.tour-mark').forEach(el=>el.classList.remove('tour-mark'));
-    directory.classList.remove('tour-directory');
+  function stop({reset=false,restoreFocus=false,complete=false}={}){
+    if(state==='idle')return;cancelAnimationFrame(frame);changeState(complete?'complete':'idle');player.hidden=true;
+    stage.classList.remove('tour-active');clearHighlight();
+    if(reset)setView('overview',true);if(restoreFocus)replay.focus({preventScroll:true});
   }
-  function finish(){
-    if(index<0)return;
-    index=-1;panel.hidden=true;updateCameraControls();clearMark();
-    setView('overview',true);
-    directory.querySelector('summary').focus({preventScroll:true});
+  function tick(){
+    if(state!=='playing')return;const time=currentTime();render(time);
+    if(time>=TOUR_DURATION){elapsed=TOUR_DURATION;stop({reset:true,restoreFocus:player.contains(document.activeElement),complete:true});return;}
+    frame=requestAnimationFrame(tick);
   }
-  function render(i){
-    index=i;clearMark();clearStill();
-    const [name,copy,key]=stops[i];
-    const isMap=key?.startsWith('team-');
-    setView(isMap && model.loaded?'sculpture':'overview',true);
-    if(key){
-      model.querySelector('[slot="hotspot-'+key+'"]').classList.add('tour-mark');
-      copies.get(key).classList.add('tour-mark');
-    }
-    if(i===stops.length-1)directory.classList.add('tour-directory');
-    panel.querySelector('.walk-count').textContent=String(i+1).padStart(2,'0')+' / '+stops.length;
-    title.textContent=name;panel.querySelector('p').textContent=copy;
-    next.textContent=i===stops.length-1?'开始自由参观':'下一站';
-    panel.hidden=false;
-    updateCameraControls();
+  function pause(){if(state!=='playing')return;elapsed=currentTime();cancelAnimationFrame(frame);changeState('paused');}
+  function resume(){if(state!=='paused'||document.hidden)return;render(elapsed,true);began=now();changeState('playing');frame=requestAnimationFrame(tick);}
+  function beginPlayback(){if(state!=='waiting')return;elapsed=0;sceneIndex=-1;render(0,true);began=now();changeState('playing');frame=requestAnimationFrame(tick);}
+  function start(){
+    stop();stage.querySelector('.directory').open=false;model.dispatchEvent(new CustomEvent('tour-start'));
+    player.hidden=false;progress.value=0;clock.textContent='00:00 / 00:30';title.textContent='正在准备展馆';caption.textContent='模型准备好后，带你用30秒认识这里。';
+    changeState('waiting');exit.focus({preventScroll:true});if(model.loaded)beginPlayback();
   }
-  model.addEventListener('load',()=>{if(index>=0)render(index)});
-  next.addEventListener('click',()=>index===stops.length-1?finish():render(index+1));
-  panel.querySelector('.walk-end').addEventListener('click',finish);
-  stage.addEventListener('click',e=>{
-    if(index>=0 && e.target.closest('[data-view],#reset,summary,.team-hotspot'))finish();
-  },true);
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&index>=0)finish()});
-  return ()=>{render(0);title.focus({preventScroll:true});stage.scrollIntoView({block:'start',behavior:'instant'})};
+  model.addEventListener('load',beginPlayback);model.addEventListener('error',()=>stop());
+  pauseButton.addEventListener('click',()=>state==='playing'?pause():resume());exit.addEventListener('click',()=>stop({reset:true,restoreFocus:true}));
+  progress.addEventListener('pointerdown',pause);
+  progress.addEventListener('input',()=>{
+    elapsed=Number(progress.value);began=now();render(elapsed,true);
+    progress.setAttribute('aria-valuetext',Math.round(elapsed)+'秒，共30秒');
+  });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+  stage.addEventListener('click',event=>{if(event.target.closest('[data-view],#reset,summary,.team-hotspot,#expand'))stop();},true);
+  model.addEventListener('pointerdown',pause,true);model.addEventListener('wheel',pause,{capture:true,passive:true});
+  model.addEventListener('focusin',event=>{if(event.target.closest('.team-hotspot'))pause();});
+  model.addEventListener('keydown',event=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','+','-'].includes(event.key))pause();},true);
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&['playing','paused','waiting'].includes(state)){event.preventDefault();stop({reset:true,restoreFocus:true});}});
+  return {start,stop,get active(){return ['playing','paused','waiting'].includes(state);}};
 }
