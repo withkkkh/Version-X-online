@@ -39,8 +39,12 @@ export function installViDirectionalBackground(screen,model){
       float wave=.5+.5*sin(uv.x*12.*PI+1.6*cos(uv.y*6.*PI));
       vec2 q=abs(cell)-vec2(.04+wave*.08);
       float distance=length(max(q,0.))+min(max(q.x,q.y),0.)-.065;
-      float smoothing=clamp(length(fwidth(grid))*.52,.008,.4);
+      // Fade unresolved cells to their average coverage as the lens pulls back.
+      vec2 footprint=fwidth(grid);
+      float pixelSpan=max(footprint.x,footprint.y);
+      float smoothing=clamp(pixelSpan*.52,.008,.4);
       float dot=1.-smoothstep(-smoothing,smoothing,distance);
+      dot=mix(dot,.09, smoothstep(.25,.8,pixelSpan));
       float density=(.055+wave*.10)*(.45+.55*drift);
       vec3 ink=mix(vec3(.81,.92,1.),vec3(.27,.49,.68),silver);
       color=mix(color,ink,dot*density);
@@ -55,7 +59,7 @@ export function installViDirectionalBackground(screen,model){
   }catch{gl.getExtension('WEBGL_lose_context')?.loseContext();return installViGraphicBackground(screen);}
   gl.useProgram(program);
   const uniforms=Object.fromEntries(['resolution','outward','rightward','upward','lens'].map(key=>[key,gl.getUniformLocation(program,key)]));
-  let visible=true,frame,drawCount=0;
+  let visible=true,frame,drawCount=0,previous;
   function draw(){
     frame=undefined;if(!visible||gl.isContextLost())return;
     const {width,height}=screen.getBoundingClientRect();if(!width||!height)return;
@@ -63,6 +67,10 @@ export function installViDirectionalBackground(screen,model){
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
     let theta=24*Math.PI/180,phi=58*Math.PI/180,fov=42;
     if(model.getCameraOrbit){const orbit=model.getCameraOrbit();theta=orbit.theta;phi=orbit.phi;fov=model.getFieldOfView();}
+    // Dolly zoom changes the radius only. The distant backdrop has the same rays.
+    if(previous && previous.w===w && previous.h===h && previous.theta===theta &&
+       previous.phi===phi && previous.fov===fov) return;
+    previous={w,h,theta,phi,fov};
     const st=Math.sin(theta),ct=Math.cos(theta),sp=Math.sin(phi),cp=Math.cos(phi);
     const aspect=width/height,halfHeight=Math.tan(fov*Math.PI/360)/Math.min(1,aspect);
     gl.uniform2f(uniforms.resolution,w,h);gl.uniform2f(uniforms.lens,halfHeight*aspect,halfHeight);
@@ -73,5 +81,5 @@ export function installViDirectionalBackground(screen,model){
   function schedule(){if(visible&&!frame)frame=requestAnimationFrame(draw);}
   screen.prepend(canvas);new ResizeObserver(schedule).observe(screen);window.addEventListener('resize',schedule);
   model.addEventListener('camera-change',schedule);model.addEventListener('load',schedule);schedule();
-  return {setVisible(value){visible=value;canvas.hidden=!value;if(value)schedule();}};
+  return {setVisible(value){visible=value;canvas.hidden=!value;if(value){previous=undefined;schedule();}}};
 }

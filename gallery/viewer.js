@@ -1,5 +1,5 @@
-import { installBackgroundComparison } from './background-comparison.js?v=6';
-import { installWalk } from './walk.js?v=tour3';
+import { installBackgroundComparison } from './background-comparison.js?v=7';
+import { installWalk } from './walk.js?v=tour4';
 import { installStillHotspots } from './still-hotspots.js?v=1';
 import { startModel } from './gallery-runtime.js?v=study1';
 import { installTeamHotspots } from './team-hotspots.js?v=tour1';
@@ -46,7 +46,7 @@ function setView(name,immediate=false){
   applyCamera(fittedView(view),immediate);presetButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===name)));
 }
 installTeamHotspots(model,stage,openMap);installStillHotspots(stage,model);
-const walk=installWalk(stage,model,setView,view=>{model.setAttribute('max-field-of-view','110deg');applyCamera(view,true);presetButtons.forEach(b=>b.setAttribute('aria-pressed','false'));},view=>view.overview?fittedView(views.overview):fittedView({...view,tour:true}));
+const walk=installWalk(stage,model,setView,view=>applyCamera(view,true),view=>view.overview?fittedView(views.overview):fittedView({...view,tour:true}));
 installBackgroundComparison(stage,model,()=>walk.pause());
 function closeDirectory(restoreFocus=false){directory.open=false;if(restoreFocus)directory.querySelector('summary').focus({preventScroll:true});}
 presetButtons.forEach(b=>b.addEventListener('click',()=>{setView(b.dataset.view);if(directory.contains(b))closeDirectory(true);}));
@@ -78,11 +78,11 @@ document.querySelector('#read-introduction-again').addEventListener('click',show
 address.querySelector('#start-walk').addEventListener('click',()=>enterGallery(true));address.querySelector('#skip-walk').addEventListener('click',()=>enterGallery());
 document.querySelector('#tour-replay').addEventListener('click',()=>walk.start());
 let waitNotice,lastProgress=-1,viewerError=false;
-function onLoaded(){clearTimeout(waitNotice);viewerError=false;document.querySelector('#tour-replay').disabled=false;loading.hidden=true;status.hidden=true;loading.classList.remove('has-error');screen.setAttribute('aria-busy','false');model.classList.add('model-loaded');if(!walk.active)setView('overview',true);}
+function onLoaded(){clearTimeout(waitNotice);viewerError=false;address.querySelector('#start-walk').disabled=false;document.querySelector('#tour-replay').disabled=false;loading.hidden=true;status.hidden=true;loading.classList.remove('has-error');screen.setAttribute('aria-busy','false');model.classList.add('model-loaded');if(!walk.active)setView('overview',true);}
 function showRetry(message){
   const retry=document.createElement('button');retry.type='button';retry.textContent='重新加载';retry.onclick=()=>{const url=new URL(location.href);url.searchParams.set('entry','return-from-map');location.assign(url);};status.replaceChildren(message,' ',retry);
 }
-function loadingError(){viewerError=true;document.querySelector('#tour-replay').disabled=true;clearTimeout(waitNotice);walk.stop();model.classList.remove('model-loaded');loading.hidden=false;status.hidden=false;loading.classList.add('has-error');screen.setAttribute('aria-busy','false');showRetry('三维模型暂时无法显示，可从「展区目录」继续参观。');}
+function loadingError(){viewerError=true;address.querySelector('#start-walk').disabled=true;document.querySelector('#tour-replay').disabled=true;clearTimeout(waitNotice);walk.stop();model.classList.remove('model-loaded');loading.hidden=false;status.hidden=false;loading.classList.add('has-error');screen.setAttribute('aria-busy','false');showRetry('三维模型暂时无法显示，可从「展区目录」继续参观。');}
 model.addEventListener('load',onLoaded);model.addEventListener('error',loadingError);
 model.addEventListener('progress',e=>{if(model.loaded||viewerError)return;const p=Math.min(99,Math.floor(e.detail.totalProgress*10)*10);if(p!==lastProgress){lastProgress=p;status.textContent='三维展馆加载中 '+p+'% · 可先浏览展区目录';}});
 waitNotice=setTimeout(()=>{if(!model.loaded)showRetry('仍在准备三维展馆，可先从「展区目录」参观。');},18000);startModel(model).catch(loadingError);if(model.loaded)onLoaded();

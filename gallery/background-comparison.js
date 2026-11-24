@@ -1,4 +1,4 @@
-import { installViDirectionalBackground } from './vi-directional-background.js?v=3';
+import { installViDirectionalBackground } from './vi-directional-background.js?v=4';
 export function installBackgroundComparison(stage,model,pauseTour){
   const graphic=installViDirectionalBackground(model.parentElement,model);
   // The approved VI is the public default. Art-direction controls are opt-in.

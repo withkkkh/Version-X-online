@@ -1,36 +1,51 @@
-import { slideFrame } from './tour-timeline.js?v=3';
-
-// Copy the rendered canvas without encoding it: no second 3D scene or GPU load.
+// Slide the outgoing still over the next view. The WebGL viewer stays mounted
+// and in the viewport, so switching exhibits never requires a blank canvas.
 export function installSceneSlide(model) {
-  const screen=model.parentElement;
-  let image,revision=0;
-  function clear(){
-    revision++;if(image){image.remove();image.width=0;image.height=0;}image=undefined;
-    model.style.removeProperty('transform');model.style.removeProperty('will-change');
+  const screen = model.parentElement;
+  let image;
+
+  function clear() {
+    image?.remove();
+    image = undefined;
+    model.style.removeProperty('clip-path');
   }
-  async function capture(){
-    clear();const current=revision;
-    try{
-      // model-viewer keeps a hidden poster canvas beside the live WebGL canvas.
-      const source=[...(model.shadowRoot?.querySelectorAll('canvas')||[])].find(canvas=>canvas.getBoundingClientRect().width>0);
-      if(!source||!source.width||!source.height)return false;
-      image=document.createElement('canvas');image.width=source.width;image.height=source.height;
-      image.className='tour-slide-frame';image.setAttribute('aria-hidden','true');
-      image.getContext('2d').drawImage(source,0,0);
-      if(current!==revision)return false;
-      screen.append(image);return true;
-    }catch{if(current===revision)clear();return false;}
-  }
-  function draw(progress){
-    if(progress>=1){clear();return;}
-    model.style.willChange='transform';
-    if(image){
-      const pose=slideFrame(progress);image.style.transform=`translateX(${pose.outgoing}%)`;
-      model.style.transform=`translateX(${pose.incoming}%)`;
-    }else{
-      const p=progress<.5?slideFrame(progress*2).outgoing:slideFrame((progress-.5)*2).incoming;
-      model.style.transform=`translateX(${p}%)`;
+
+  function capture() {
+    clear();
+    const source = [...(model.shadowRoot?.querySelectorAll('canvas') || [])]
+      .find(canvas => canvas.getBoundingClientRect().width > 0 && canvas.width && canvas.height);
+    if (!source) return false;
+    try {
+      const still = document.createElement('canvas');
+      still.width = Math.min(source.width, Math.ceil(screen.clientWidth * 1.5));
+      still.height = Math.round(still.width * screen.clientHeight / Math.max(1, screen.clientWidth));
+      const ctx = still.getContext('2d');
+      // Some drivers clear the WebGL drawing buffer after presentation.
+      // Fall back to an ordinary live camera move if there is no exhibit in it.
+      const sample = document.createElement('canvas');
+      sample.width = sample.height = 16;
+      const probe = sample.getContext('2d');
+      probe.drawImage(source, 0, 0, 16, 16);
+      if (!probe.getImageData(0, 0, 16, 16).data.some((v, i) => i % 4 === 3 && v > 32)) return false;
+      ctx.drawImage(source, 0, 0, still.width, still.height);
+      still.className = 'tour-slide-frame';
+      still.setAttribute('aria-hidden','true');
+      screen.append(still);
+      image = still;
+      return true;
+    } catch {
+      clear();
+      return false;
     }
   }
-  return {capture,draw,clear,get hasImage(){return Boolean(image);}};
+
+  function draw(progress) {
+    if (!image) return;
+    if (progress >= 1) { clear(); return; }
+    const eased = progress * progress * (3 - 2 * progress);
+    image.style.transform = 'translateX(' + (-100 * eased) + '%)';
+    model.style.clipPath = 'inset(0 0 0 ' + (100 * (1 - eased)) + '%)';
+  }
+
+  return { capture, draw, clear };
 }
