@@ -1,0 +1,11 @@
+VI 全景背景本地试版
+
+按用户提供的冰蓝点阵海报、银色液态 X、玻璃立面与颗粒蓝海报制作。弃用此前的写实灰色房间背景。
+
+可见背景：gallery-vi-skybox.jpg，2:1 全景贴图，由 imagegen 参考 VI 生成，JPEG 编码约174KB。使用 model-viewer 的 skybox-image 接入，随相机方向变化；不是纯色平铺。
+
+照明：gallery-neutral-studio.hdr，由 tools/build-gallery-lighting.mjs 生成。单独的中性柔光环境避免可见背景把展墙染蓝，保留灰色地面、白色墙面和接触阴影。新增贴图和照明合计约207KB。environment.css 统一背景边缘、页眉和文字颜色。
+
+内容：删除设计团队页的“发散与收敛”说明框，保留同理心、批判性、想象力、感知力及项目索引。
+
+验证：浏览器查看总览、团队近景与横向切换、390px手机端和设计团队页；无控制台错误。仅本地预览，未推送到 GitHub Pages。

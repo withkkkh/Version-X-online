@@ -1,0 +1,8 @@
+/* The VI's frosted silver-blue environment surrounds the live 3D scene. */
+.exhibit.vi-environment{--paper:#dce7f1;background:var(--paper)}
+.vi-environment .mast{background:linear-gradient(#e9f0f6,#dce7f1);border:0}
+.vi-environment .screen{mask-image:linear-gradient(transparent,#000 65px,#000 calc(100% - 75px),transparent)}
+.vi-environment #visit-tip,.vi-environment .web-credits,.vi-environment #reset,.vi-environment .directory summary{color:#233e5c;text-shadow:0 1px 8px #f5faff80}
+.vi-environment .toolbar{color:#223e61}
+.vi-environment .tour-slide-frame{background:var(--paper)}
+@media(max-width:760px){.vi-environment .screen{mask-image:linear-gradient(transparent,#000 50px,#000 calc(100% - 65px),transparent)}}
