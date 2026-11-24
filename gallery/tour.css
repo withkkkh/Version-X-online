@@ -31,3 +31,8 @@
 @media(max-width:680px),(max-height:520px) and (pointer:coarse) {
   .opening .opening-editorial .opening-actions {justify-content:center}
 }
+
+@media(max-width:760px),(pointer:coarse),(hover:none) {
+  .gallery-ready .tour-active .model-loaded .team-hotspot {opacity:0;visibility:hidden;pointer-events:none}
+  .gallery-ready .tour-active .still-points {display:none}
+}

@@ -187,41 +187,34 @@ body.has-project-index {background-color:#f5f8fb}
 }
 
 /* Direction marks use strokes so phone keyboards cannot substitute emoji. */
-body[data-team] .nav-mark {
+:is(body[data-team],.knowledge-page) .nav-mark {
   display:inline-block;width:.48em;height:.48em;flex:none;
   border-top:1.4px solid currentColor;border-right:1.4px solid currentColor;
   vertical-align:.15em;margin-left:.5em;
 }
-body[data-team] .nav-mark.back {transform:rotate(-135deg);margin:0 .5em 0 0}
-body[data-team] .nav-mark.down {transform:rotate(135deg)}
+:is(body[data-team],.knowledge-page) .nav-mark.back {transform:rotate(-135deg);margin:0 .5em 0 0}
+:is(body[data-team],.knowledge-page) .nav-mark.down {transform:rotate(135deg)}
 @media(max-width:1000px){
-  body[data-team] {--story-hairline:#beced9;--story-type:system-ui,"PingFang SC","Microsoft YaHei",sans-serif}
+  :is(body[data-team],.knowledge-page) {--story-hairline:#beced9;--story-type:system-ui,"PingFang SC","Microsoft YaHei",sans-serif}
   body[data-team] .mast {
     height:auto;min-height:58px;max-width:640px;margin-inline:auto;
     gap:10px;padding:6px clamp(10px,3vw,20px);align-items:center;
   }
   body[data-team] .mast .brand {flex:none}
   body[data-team] .mast .brand .exhibition-wordmark {width:clamp(53px,15vw,72px)}
-  body[data-team] .mast nav {
+  :is(body[data-team],.knowledge-page) .mast nav {
     display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:0;min-width:0;
     border:1px solid var(--story-hairline);border-radius:6px;background:#f8fbfd;
   }
-  body[data-team] .mast nav a,body[data-team] .mast nav a:first-child {
+  :is(body[data-team],.knowledge-page) .mast nav a,:is(body[data-team],.knowledge-page) .mast nav a:first-child {
     position:static;transform:none;display:flex;align-items:center;justify-content:center;
     min-height:44px;width:auto;max-width:none;margin:0;padding:0 clamp(4px,1.6vw,12px);
     border:0;border-radius:0;box-shadow:none;background:transparent;color:var(--exhibition-ink);
     font:500 12px/1.2 var(--story-type);letter-spacing:0;text-decoration:none;white-space:nowrap;
   }
-  body[data-team] .mast nav a+a {border-left:1px solid var(--story-hairline)}
-  body[data-team] .mast nav a:active {background:#e1ebf2}
+  :is(body[data-team],.knowledge-page) .mast nav a+a {border-left:1px solid var(--story-hairline)}
+  :is(body[data-team],.knowledge-page) .mast nav a:active {background:#e1ebf2}
   body[data-team] .nav-team {display:none}
-  body[data-team] .signature {padding-right:50px}
-  body[data-team] .signature .motion {
-    inset:auto 0 0 auto;transform:none;width:44px;height:44px;padding:0;display:grid;place-items:center;
-    font-size:0;border:1px solid var(--story-hairline);border-radius:50%;background:#f8fbfd;color:#405a71;
-  }
-  body[data-team] .signature .motion::before {content:"";width:5px;height:10px;border-inline:2px solid currentColor}
-  body[data-team] .motion-paused .signature .motion::before {width:0;height:0;border:0;border-left:8px solid currentColor;border-block:5px solid transparent;margin-left:2px}
   body[data-team] .pin {
     min-width:min(108px,32%);max-width:35%;padding:7px 10px;gap:4px;
     border:1px solid var(--story-hairline);border-radius:5px;background:#f8fbfd;
@@ -235,4 +228,18 @@ body[data-team] .nav-mark.down {transform:rotate(135deg)}
   body[data-team] .note h2 .ordinal,body[data-team] .note h2 small {font:500 10px/1.3 var(--mono)}
   body[data-team] .note p {font:400 15px/1.7 var(--story-type)}
   body[data-team] .note p.follow {font-size:13px}
+}
+
+.knowledge-page .map-teams {display:flex;align-items:center;gap:clamp(12px,2vw,32px);font:500 .86rem/1.35 system-ui,sans-serif;letter-spacing:0}
+.knowledge-page .map-teams [aria-current] {text-decoration:underline;text-underline-offset:.35em;color:#214767}
+.knowledge-page .map-teams a:focus-visible {outline:2px solid #446c9d;outline-offset:2px}
+@media(min-width:1001px){
+  .knowledge-page .map-mast-label {margin-right:auto}
+}
+@media(max-width:1000px){
+  .knowledge-page .mast {justify-content:space-between;gap:6px;padding:6px clamp(6px,2vw,16px);min-height:58px}
+  .knowledge-page .mast .brand {display:none}
+  .knowledge-page .mast .exhibition-wordmark {width:clamp(48px,15vw,72px);display:block}
+  .knowledge-page .mast nav.map-teams {grid-template-columns:max-content repeat(4,minmax(0,1fr));gap:0}
+  .knowledge-page .map-teams a[aria-current] {background:#e1ebf2;text-decoration:none}
 }

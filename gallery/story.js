@@ -6,7 +6,6 @@
   const stage = document.querySelector('.stage');
   const svg = document.querySelector('.leads');
   const notes = Array.from(document.querySelectorAll('.note'));
-  const motion = document.querySelector('.motion');
   const preference = matchMedia('(prefers-reduced-motion: reduce)');
   const tau = 2 * Math.PI;
   const faces = [];
@@ -62,13 +61,6 @@
     Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));parent.append(el);return el;
   }
   const compact = matchMedia('(max-width:1000px)');
-  const signature = document.querySelector('.signature');
-  const emblem = canvas.parentElement;
-  function placeMotion() {
-    (compact.matches ? signature : emblem).append(motion);
-  }
-  placeMotion();
-  compact.addEventListener('change', placeMotion);
   const pinGroup = document.createElement('div');
   pinGroup.className = 'mobile-pins';
   pinGroup.setAttribute('role','group');
@@ -234,10 +226,8 @@
   canvas.addEventListener('pointerleave',()=>{pointer=null;});
   function updateMotion(){
     stage.classList.toggle('motion-paused',paused);
-    motion.hidden=false;motion.textContent=paused?'▷':'Ⅱ';
-    motion.setAttribute('aria-label',motion.title=paused?'继续旋转':'暂停旋转');leaders.forEach(leader=>leader.pose=null);draw();schedule();
+    leaders.forEach(leader=>leader.pose=null);draw();schedule();
   }
-  motion.addEventListener('click',()=>{paused=!paused;updateMotion();});
   preference.addEventListener('change',()=>{paused=preference.matches;pointer=null;updateMotion();});
   document.addEventListener('visibilitychange',()=>{last=0;schedule();});
   const observer=new ResizeObserver(measure);observer.observe(stage);observer.observe(canvas);notes.forEach(n=>observer.observe(n));

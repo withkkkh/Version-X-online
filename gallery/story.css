@@ -39,8 +39,6 @@ canvas { position: relative; display: block; width: 100%; height: auto; aspect-r
 h1 { margin: 0; font-weight: 600; line-height: 1.02; font-size: clamp(30px,3vw,54px); letter-spacing: -.065em }
 h1 span { display:block; margin-top: .22em; color:var(--ink); font: 500 clamp(15px,1.5vw,26px)/1 var(--mono); letter-spacing:.06em }
 .signature p { margin: 1.2em 0 0; font-size:clamp(14px,1vw,16px); color:#4d5d6d }
-.motion { position:absolute; z-index:2; right:6px; top:6px; border:0; background:transparent; color:#344b61; font: 16px var(--mono); width:36px; height:36px; cursor:pointer }
-.motion:hover { background:#ffffffac }
 .leads { position:absolute; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none; overflow:visible }
 .note {
   --cut: 13px; --edge: polygon(0 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%);
@@ -160,7 +158,6 @@ body {
   .design-brief{max-width:100%;margin-top:10px}
   .specimen{align-self:stretch;width:100%;position:relative;display:grid;place-items:center}
   .emblem{width:70%;max-width:390px}.emblem canvas{width:100%;height:clamp(194px,59vw,312px);aspect-ratio:auto}
-  .motion{right:2px;top:1px;width:36px;height:36px}
   .has-pins .mobile-pins{display:block;position:absolute;inset:0;pointer-events:none}
   .pin {position:absolute;pointer-events:auto;min-height:44px;max-width:34%;padding:5px 6px;display:grid;align-content:center;gap:3px;text-align:left;
     font-family:inherit;line-height:1.15;font-size:clamp(14px,3.9vw,17px);font-weight:600;border:0;border-bottom:1px solid #91a1ac;background:#fcfcfb;color:#23374a}
@@ -211,12 +208,7 @@ body {
   .n4 h2 {background:#e1e4e6;padding:2px 5px}
 }
 
-@media(hover:hover) and (min-width:1001px){
-  .motion {opacity:0}
-  .emblem:hover .motion,.motion:focus-visible,.motion-paused .motion {opacity:1}
-}
-@media(max-width:1000px){
-  .motion {top:0;right:auto;left:50%;transform:translateX(-50%);width:44px;height:44px}
-}
+
+
 
 @media(max-width:680px){.index[aria-label="展区索引"]{display:none}}

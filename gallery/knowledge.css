@@ -36,16 +36,6 @@
   gap: 1.25rem;
   background: #f9fbfd;
 }
-.knowledge-page .knowledge-back {
-  display: inline-flex;
-  align-items: center;
-  padding-block: 5px;
-  color: #315e85;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: .75rem;
-}
-.knowledge-back:hover { text-decoration: underline; }
 .map-title-row { display: flex; align-items: center; gap: clamp(10px, 1.5vw, 20px); }
 .map-emblem { display: flex; flex: 0 0 clamp(24px, 3.2vw, 43px); color: #224f75; }
 .map-emblem svg { width: 100%; stroke: currentColor; stroke-width: 1.4; fill: none; }
@@ -57,18 +47,6 @@
   line-height: 1.16;
   margin: 0;
 }
-.map-teams { display: flex; border-bottom: 1px solid #bccddd; gap: .1rem; }
-.map-teams a {
-  font-size: .86rem;
-  min-width: 4em;
-  padding: .65rem .75rem;
-  text-align: center;
-  color: var(--map-muted);
-  border-bottom: 2px solid transparent;
-  transition: background-color 160ms ease, color 160ms ease;
-}
-.map-teams a:hover { background: #ecf3fa; color: var(--map-blue); }
-.map-teams a[aria-current="page"] { color: #164c7a; background: #e7f0f9; border-color: #377bac; font-weight: 650; }
 .map-shell {
   flex: 1;
   display: grid;
@@ -315,7 +293,6 @@
 @media (max-width: 650px) {
   .knowledge-page .mast, .map-heading, .map-bar, .map-navigator { padding-inline: 14px; }
   .map-heading { display: grid; gap: 8px; padding-block: 12px 6px; }
-  .map-teams a { flex: 1; padding: 7px 5px; }
   .map-shell { grid-template-rows: auto minmax(350px, 1fr) auto; min-height: max(440px, calc(100svh - 187px)); }
   .map-bar { gap: 4px; }
   .map-bar p { font-size: .68rem; }

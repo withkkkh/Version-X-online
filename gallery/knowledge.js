@@ -7,6 +7,8 @@ const active = Object.hasOwn(teams, requested) ? requested : 'software';
 const title = teams[active] + '知识图谱';
 document.title = title + ' · VERSION X';
 $('#graph-title').textContent = title;
+$('.knowledge-back').href = './story-' + active + '.html';
+$('#team-return-label').textContent = '返回' + teams[active].replace(/团队$/, '') + '展区';
 document.querySelector('.map-teams [data-team="' + active + '"]').setAttribute('aria-current', 'page');
 
 const viewport = $('#map-viewport');

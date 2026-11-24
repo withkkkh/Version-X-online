@@ -65,42 +65,37 @@ export function finishGallery(g, values, accessor) {
     }
   }
 
-  // A wall-mounted bezel follows the south wall's outer rib envelope.
+  // Remount the original round extrusions and ball joints against the ribs.
+  // Transform both nodes about the same source frame so the print stays captured.
   const wall = g.nodes.find(n => n.name.startsWith('长侧围墙') && n.rotation);
   const wallBounds = g.accessors[g.meshes[wall.mesh].primitives[0].attributes.POSITION];
-  const wallFront = -wallBounds.min[2];
   const poster = g.nodes.find(n => n.name.includes('原图直接落地'));
   const surround = g.nodes.find(n => n.name.includes('无脚球接头'));
-  const posterFace = g.meshes[poster.mesh].primitives[0];
-  const limits = g.accessors[posterFace.attributes.POSITION];
-  const scale = (wallBounds.max[1] - .22) / (limits.max[1] - limits.min[1]);
-  const cx = -6.32, cy = wallBounds.max[1] / 2;
-  const halfW = (limits.max[0] - limits.min[0]) * scale / 2;
-  const halfH = (limits.max[1] - limits.min[1]) * scale / 2;
-  const front = wallFront + .009, rear = wallFront - .075, lip = .020;
-  poster.name = 'VERSION X | 玻璃立面展签';
-  poster.scale = [scale,scale,1];
-  poster.translation = [cx - scale*(limits.min[0]+limits.max[0])/2,
-    cy - scale*(limits.min[1]+limits.max[1])/2,front-limits.min[2]];
-  const rectangle = (w,h,z) => [[cx-w,cy-h,z],[cx+w,cy-h,z],[cx+w,cy+h,z],[cx-w,cy+h,z]];
-  const aperture = rectangle(halfW,halfH,front);
-  const rim = rectangle(halfW+lip,halfH+lip,front);
-  const back = rectangle(halfW+lip,halfH+lip,rear);
-  const vp=[],vn=[];
-  function quad(a,b,c,d,normal) {
-    for(const v of [a,b,c,a,c,d]) {vp.push(...v);vn.push(...normal);}
-  }
-  const outward=[[0,-1,0],[1,0,0],[0,1,0],[-1,0,0]];
-  for(let i=0;i<4;i++) {
-    const j=(i+1)%4;
-    quad(rim[i],rim[j],aperture[j],aperture[i],[0,0,1]);
-    quad(back[i],back[j],rim[j],rim[i],outward[i]);
-  }
-  const framePrimitive=g.meshes[surround.mesh].primitives[0];
-  framePrimitive.attributes=attributes(vp,vn);
-  delete framePrimitive.indices;
-  g.meshes[surround.mesh].primitives=[framePrimitive];
-  surround.name='玻璃立面｜嵌墙金属包边';
+  const frameParts = g.meshes[surround.mesh].primitives;
+  const bounds = frameParts.map(p => g.accessors[p.attributes.POSITION]);
+  const bottom = Math.min(...bounds.map(b => b.min[1]));
+  const top = Math.max(...bounds.map(b => b.max[1]));
+  const scale = (wallBounds.max[1] - .015) / (top - bottom);
+  const print = g.accessors[g.meshes[poster.mesh].primitives[0].attributes.POSITION];
+  const printCenter = (print.min[0] + print.max[0]) / 2 * poster.scale[0] + poster.translation[0];
+  const printFront = print.min[2] * poster.scale[2] + poster.translation[2];
+  const offset = [-6.32 - scale * printCenter, -scale * bottom,
+    -wallBounds.min[2] + .003 - scale * printFront];
+  surround.scale = [scale,scale,scale];
+  surround.translation = offset;
+  poster.scale = poster.scale.map(v => v * scale);
+  poster.translation = poster.translation.map((v,k) => v * scale + offset[k]);
+  surround.name = '玻璃立面｜落地铝管与球形角接头';
+  frameParts.forEach((part,i) => {
+    const material = structuredClone(g.materials[part.material]);
+    material.name = i === 0 ? '落地框｜缎面铝管' : '落地框｜抛光铝接头';
+    material.pbrMetallicRoughness = {
+      baseColorFactor:i === 0 ? [.70,.76,.80,1] : [.83,.87,.90,1],
+      metallicFactor:.82, roughnessFactor:i === 0 ? .34 : .23
+    };
+    part.material = g.materials.length;
+    g.materials.push(material);
+  });
 
   // Build a solid fluted core. The original two logo outlines and the silver
   // crown share one plane and boundary edges, even in the straight-down view.
