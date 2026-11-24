@@ -1,6 +1,10 @@
 import { installViDirectionalBackground } from './vi-directional-background.js?v=3';
 export function installBackgroundComparison(stage,model,pauseTour){
   const graphic=installViDirectionalBackground(model.parentElement,model);
+  // The approved VI is the public default. Art-direction controls are opt-in.
+  if(new URL(location.href).searchParams.get('compare')!=='backgrounds'){
+    model.removeAttribute('skybox-image');model.setAttribute('skybox-height','0m');document.body.dataset.environment='vi';graphic.setVisible(true);return;
+  }
   const versions={
     vi:{label:'A · VI 动态版'},
     studio:{label:'B · 空间贴图'},
