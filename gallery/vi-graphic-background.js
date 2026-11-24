@@ -16,15 +16,6 @@ export function installViGraphicBackground(screen){
     const ctx=context;ctx.setTransform(dpr,0,0,dpr,0,0);
     const base=ctx.createLinearGradient(0,0,w,h);base.addColorStop(0,'#a3c3da');base.addColorStop(.42,'#d7e6ef');base.addColorStop(1,'#9cbdd5');ctx.fillStyle=base;ctx.fillRect(0,0,w,h);
     const light=ctx.createRadialGradient(w*.57,h*.23,0,w*.57,h*.23,w*.62);light.addColorStop(0,'#f1f6faad');light.addColorStop(.6,'#d7e8f32e');light.addColorStop(1,'#789fb900');ctx.fillStyle=light;ctx.fillRect(0,0,w,h);
-    // Translucent, sharply edged glass planes, deliberately quiet behind exhibits.
-    for(const panel of [
-      [[-.08,.06],[.29,.02],[.25,.37],[-.05,.5]],
-      [[.77,-.06],[1.09,.04],[1.03,.35],[.73,.24]],
-      [[.02,.73],[.31,.67],[.37,1.04],[-.04,1.09]],
-    ]){
-      const fill=ctx.createLinearGradient(0,0,w*.35,h);fill.addColorStop(0,'#f8fcff52');fill.addColorStop(1,'#ffffff05');
-      ctx.beginPath();panel.forEach(([x,y],i)=>i?ctx.lineTo(x*w,y*h):ctx.moveTo(x*w,y*h));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle='#f7fcff50';ctx.lineWidth=.7;ctx.stroke();
-    }
     // Round-square halftone cells are drawn as vectors at the actual screen scale.
     const pitch=w<600?17:20;
     for(let row=0,y=9;y<h;y+=pitch,row++)for(let col=0,x=9;x<w;x+=pitch,col++){

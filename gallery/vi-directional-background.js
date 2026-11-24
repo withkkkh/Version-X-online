@@ -1,4 +1,4 @@
-import { installViGraphicBackground } from './vi-graphic-background.js?v=1';
+import { installViGraphicBackground } from './vi-graphic-background.js?v=2';
 
 // The VI environment is evaluated per screen pixel from a world-space ray.
 // No finite-resolution panorama sits between the camera and the graphics.
@@ -32,13 +32,6 @@ export function installViDirectionalBackground(screen,model){
       float ribbon=pow(.5+.5*cos(azimuth*2.+.8*sin(uv.y*2.*PI)),18.);
       float frost=pow(.5+.5*sin(azimuth*3.-uv.y*3.4),8.);
       color=mix(color,vec3(.98,.995,1.),ribbon*.62+frost*.17);
-      // Glass planes have defined edges, while their light remains soft.
-      vec2 pane=fract(uv*vec2(4.,2.)+vec2(.1,.2))-.5;
-      float edge=max(abs(pane.x)-.35,abs(pane.y)-.31);
-      float aa=max(fwidth(edge),.0004);
-      float fill=1.-smoothstep(-aa,aa,edge);
-      float rim=1.-smoothstep(aa,aa*2.5,abs(edge));
-      color=mix(color,vec3(.96,.98,1.),fill*.09+rim*.16);
       // World-space halftone: derivative antialiasing preserves crisp dots at
       // every zoom, including the longitude seam and the spherical poles.
       vec2 grid=uv*vec2(360.,180.);

@@ -1,4 +1,4 @@
-import { installViDirectionalBackground } from './vi-directional-background.js?v=2';
+import { installViDirectionalBackground } from './vi-directional-background.js?v=3';
 export function installBackgroundComparison(stage,model,pauseTour){
   const graphic=installViDirectionalBackground(model.parentElement,model);
   const versions={
