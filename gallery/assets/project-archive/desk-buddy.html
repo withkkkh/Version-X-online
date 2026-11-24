@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light"><title>小默 Desk Buddy · 互动工作台</title>
+<style>
+*{box-sizing:border-box} :root{--ink:#182b42;--muted:#586b7f;--line:#d8e1e9;--blue:#254ca9;--mono:Consolas,"Microsoft YaHei",monospace} body{margin:0;color:var(--ink);background:#f4f7f9;font:16px/1.6 "Inter","Microsoft YaHei",system-ui,sans-serif}
+button,select,textarea,input{font:inherit}button,summary,select,label:has(input){cursor:pointer} button{color:inherit} :focus-visible{outline:3px solid #577ff0;outline-offset:3px}
+header{height:70px;border-bottom:1px solid var(--line);background:#fff} .bar,main{max-width:1240px;margin:auto;padding:0 36px} .bar,.brand,.row,.panelhead,.cluster,.resulttitle,.subbar,.status,.switcher{display:flex;align-items:center}.bar{height:100%;justify-content:space-between}.brand{gap:12px;font-size:19px;font-weight:750}.brand i{font:normal 14px "Inter",sans-serif;color:var(--muted);margin-left:4px}
+.mark{position:relative;width:34px;height:30px;background:#304d9c;border-radius:10px;display:inline-flex;justify-content:center;gap:5px;align-items:center}.mark:before,.mark:after{content:"";display:block;width:5px;height:10px;background:white;border-radius:4px}.textbtn{border:0;background:none;padding:6px 0;font-size:14px;color:var(--blue)}.textbtn:hover{text-decoration:underline}
+.intro{padding:34px 0 24px}.intro h1{font-size:clamp(30px,3.3vw,46px);line-height:1.22;margin:0 0 8px;letter-spacing:-.045em}.intro p{margin:0;color:var(--muted);font-size:16px}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start} .card{min-width:0;background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 3px 12px #17345608;overflow:hidden}.panelhead{padding:20px 23px 16px;border-bottom:1px solid var(--line);justify-content:space-between;gap:12px}.panelhead h2,.resulttitle h3{margin:0;font-size:19px;letter-spacing:-.025em}.panelhead h2{display:flex;align-items:center;gap:10px}.symbol{font:700 16px var(--mono);width:29px;height:29px;border-radius:7px;display:inline-grid;place-items:center;background:#eaf0ff;color:#314f99}.lcdsymbol:before{content:"";width:13px;height:9px;border-radius:2px;border:1.7px solid currentColor;box-shadow:0 3px 0 -1px #eaf0ff,0 4px 0 -1px currentColor}
+.editing{padding:17px 22px 0}.editor{border:1px solid #cbd7e3;border-radius:10px;overflow:hidden;background:#fcfdff}.filebar{padding:8px 14px;background:#f2f5fa;border-bottom:1px solid var(--line);color:#3b526f;font:13px/1.6 var(--mono);display:flex;justify-content:space-between}.filebar span:last-child{color:#687b90}.noteinput{display:flex;position:relative}.gutter{width:34px;flex-shrink:0;text-align:right;color:#8393a6;padding:12px 7px 12px 0;overflow:hidden;height:248px;user-select:none;font:14px/24px var(--mono);background:#f8fafd;white-space:pre}.noteinput textarea{display:block;min-width:0;width:100%;height:248px;border:0;padding:12px 12px;resize:none;background:transparent;white-space:pre;overflow:auto;color:#233d5a;font:14px/24px var(--mono);tab-size:2;outline-offset:-3px}.editor:focus-within{border-color:#4f72c2}
+.subbar{justify-content:space-between;gap:8px;padding:9px 0 12px}.check{display:inline-flex;align-items:center;gap:7px;font-size:14px;color:var(--muted)}input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;margin:0;flex:none}.sync{border:1px solid #c5d3e8;border-radius:6px;color:var(--blue);background:#f6f8fd;padding:5px 10px;font-size:13px}.sync:hover{background:#e9effb}
+.result{border-top:1px solid var(--line);padding:15px 22px 18px}.resulttitle{justify-content:space-between;gap:8px}.resulttitle h3{font-size:16px}.scope{max-width:55%;font-size:13px;border:0;background:white;color:var(--muted)}.list{padding:0;margin:8px 0;list-style:none;max-height:170px;overflow:auto}.list li{padding:5px 0}.list label{display:flex;align-items:baseline;gap:9px;font-size:15px;overflow-wrap:anywhere}.list input{align-self:center}.list label:has(input:checked) span{color:#647588;text-decoration:line-through}.result p{margin:8px 0 0;color:var(--muted);font-size:14px;overflow-wrap:anywhere}.result p b{font-weight:650;color:#41556b;margin-right:9px}.warning{font-size:13px;color:#794d04;background:#fff5df;border-radius:6px;padding:8px 10px;margin:8px 0 0;list-style-position:inside}.empty{font-size:14px;color:var(--muted)}
+.devicearea{background-color:#edf2f6;background-image:radial-gradient(#c9d3df .8px,transparent .8px);background-size:12px 12px;padding:18px 24px 16px}.device{position:relative;max-width:390px;margin:auto;border-radius:18px;padding:12px 22px 15px;background:linear-gradient(128deg,#344054,#232e40 72%);border:2px solid #253143;box-shadow:0 5px 0 #172334,0 9px 15px #26344c30}
+.platehead{display:flex;align-items:center;justify-content:space-between;color:#d0d8e5;font:600 10px/1.3 var(--mono);letter-spacing:.15em;margin:0 0 7px}.speaker{width:22px;height:5px;background:repeating-linear-gradient(90deg,#101b29 0 2px,transparent 2px 5px)}.glass{position:relative;background:#030405;border:3px solid #121d2b;border-radius:7px;overflow:hidden}.glass canvas{width:100%;height:auto;aspect-ratio:4/3;display:block;background:#000}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);column-gap:6px;margin:10px 0 0}.key{display:flex;flex-direction:column;align-items:center;gap:3px;color:#dce6f7;background:none;border:0;border-radius:5px;user-select:none;touch-action:manipulation;padding:2px 0}.key:nth-child(2){margin-right:8px}.key:nth-child(3){margin-left:8px}.keycode{font:11px/1.1 var(--mono);letter-spacing:.08em}.keycap{width:31px;height:24px;position:relative;display:grid;place-items:center;border-radius:4px;border:1px solid #a6afba;background:linear-gradient(125deg,#a2aebc,#727e91);box-shadow:0 3px 0 #121d2b}.keycap:before{content:"";height:16px;width:17px;border-radius:50%;background:linear-gradient(140deg,#495465,#192331);border:1px solid #101b28;box-shadow:inset 0 1px 0 #667486,0 1px 2px #111}.key:active .keycap,.key.held .keycap{transform:translateY(2px);box-shadow:0 1px 0 #121d2b}.key:hover .keycap{outline:1px solid #c3d9ff}.keyname{line-height:1.35;font-size:13px}.status{padding:9px 22px;border-bottom:1px solid var(--line);gap:8px;font-size:13px;color:#475b71;min-height:42px}.status i{border:1px solid #64748b;flex:none;width:9px;height:9px;background:#101030;border-radius:50%}.status span{overflow-wrap:anywhere}.mono{font:12px var(--mono);color:#697b91;margin-left:auto;text-align:right}
+.tools{padding:13px 22px 16px}.keysHelp{font-size:13px;color:var(--muted);margin:0}.tools summary{font-size:14px;font-weight:650;padding:4px 0}.tools details{border-top:1px solid var(--line);margin-top:9px;padding-top:7px}.toolrow{padding:6px 0}.toolrow b{font-size:13px;color:#526278;font-weight:600;display:block;margin-bottom:4px}.cluster{gap:6px;flex-wrap:wrap}.chip,.switcher select{font-size:13px;border:1px solid #c9d4e1;background:#fafcfe;border-radius:6px;padding:4px 8px}.chip:hover{background:#eaf0fa}.switcher select{color:#3c536d;max-width:150px}.keyboardwrap{max-width:100%;overflow:hidden}.jump{display:none}.sr{clip-path:inset(50%);position:absolute;width:1px;height:1px;overflow:hidden}main{padding-bottom:34px}.actionrow{display:flex;gap:12px;align-items:center}.actionrow a{color:var(--blue);font-size:13px}.actionrow .textbtn{font-size:13px}
+@media(min-width:1400px){.intro{padding-top:42px;padding-bottom:30px}}
+@media(max-width:860px){.bar,main{padding-left:18px;padding-right:18px}.layout{gap:12px}.panelhead,.editing,.result,.status,.tools{padding-left:14px;padding-right:14px}.devicearea{padding:16px 12px}.device{padding:10px 13px}.intro h1{font-size:35px}}
+@media(max-width:710px){.layout{grid-template-columns:minmax(0,1fr)}header{height:53px}.brand i{display:none}.bar,main{padding-left:12px;padding-right:12px}.intro{padding:21px 3px 16px}.intro h1{font-size:31px}.intro p{font-size:14px}.panelhead{padding-top:13px;padding-bottom:11px}.panelhead h2{font-size:17px}.gutter,.noteinput textarea{height:202px}.jump{display:inline}.devicearea{padding-top:16px;padding-bottom:16px}.keycap{width:30px}.device{max-width:350px}.editing{padding-top:12px}.actionrow{gap:9px}.result{padding-bottom:12px}.key{min-height:50px}main{padding-bottom:30px}}
+.filebar{gap:10px;align-items:center}.filebar #source-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.filebar #file-type{white-space:nowrap}.import-info{font-size:13px;color:var(--muted);margin:8px 0;line-height:1.5;overflow-wrap:anywhere}.import-info:empty{display:none}.import-info[data-error="true"]{color:#8a4a0b}.file-tools{display:flex;align-items:center;gap:8px}.file-tools button{padding:0;color:var(--blue);border:0;background:transparent;font-size:13px;white-space:nowrap}.scope-info{font-size:13px;color:var(--muted);margin:4px 0 0}.actionrow{flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:390px){.actionrow .jump{display:none}}
+</style></head>
+<body><header><div class="bar"><div class="brand"><span class="mark" aria-hidden="true"></span><span>小默 <i>Desk Buddy</i></span></div><button id="reset" class="textbtn" type="button">恢复示例笔记</button></div></header>
+<main><div class="intro"><h1>小默互动工作台</h1><p>改写一条待办，或勾选已完成的任务，看看小默屏幕上的变化。</p></div>
+<div class="layout">
+<section class="card" id="notes"><div class="panelhead"><h2><span class="symbol" aria-hidden="true">#</span>Obsidian 笔记</h2><div class="actionrow"><a href="#device-panel" class="jump">看模拟屏</a><button type="button" id="import-note" class="sync" title="从 Obsidian 笔记库选择一个 Markdown 文件">导入笔记</button><input type="file" id="note-file" accept=".md,.markdown" hidden></div></div>
+<div class="editing"><div class="editor"><div class="filebar"><span id="source-name">今日笔记.md</span><div class="file-tools"><button id="reload-note" type="button" hidden>重新读取原文</button><span id="file-type">Markdown</span></div></div><div class="noteinput"><div class="gutter" id="gutter" aria-hidden="true"></div><textarea id="note" aria-label="编辑 Obsidian 笔记" spellcheck="false" wrap="off"></textarea></div></div><p id="import-status" class="import-info" role="status"></p>
+<div class="subbar"><label class="check"><input id="autosync" type="checkbox" checked>实时同步</label><button type="button" class="sync" id="send">同步到小默</button></div></div>
+<div class="result"><div class="resulttitle"><h3>解析结果</h3><select id="scope" class="scope" aria-label="笔记解析范围"><option value="auto">自动识别章节</option><option value="sections">只读小默章节</option><option value="whole">读取整篇笔记</option></select></div><div class="scope-info" id="scope-info" hidden></div><ul id="tasks" class="list"></ul><p><b>备注</b><span id="remark"></span></p><ul class="warning" id="warnings" hidden></ul></div></section>
+<section class="card" id="device-panel"><div class="panelhead"><h2><span class="symbol lcdsymbol" aria-hidden="true"></span>小默模拟屏</h2><button type="button" class="sync" id="sound" aria-pressed="false">开启声音</button></div>
+<div class="devicearea"><div class="device" id="device"><div id="moving-head"><div class="platehead"><span>DESK BUDDY</span><span class="speaker" aria-hidden="true"></span></div><div class="glass"><canvas id="screen" width="640" height="480" aria-label="小默模拟屏" role="img"></canvas></div></div><div class="keys" id="keys"></div></div></div>
+<div class="status" role="status" aria-live="polite"><i id="led"></i><span id="statusText"></span><span id="screenPage" class="mono"></span></div>
+<div class="tools"><p class="keysHelp">按住 SW6 满 0.8 秒，让小默回到常态、两轴归中。按住其他任一键满 0.8 秒会响三声提醒音。</p></div></section>
+</div></main>
+<script>// Browser port of Desk Buddy's tools/companion/task_parser.py and parse_preview.
+(() => {
+  "use strict";
+  const utf8 = new TextEncoder();
+  const headingPattern = /^ {0,3}(#{1,6})\s+(.+?)\s*#*\s*$/u;
+  const taskPattern = /^(\s*[-*+]\s*\[)([ xX])\]\s+(.+?)\s*$/u;
+  const anyTask = /^\s*[-*+]\s*\[.\]/u;
+  const fencePattern = /^ {0,3}(\x60{3,}|~{3,})(.*)$/u;
+  const metadata = /[📅⏳🛫⏰🔁➕⏫🔼🔽✅❌🆔]/u;
+  const isSection = title => title === "小默任务" || title === "小默备注";
+
+  function plainText(text) {
+    return text
+      .replace(/!\[\[[^\]]*\]\]/gu, "")
+      .replace(/!\[[^\]]*\]\([^)]*\)/gu, "")
+      .replace(/\[\[([^\]]+)\]\]/gu, (_, link) => link.split("|").pop())
+      .replace(/\[([^\]]+)\]\([^)]*\)/gu, "$1")
+      .replace(/\[[\p{L}\p{N}_-]+::[^\]]*\]/gu, "")
+      .replace(/(?<!\S)#[\p{L}\p{N}_/-]+/gu, "")
+      .replace(/(\x60+|\*{1,3}|_{1,3}|~~|==)(.+?)\1/gu, "$2")
+      .replace(/\s+/gu, " ").trim();
+  }
+
+  function visibleLines(text) {
+    const lines = [];
+    let frontmatter = false, inComment = false, fence = "";
+    let lineNumber = 0, lineStart = 0;
+    // Match Python splitlines(), preserving source offsets even with CRLF.
+    const lineEnds = /\r\n|[\n\r\v\f\x1c-\x1e\x85\u2028\u2029]/gu;
+    for (const end of [...text.matchAll(lineEnds), { index: text.length, 0: "" }]) {
+      lineNumber++;
+      let start = lineStart;
+      if (lineNumber === 1) {
+        while (text[start] === "\uFEFF") start++;
+      }
+      const raw = text.slice(start, end.index);
+      lineStart = end.index + end[0].length;
+      if (lineNumber === 1) frontmatter = raw.trim() === "---";
+      if (frontmatter) {
+        if (lineNumber > 1 && ["---", "..."].includes(raw.trim())) frontmatter = false;
+        continue;
+      }
+      if (fence) {
+        const closing = fencePattern.exec(raw);
+        if (closing && closing[1][0] === fence[0] && closing[1].length >= fence.length && !closing[2].trim()) fence = "";
+        continue;
+      }
+      let position = 0, cleaned = "";
+      const spans = [];
+      while (position < raw.length) {
+        if (inComment) {
+          const close = raw.indexOf("-->", position);
+          if (close < 0) break;
+          position = close + 3;
+          inComment = false;
+        } else {
+          const open = raw.indexOf("<!--", position);
+          const until = open < 0 ? raw.length : open;
+          if (position < until) {
+            spans.push({offset: start + position, from: cleaned.length});
+            cleaned += raw.slice(position, until);
+          }
+          if (open < 0) break;
+          position = open + 4;
+          inComment = true;
+        }
+      }
+      const opening = fencePattern.exec(cleaned);
+      if (opening) {
+        fence = opening[1];
+        continue;
+      }
+      if (cleaned.trimStart().startsWith(">")) continue;
+      lines.push({cleaned, spans, lineNumber, heading: headingPattern.exec(cleaned)});
+    }
+    return lines;
+  }
+
+  function truncateUtf8(text, limit) {
+    if (utf8.encode(text).length <= limit) return text;
+    let length = 0, result = "";
+    for (const character of text) {
+      length += utf8.encode(character).length;
+      if (length > limit - 3) break;
+      result += character;
+    }
+    return result + "…";
+  }
+
+  // Keep IDs synchronous for local-file previews, matching hashlib.sha256(...).hexdigest()[:32].
+  const shaConstants = [
+    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+  ];
+  const rotate = (word, by) => (word >>> by) | (word << (32 - by));
+  function taskId(source, title, count) {
+    const data = utf8.encode(source + "\0" + title + "\0" + count);
+    const padded = new Uint8Array(Math.ceil((data.length + 9) / 64) * 64);
+    padded.set(data);
+    padded[data.length] = 0x80;
+    const view = new DataView(padded.buffer);
+    const bits = data.length * 8;
+    view.setUint32(padded.length - 8, Math.floor(bits / 0x100000000));
+    view.setUint32(padded.length - 4, bits >>> 0);
+    const state = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    const words = new Uint32Array(64);
+    for (let block = 0; block < padded.length; block += 64) {
+      for (let i = 0; i < 16; i++) words[i] = view.getUint32(block + i * 4);
+      for (let i = 16; i < 64; i++) {
+        const x = words[i - 15], y = words[i - 2];
+        const s0 = rotate(x, 7) ^ rotate(x, 18) ^ (x >>> 3);
+        const s1 = rotate(y, 17) ^ rotate(y, 19) ^ (y >>> 10);
+        words[i] = words[i - 16] + s0 + words[i - 7] + s1;
+      }
+      let [a,b,c,d,e,f,g,h] = state;
+      for (let i = 0; i < 64; i++) {
+        const sum1 = rotate(e, 6) ^ rotate(e, 11) ^ rotate(e, 25);
+        const choose = (e & f) ^ (~e & g);
+        const t1 = h + sum1 + choose + shaConstants[i] + words[i];
+        const sum0 = rotate(a, 2) ^ rotate(a, 13) ^ rotate(a, 22);
+        const majority = (a & b) ^ (a & c) ^ (b & c);
+        h=g; g=f; f=e; e=(d+t1) | 0;
+        d=c; c=b; b=a; a=(t1+sum0+majority) | 0;
+      }
+      [a,b,c,d,e,f,g,h].forEach((value, i) => { state[i] = (state[i] + value) >>> 0; });
+    }
+    return "t:" + state.slice(0, 4).map(word => word.toString(16).padStart(8, "0")).join("");
+  }
+
+  window.parseBuddyNote = function parseBuddyNote(text, scope = "auto", source = "today") {
+    if (!["auto", "sections", "whole"].includes(scope)) throw new RangeError("scope must be auto, sections or whole");
+    const lines = visibleLines(text);
+    const hasSections = lines.some(row => row.heading && isSection(row.heading[2]));
+    const resolved = scope === "auto" ? (hasSections ? "sections" : "whole") : scope;
+    const warnings = new Set(), occurrences = new Map();
+    const tasks = [], remarkLines = [];
+    if (resolved === "sections" && !hasSections) warnings.add("未找到“小默任务”或“小默备注”章节，本次结果为空。");
+    let section = "", sectionLevel = 0;
+    for (const {cleaned, heading, spans, lineNumber} of lines) {
+      if (heading) {
+        if (heading[1].length <= sectionLevel) section = "";
+        if (isSection(heading[2])) {
+          section = heading[2];
+          sectionLevel = heading[1].length;
+        }
+        continue;
+      }
+      const task = taskPattern.exec(cleaned);
+      const allowTask = resolved === "whole" || section === "小默任务";
+      if (task && allowTask) {
+        const title = plainText(task[3].split(metadata, 1)[0].trim());
+        if (!title) continue;
+        const count = (occurrences.get(title) || 0) + 1;
+        occurrences.set(title, count);
+        // Position of the editable state character, including any hidden inline comments.
+        const index = task[1].length;
+        const span = spans.filter(part => part.from <= index).pop();
+        tasks.push({
+          id: taskId(source, title, count), title, completed: task[2].toLowerCase() === "x",
+          line: lineNumber, checkboxOffset: span.offset + index - span.from,
+          display_title: truncateUtf8(title, 63), will_send: tasks.length < 50
+        });
+      } else if (anyTask.test(cleaned)) {
+        if (!task && allowTask) warnings.add("存在未识别的复选框状态；仅支持 [ ]、[x] 和 [X]。");
+      } else if (resolved === "whole" || section === "小默备注") {
+        const stripped = cleaned.trim();
+        if (!stripped || /^(---|\*\*\*|___|\||!\[)/u.test(stripped)) continue;
+        const remark = plainText(stripped);
+        if (remark) remarkLines.push(remark);
+      }
+    }
+    const remarks = remarkLines.join("；");
+    if (tasks.length > 50) warnings.add("共解析 " + tasks.length + " 条任务，设备仅接收前 50 条，其余 " + (tasks.length - 50) + " 条未发送。");
+    if (tasks.some(task => task.will_send && task.title !== task.display_title)) warnings.add("部分标题超过设备长度，将按完整字符缩短并显示省略号；下方保留完整标题。");
+    const displayRemarks = truncateUtf8(remarks, 127);
+    if (remarks !== displayRemarks) warnings.add("备注超过设备长度，发送时将缩短并显示省略号。");
+    if ([...occurrences.values()].some(count => count > 1)) warnings.add("存在同名任务，按出现顺序区分；建议使用不同标题。");
+    return {
+      scope: resolved, total: tasks.length, sent_count: Math.min(tasks.length, 50), tasks,
+      remarks, display_remarks: displayRemarks, warnings: [...warnings]
+    };
+  };
+})();
+</script>
+<script>/* 320 × 240 firmware display and input behavior, ported from the desk_buddy C sources. */
+(() => {
+  'use strict';
+  const W = 320, H = 240, ROW_H = 44, HEADER_H = 46, MARGIN = 20, TEXT_X = 48;
+  const INK = '#ffffff', GREEN = '#00c850';
+  const IDLE_LED = '#101030', WORK_LED = '#004080', DONE_LED = '#008000';
+  const poses = {
+    home: [[0, 0, 0], [300, 0, 0]],
+    nod: [[0, 0, 0], [150, 20, 14], [300, 0, 0], [450, -20, 14], [600, 0, 0]],
+    reminder: [[0, 0, 0], [150, 0, 8], [300, 0, 0], [450, -20, 0], [600, 20, 0], [750, 0, 0]],
+    happy: [[0, 0, 8], [80, 14, 7], [160, 20, 3], [240, 15, -1], [320, 3, -4],
+      [400, -12, -3], [480, -20, 1], [560, -17, 5], [640, -5, 8], [720, 10, 7],
+      [800, 19, 4], [880, 18, -1], [960, 7, -3], [1040, -7, -3], [1120, -18, -1],
+      [1200, -19, 4], [1400, 0, 0]]
+  };
+  const effects = {
+    SW4: ['WORKING', 'nod', 'short', WORK_LED],
+    SW5: ['REMINDER', 'reminder', 'reminder', null],
+    SW6: ['HAPPY', 'happy', 'done', DONE_LED],
+    SW6_LONG: ['IDLE', 'home', 'short', IDLE_LED]
+  };
+  function mount(canvas, {onChange = () => {}, onPose, onTone} = {}) {
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    const font = '16px SimHei, "Microsoft YaHei", sans-serif';
+    const state = {page: 'expr', expression: 'IDLE', led: IDLE_LED, motion: null,
+      action: 'init', tone: null, total: 0, done: 0, remarks: '', mode: 'IDLE', message: '模拟屏已就绪'};
+    const eyes = {nextBlink: performance.now() + 1500, blinkEnd: 0, nextGaze: performance.now() + 2000, x: 0, y: 0, goalX: 0, goalY: 0};
+    const signal = () => onChange({...state});
+    const oldTransform = canvas.style.transform;
+    const pose = {yaw: 0, pitch: 0};
+    let rows = [], model = [], latestRemark = '', signature = null;
+    let sequence = null, pendingMotion = null, timer = null, frameId = 0, stopped = false;
+    const queue = [];
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    // The main event loop blocks for buzzer patterns and feedback delays. Display and motion keep running.
+    function drain() {
+      if (stopped || timer !== null) return;
+      while (queue.length) {
+        const {fn, wait} = queue.shift();
+        fn();
+        if (wait > 0) {
+          timer = setTimeout(() => { timer = null; drain(); }, wait);
+          break;
+        }
+      }
+    }
+    function append(fn, wait = 0) { queue.push({fn, wait}); }
+    function publish(message, tone = null) {
+      state.message = message;
+      state.tone = tone;
+      if (tone && onTone) onTone(tone);
+      signal();
+      state.tone = null;
+    }
+    function applyPose(yaw, pitch) {
+      pose.yaw = yaw;
+      pose.pitch = pitch;
+      if (onPose) onPose({...pose});
+      else canvas.style.transform = (yaw || pitch)
+        ? 'perspective(650px) rotateY(' + yaw + 'deg) rotateX(' + pitch + 'deg)' : oldTransform;
+    }
+    function move(name) {
+      if (sequence) { pendingMotion = name; return; }
+      state.motion = name;
+      sequence = {frames: poses[name], start: performance.now()};
+    }
+    function tickPose(now) {
+      if (!sequence) return;
+      const elapsed = now - sequence.start;
+      const frames = sequence.frames;
+      const to = frames.findIndex(frame => frame[0] > elapsed);
+      if (to < 1) {
+        sequence = null;
+        state.motion = null;
+        applyPose(0, 0);
+        if (pendingMotion) { const next = pendingMotion; pendingMotion = null; move(next); }
+        signal();
+        return;
+      }
+      if (reducedMotion) return;
+      const [time, yaw, pitch] = frames[to - 1];
+      const next = frames[to], t = (elapsed - time) / (next[0] - time);
+      const eased = t * t * (3 - 2 * t);
+      applyPose(yaw + Math.trunc((next[1] - yaw) * eased), pitch + Math.trunc((next[2] - pitch) * eased));
+    }
+    function face(expression) {
+      state.page = 'expr';
+      state.expression = expression;
+    }
+    function press(key) {
+      const reminderOnly = ['SW3_LONG', 'SW4_LONG', 'SW5_LONG'].includes(key);
+      if (stopped || (!reminderOnly && key !== 'SW3' && !Object.hasOwn(effects, key))) return false;
+      const tone = reminderOnly ? 'reminder' : key === 'SW3' ? 'short' : effects[key][2];
+      append(() => {
+        state.action = key;
+        if (reminderOnly) { publish('长按提醒 · 三声提示音', tone); return; }
+        if (key === 'SW3') {
+          state.page = state.page === 'expr' ? 'todo' : 'expr';
+          publish(state.page === 'todo' ? '已切换到任务页' : '已切换到表情页', tone);
+          return;
+        }
+        const [expression, motion, , led] = effects[key];
+        face(expression); move(motion);
+        if (led) state.led = led;
+        const text = {SW4:'专注 · 轻轻点头', SW5:'提醒 · 左右张望', SW6:'庆祝 · 开心摇摆', SW6_LONG:'常态 · 舵机归中'};
+        publish(text[key], tone);
+      }, {short:80, reminder:750, done:240}[tone]);
+      drain();
+      return true;
+    }
+    function rowFor(id) { return rows.find(r => r.id === id); }
+    function statusEvent(task) {
+      const row = rowFor(task.id);
+      if (row) {
+        row.completed = task.completed;
+        row.animation = task.completed ? 'tick' : '';
+        row.start = performance.now();
+      }
+      state.action = 'sync';
+      if (task.completed) {
+        state.mode = 'TASK_COMPLETED';
+        state.led = DONE_LED;
+        publish('已完成「' + task.title + '」', 'done');
+      }
+    }
+    function applySnapshot() {
+      const old = new Map(rows.map(r => [r.id, r])), now = performance.now();
+      rows = model.map(t => {
+        const r = old.get(t.id); old.delete(t.id);
+        if (!r || r.removed) return {...t, animation: 'fade', start: now};
+        if (r.completed !== t.completed) return {...t, animation: t.completed ? 'tick' : '', start: now};
+        return {...r, ...t};
+      });
+      for (const r of old.values()) {
+        if (rows.length >= 50) break;
+        if (!r.removed) Object.assign(r, {removed:true, animation:'delete', start:now});
+        rows.push(r);
+      }
+      state.remarks = latestRemark;
+      state.action = 'sync';
+      if (model.length) state.page = 'todo';
+      else { face('SAD'); move('reminder'); }
+      publish('已同步 ' + model.length + ' 条任务');
+    }
+    function update(input) {
+      if (stopped) return;
+      const snapshot = input?.payload || input || {};
+      const tasks = (snapshot.tasks || []).filter(t => t.will_send !== false).slice(0, 50);
+      const next = tasks.map(t => ({id: t.id, title: String(t.display_title ?? t.title ?? ''), completed: !!t.completed}));
+      const remark = String(snapshot.display_remarks ?? snapshot.remarks ?? '');
+      const version = JSON.stringify([next, remark]);
+      if (version === signature) return;
+      if (signature === null) {
+        // The first snapshot follows a successful Companion connection.
+        state.led = '#006060';
+        face('WORKING');
+      }
+      signature = version;
+      latestRemark = remark;
+      const old = new Map(model.map(t => [t.id, t]));
+      model = next;
+      state.total = next.length;
+      state.done = next.filter(t => t.completed).length;
+      if (!state.total) state.mode = 'NO_PLAN';
+      else if (state.done === state.total) state.mode = 'ALL_COMPLETED';
+      else if (state.mode !== 'WORKING') state.mode = 'HAS_PLAN';
+      for (const t of next) {
+        const prev = old.get(t.id); old.delete(t.id);
+        if (!prev) {
+          append(() => {
+            if (rows.length < 50 && !rowFor(t.id)) rows.push({...t, animation:'fade', start:performance.now()});
+          });
+        } else if (prev.completed !== t.completed) {
+          append(() => statusEvent(t), t.completed ? 1090 : 0); // two 60/60 ms beeps, then 850 ms
+          if (t.completed) {
+            append(() => { face('HAPPY'); move('happy'); publish('任务完成 · 开心庆祝'); }, 1500);
+            append(() => {
+              state.led = IDLE_LED;
+              if (!state.total) { state.mode = 'NO_PLAN'; face('SAD'); }
+              else if (state.done === state.total) state.mode = 'ALL_COMPLETED';
+              else { state.mode = 'WORKING'; state.page = 'todo'; }
+            });
+          }
+        }
+      }
+      for (const deleted of old.values()) {
+        append(() => {
+          const row = rowFor(deleted.id);
+          if (row && !row.removed) Object.assign(row, {removed:true, animation:'delete', start:performance.now()});
+          state.action = 'sync';
+          publish('已删除「' + deleted.title + '」', 'short');
+        }, 80);
+        append(() => { face('SURPRISED'); publish('任务移除 · 惊讶'); }, 800);
+        append(() => { if (model.length) state.page = 'todo'; else face('SAD'); });
+      }
+      append(applySnapshot);
+      drain();
+    }
+    function fit(text, width, suffix = '') {
+      if (ctx.measureText(text).width <= width) return text;
+      const chars = Array.from(text);
+      while (chars.length && ctx.measureText(chars.join('') + suffix).width > width) chars.pop();
+      return chars.join('') + suffix;
+    }
+    function box(x, y, w, h, r, color, fill = true) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      if (fill) { ctx.fillStyle = color; ctx.fill(); }
+      else { ctx.strokeStyle = color; ctx.stroke(); }
+    }
+    function stroke(x1, y1, x2, y2, color, width) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+    function drawFace(now) {
+      if (now >= eyes.nextBlink) {
+        eyes.nextBlink = now + 2000 + Math.random() * 3000;
+        eyes.blinkEnd = now + 200;
+      }
+      if (now >= eyes.nextGaze) {
+        eyes.nextGaze = now + 2000 + Math.random() * 4000;
+        eyes.goalX = Math.round(Math.random() * 24 - 12);
+        eyes.goalY = Math.round(Math.random() * 20 - 10);
+      }
+      eyes.x += Math.trunc((eyes.goalX - eyes.x) / 4);
+      eyes.y += Math.trunc((eyes.goalY - eyes.y) / 4);
+      const blink = Math.max(0, 1 - Math.abs(eyes.blinkEnd - now - 100) / 100);
+      const opening = reducedMotion ? 1 : 1 - .92 * blink;
+      const mood = state.expression;
+      const h = Math.max(8, 80 * opening * (mood === 'HAPPY' ? .55 : 1));
+      for (const x of [110, 210]) {
+        if (mood === 'ERROR') {
+          ctx.lineCap = 'round';
+          stroke(x - 26, 74, x + 26, 126, INK, 8);
+          stroke(x - 26, 126, x + 26, 74, INK, 8);
+          continue;
+        }
+        box(x - 29, 100 - h / 2, 58, h, Math.min(29, h / 2), INK);
+        if (opening > .2) {
+          ctx.fillStyle = '#000';
+          ctx.beginPath();
+          ctx.arc(x + (reducedMotion ? 0 : eyes.x), 100 + (reducedMotion ? 0 : eyes.y), 13, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+      }
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (mood === 'HAPPY' || mood === 'SAD') {
+        const start = mood === 'HAPPY' ? 40 : 220;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 6;
+        ctx.arc(160, mood === 'HAPPY' ? 158 : 198, 32, start * Math.PI / 180, (start + 100) * Math.PI / 180);
+        ctx.stroke();
+      } else if (mood === 'REMINDER' || mood === 'SURPRISED') {
+        ctx.fillStyle = INK;
+        ctx.arc(160, 178, mood === 'REMINDER' ? 11 : 14, 0, 2 * Math.PI);
+        ctx.fill();
+      } else stroke(132, 178, 188, 178, INK, 6);
+      if (state.remarks) {
+        ctx.fillStyle = '#888';
+        ctx.textAlign = 'center';
+        ctx.fillText(fit(state.remarks, 280), 160, 209);
+        ctx.textAlign = 'left';
+      }
+    }
+    function drawTodo(now) {
+      const total = rows.length, done = rows.filter(r => r.completed).length;
+      ctx.fillStyle = INK;
+      ctx.fillText('今日进度 ' + done + '/' + total, MARGIN, 15);
+      box(MARGIN, 36, 280, 8, 4, '#333');
+      if (done) box(MARGIN, 36, Math.floor(280 * done / total), 8, 4, GREEN);
+      let y = HEADER_H;
+      for (let i = 0; i < rows.length && y <= H; i++) {
+        const r = rows[i];
+        const elapsed = Math.max(0, now - r.start);
+        let opacity = r.completed ? .5 : 1;
+        let tick = r.completed ? 1 : 0, strike = tick, height = ROW_H;
+        if (r.animation === 'fade' && elapsed < 200) opacity = elapsed / 200;
+        if (r.animation === 'tick' || r.animation === 'delete') {
+          const tickTime = r.removed ? 0 : 150;
+          const s = elapsed - tickTime;
+          if (elapsed < tickTime) { tick = elapsed / 150; strike = 0; opacity = 1; }
+          else if (s < 300) { tick = 0; strike = s / 300; opacity = 1; }
+          else if (s < 700) { tick = 0; strike = 0; opacity = 1 - .5 * (s - 300) / 400; }
+          else if (r.removed) {
+            const collapse = Math.min(1, (s - 700) / 250);
+            tick = strike = 0; opacity = .5 * (1 - collapse); height *= 1 - collapse;
+          }
+        }
+        if (height <= 0) continue;
+        if (i === 0) { ctx.lineWidth = 2; box(16, y - 2, 288, ROW_H, 8, INK, false); }
+        ctx.globalAlpha = opacity;
+        const labelY = y + (ROW_H - 19) / 2 + 9;
+        const title = fit(r.title, W - MARGIN - TEXT_X, '…');
+        ctx.fillStyle = r.completed ? '#999' : INK;
+        ctx.fillText(title, TEXT_X, labelY);
+        if (strike) stroke(TEXT_X, labelY, TEXT_X + ctx.measureText(title).width * strike, labelY, r.completed ? GREEN : INK, 2);
+        ctx.globalAlpha = 1;
+        const by = y + (height - 14) / 2;
+        ctx.lineWidth = 2;
+        box(MARGIN, by, 14, 14, 4, INK, false);
+        if (tick) {
+          const t = Math.min(1, tick * 2);
+          ctx.lineCap = 'round';
+          stroke(22, by + 3, 22 + 3.5 * t, by + 3 + 8.5 * t, GREEN, 3);
+          if (tick > .5) {
+            const u = (tick - .5) * 2;
+            stroke(25.5, by + 11.5, 25.5 + 10 * u, by + 11.5 - 11 * u, GREEN, 3);
+          }
+        }
+        y += height;
+      }
+    }
+    function render(now) {
+      if (stopped) return;
+      tickPose(now);
+      rows = rows.filter(r => !r.removed || now - r.start < 950);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, W, H);
+      ctx.font = font;
+      ctx.textBaseline = 'middle';
+      if (state.page === 'expr') drawFace(now);
+      else drawTodo(now);
+      frameId = requestAnimationFrame(render);
+    }
+    function destroy() {
+      stopped = true;
+      queue.length = 0;
+      clearTimeout(timer);
+      cancelAnimationFrame(frameId);
+      applyPose(0, 0);
+    }
+    signal();
+    render(performance.now());
+    return {update, press, getState: () => ({...state}), destroy};
+  }
+  window.buddyScreen = {mount};
+})();
+</script>
+<script>// TMB12A05 active buzzer. Pulse timings are from components/devices/buzzer.c.
+(() => {
+  'use strict';
+  const frequency = 2400;
+  const patterns = {
+    short:    {count: 1, onMs: 80,  offMs: 0},
+    done:     {count: 2, onMs: 60,  offMs: 60},
+    reminder: {count: 3, onMs: 150, offMs: 100},
+    error:    {count: 2, onMs: 300, offMs: 100}
+  };
+  let context = null, muted = true, availableAt = 0;
+  const active = new Set();
+
+  async function enable() {
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (!Audio) return false;
+    try {
+      context ??= new Audio();
+      muted = false;
+      if (context.state !== 'running') await context.resume();
+      return !muted && context.state === 'running';
+    } catch {
+      mute();
+      return false;
+    }
+  }
+
+  function mute() {
+    muted = true;
+    availableAt = 0;
+    for (const oscillator of active) {
+      oscillator.disconnect();
+      oscillator.stop();
+    }
+    active.clear();
+  }
+
+  function play(tone) {
+    if (muted || !context || context.state === 'closed' || !Object.hasOwn(patterns, tone)) return false;
+    const {count, onMs, offMs} = patterns[tone];
+    const start = Math.max(context.currentTime, availableAt);
+    for (let i = 0; i < count; i++) {
+      const from = start + i * (onMs + offMs) / 1000;
+      const to = from + onMs / 1000;
+      const oscillator = context.createOscillator();
+      const envelope = context.createGain();
+      // The hardware sets a GPIO level. The browser synthesizes its fixed pitch
+      // with short amplitude ramps to avoid speaker clicks at pulse boundaries.
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      envelope.gain.setValueAtTime(0, from);
+      envelope.gain.linearRampToValueAtTime(0.065, from + 0.003);
+      envelope.gain.setValueAtTime(0.065, to - 0.004);
+      envelope.gain.linearRampToValueAtTime(0, to);
+      oscillator.connect(envelope);
+      envelope.connect(context.destination);
+      oscillator.onended = () => {
+        oscillator.disconnect();
+        envelope.disconnect();
+        active.delete(oscillator);
+      };
+      active.add(oscillator);
+      oscillator.start(from);
+      oscillator.stop(to);
+    }
+    // The event loop also waits for the final off interval in buzzer_play_pattern().
+    availableAt = start + count * (onMs + offMs) / 1000;
+    return true;
+  }
+
+  window.buddyAudio = {enable, mute, play, get muted() { return muted; }};
+})();
+</script>
+<script>// Local file access is read-only. A reusable file handle can follow external saves.
+function bindNoteImport(onRead) {
+  const control = id => document.getElementById(id);
+  const input = control("note-file"), reload = control("reload-note"), status = control("import-status");
+  let source = null, operation = 0, reading = null, polling = null;
+  let usePicker = typeof window.showOpenFilePicker === "function" && window.isSecureContext;
+  const linkedHint = "已跟读这篇笔记。在 Obsidian 保存后会自动更新；网页内的修改仅用于预览。";
+  function message(text, error = false) {
+    status.textContent = text;
+    status.dataset.error = String(error);
+  }
+  function stopPolling() {
+    clearInterval(polling);
+    polling = null;
+  }
+  function follow() {
+    stopPolling();
+    polling = setInterval(() => { if (!document.hidden) refresh(false); }, 1200);
+  }
+  async function decode(file) {
+    if (!/\.(md|markdown)$/i.test(file.name)) throw new Error("请选择 Obsidian 笔记库里的 .md 或 .markdown 文件。");
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    let encoding = "utf-8";
+    if (bytes[0] === 0xff && bytes[1] === 0xfe) encoding = "utf-16le";
+    if (bytes[0] === 0xfe && bytes[1] === 0xff) encoding = "utf-16be";
+    try {
+      return new TextDecoder(encoding, {fatal:true}).decode(bytes).replace(/\r\n?/g, "\n");
+    } catch {
+      throw new Error("无法解码这篇笔记。请在 Obsidian 中将它另存为 UTF-8 Markdown 后再导入。");
+    }
+  }
+  async function load(file, handle, ticket) {
+    const text = await decode(file);
+    if (ticket !== operation) return;
+    stopPolling();
+    source = {handle, text, name:file.name, modified:file.lastModified, size:file.size, failures:0};
+    onRead(text, file.name, true);
+    control("source-name").textContent = file.name;
+    control("source-name").title = file.name;
+    reload.hidden = !handle;
+    if (handle) {
+      follow();
+      message(linkedHint);
+    } else message("已导入本地副本。在 Obsidian 修改后，可再次选择这篇笔记。");
+  }
+  function readError(error) {
+    if (error instanceof DOMException) return "暂时无法读取原文件。请检查文件位置与读取权限，再重新选择笔记。";
+    return error.message || "读取失败，请重新选择笔记。";
+  }
+  async function refresh(force) {
+    const current = source;
+    if (!current?.handle || (!force && (polling === null || reading))) return;
+    const ticket = force ? ++operation : operation;
+    const readId = Symbol();
+    reading = readId;
+    try {
+      const file = await current.handle.getFile();
+      if (!force && file.lastModified === current.modified && file.size === current.size) {
+        if (ticket === operation) current.failures = 0;
+        return;
+      }
+      const text = await decode(file);
+      if (ticket !== operation || source !== current) return;
+      current.modified = file.lastModified;
+      current.size = file.size;
+      current.failures = 0;
+      if (force || text !== current.text) {
+        current.text = text;
+        onRead(text, current.name, false);
+      }
+      if (force) { follow(); message(linkedHint); }
+    } catch (error) {
+      if (ticket !== operation || source !== current) return;
+      // An atomic save can briefly make the previous File object unreadable.
+      if (force || ++current.failures >= 3) {
+        stopPolling();
+        message(readError(error), true);
+      }
+    } finally { if (reading === readId) reading = null; }
+  }
+  control("import-note").addEventListener("click", async () => {
+    if (!usePicker) { input.click(); return; }
+    const ticket = ++operation;
+    let handle;
+    try {
+      [handle] = await window.showOpenFilePicker({multiple:false,
+        types:[{description:"Obsidian Markdown 笔记", accept:{"text/markdown":[".md",".markdown"]}}]});
+    } catch (error) {
+      if (ticket !== operation || error.name === "AbortError") return;
+      // Sandboxed exhibition embeds can expose the API but block its picker.
+      usePicker = false;
+      message("可用普通文件选择器导入。请点击「导入笔记」选择 .md 文件。");
+      return;
+    }
+    if (!handle || ticket !== operation) return;
+    try { await load(await handle.getFile(), handle, ticket); }
+    catch (error) { if (ticket === operation) message(readError(error), true); }
+  });
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    input.value = "";
+    if (!file) return;
+    const ticket = ++operation;
+    try { await load(file, null, ticket); }
+    catch (error) { if (ticket === operation) message(readError(error), true); }
+  });
+  reload.addEventListener("click", () => refresh(true));
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(false); });
+  window.addEventListener("focus", () => refresh(false));
+  return {
+    edited() {
+      ++operation;
+      if (!source?.handle || polling === null) return;
+      stopPolling();
+      message("正在编辑网页副本，跟读已暂停。点「重新读取原文」可用磁盘内容替换草稿，继续跟读。");
+    },
+    reset() {
+      ++operation;
+      source = null;
+      stopPolling();
+      reload.hidden = true;
+      control("source-name").textContent = "今日笔记.md";
+      control("source-name").removeAttribute("title");
+      message("");
+    }
+  };
+}
+</script>
+<script>(() => {
+  "use strict";
+  const byId = id => document.getElementById(id);
+  const sample = [
+    "## 小默任务",
+    "- [ ] 阅读一篇论文",
+    "- [ ] 调试小默屏幕",
+    "- [x] 整理桌面",
+    "",
+    "## 小默备注",
+    "下午三点，带上小默去布展。",
+    "",
+    "## 日记",
+    "- [ ] 记下今天逛展的灵感"
+  ].join("\n");
+  const note = byId("note"), autosync = byId("autosync"), canvas = byId("screen");
+  const status = byId("statusText"), gutter = byId("gutter");
+  let draft, pending, composing = false, lastSent;
+  let sourceKey = "today", sourceVersion = 0, screenSource = -1;
+  let imported = false, screen;
+  let lastAnnouncement = "";
+  const screenOptions = {
+    onChange(state) {
+      canvas.dataset.page = state.page;
+      canvas.dataset.expression = state.expression;
+      canvas.dataset.done = state.done;
+      canvas.dataset.total = state.total;
+      canvas.dataset.mode = state.mode;
+      canvas.dataset.action = state.action;
+      byId("led").style.backgroundColor = state.led;
+      const label = state.page === "todo" ? "任务页" : "表情页";
+      byId("screenPage").textContent = label + " · " + state.done + "/" + state.total;
+      canvas.setAttribute("aria-label", "小默" + label + "，完成 " + state.done + " / " + state.total + " 项。" + state.message);
+      if (lastAnnouncement !== state.message) {
+        status.textContent = state.message;
+        lastAnnouncement = state.message;
+      }
+    },
+    onTone(tone) { window.buddyAudio.play(tone); },
+    onPose({yaw, pitch}) {
+      byId("moving-head").style.transform = yaw || pitch
+        ? "perspective(650px) rotateY(" + yaw + "deg) rotateX(" + pitch + "deg)" : "";
+    }
+  };
+  function sync() {
+    clearTimeout(pending);
+    if (sourceVersion !== screenSource) {
+      screen?.destroy();
+      screen = window.buddyScreen.mount(canvas, screenOptions);
+      screenSource = sourceVersion;
+    }
+    screen.update(draft);
+    lastSent = draft;
+    byId("send").textContent = "同步到小默";
+  }
+  function renderDraft(immediate = false) {
+    clearTimeout(pending);
+    const source = note.value;
+    draft = window.parseBuddyNote(source, byId("scope").value, sourceKey);
+    const scopeInfo = byId("scope-info");
+    scopeInfo.hidden = !imported;
+    scopeInfo.textContent = draft.scope === "sections" ? "读取范围：小默任务和小默备注" : "读取范围：整篇笔记";
+    const list = byId("tasks");
+    const focusLine = list.contains(document.activeElement) ? document.activeElement.dataset.line : null;
+    const items = document.createDocumentFragment();
+    for (const t of draft.tasks) {
+      const li = document.createElement("li"), label = document.createElement("label");
+      const box = document.createElement("input"), title = document.createElement("span");
+      box.type = "checkbox";
+      box.checked = t.completed;
+      box.dataset.line = t.line;
+      box.dataset.offset = t.checkboxOffset;
+      title.textContent = t.title;
+      label.append(box, title);
+      li.append(label);
+      items.append(li);
+    }
+    if (!draft.total) {
+      const item = document.createElement("li");
+      item.className = "empty";
+      item.textContent = "还没有任务。试着在笔记里写下 - [ ] 和一件想做的事。";
+      items.append(item);
+    }
+    list.replaceChildren(items);
+    if (focusLine) list.querySelector('input[data-line="' + focusLine + '"]')?.focus({preventScroll:true});
+    byId("remark").textContent = draft.remarks || "暂无";
+    const warnings = byId("warnings");
+    warnings.replaceChildren(...draft.warnings.map(message => {
+      const item = document.createElement("li"); item.textContent = message; return item;
+    }));
+    warnings.hidden = !draft.warnings.length;
+    gutter.textContent = source.split("\n").map((_, i) => i + 1).join("\n");
+    gutter.scrollTop = note.scrollTop;
+    if (autosync.checked || !lastSent) {
+      if (immediate) sync();
+      else pending = setTimeout(sync, 550);
+    } else {
+      byId("send").textContent = "同步当前草稿";
+    }
+  }
+  const files = bindNoteImport((text, filename, newSource) => {
+    if (newSource) {
+      sourceVersion++;
+      note.scrollTop = 0;
+    }
+    imported = true;
+    sourceKey = filename.replace(/\.(md|markdown)$/i, "");
+    note.value = text;
+    renderDraft(true);
+  });
+  byId("tasks").addEventListener("change", event => {
+    const box = event.target;
+    if (box.type !== "checkbox") return;
+    files.edited();
+    const offset = Number(box.dataset.offset);
+    note.setRangeText(box.checked ? "x" : " ", offset, offset + 1, "preserve");
+    renderDraft(true);
+  });
+  note.addEventListener("compositionstart", () => { files.edited(); composing = true; clearTimeout(pending); });
+  note.addEventListener("compositionend", () => { composing = false; renderDraft(); });
+  note.addEventListener("input", () => { files.edited(); if (!composing) renderDraft(); });
+  note.addEventListener("scroll", () => { gutter.scrollTop = note.scrollTop; });
+  byId("scope").addEventListener("change", () => renderDraft(true));
+  byId("send").addEventListener("click", sync);
+  autosync.addEventListener("change", () => { if (autosync.checked) sync(); else clearTimeout(pending); });
+  byId("reset").addEventListener("click", () => {
+    files.reset();
+    sourceVersion++;
+    imported = false;
+    sourceKey = "today";
+    note.value = sample;
+    note.scrollTop = 0;
+    byId("scope").value = "auto";
+    renderDraft(true);
+  });
+  const sound = byId("sound");
+  sound.addEventListener("click", async () => {
+    if (window.buddyAudio.muted) {
+      if (!await window.buddyAudio.enable()) {
+        status.textContent = "当前浏览器无法开启声音";
+        return;
+      }
+    } else window.buddyAudio.mute();
+    const enabled = !window.buddyAudio.muted;
+    sound.textContent = enabled ? "关闭声音" : "开启声音";
+    sound.setAttribute("aria-pressed", String(enabled));
+  });
+  // A stable press lasts at least 800 ms. Each press generates exactly one event.
+  const keyActions = [
+    ["SW3", "切页", "切换任务页与表情页"], ["SW4", "专注", "专注表情与点头"],
+    ["SW5", "提醒", "提醒表情与张望"], ["SW6", "庆祝", "庆祝，长按归中"]
+  ];
+  for (const [key, name, description] of keyActions) {
+    const button = document.createElement("button");
+    button.type = "button"; button.className = "key"; button.id = key;
+    button.setAttribute("aria-label", key + " " + description);
+    button.innerHTML = '<span class="keycode"></span><span class="keycap" aria-hidden="true"></span><span class="keyname"></span>';
+    button.querySelector(".keycode").textContent = key;
+    button.querySelector(".keyname").textContent = name;
+    byId("keys").append(button);
+    let heldBy = null, started, longFired = false, timeout, ignoreClick = false;
+    function cancel() {
+      clearTimeout(timeout);
+      heldBy = null;
+      button.classList.remove("held");
+    }
+    function begin(owner) {
+      if (heldBy !== null) return;
+      heldBy = owner;
+      started = performance.now();
+      longFired = false;
+      ignoreClick = true;
+      button.classList.add("held");
+      timeout = setTimeout(() => { longFired = true; screen.press(key + "_LONG"); }, 800);
+    }
+    function release(owner) {
+      if (owner !== heldBy) return;
+      if (!longFired) screen.press(performance.now() - started >= 800 ? key + "_LONG" : key);
+      cancel();
+    }
+    button.addEventListener("pointerdown", e => {
+      if (e.button !== 0 || !e.isPrimary) return;
+      button.setPointerCapture(e.pointerId);
+      begin(e.pointerId);
+    });
+    button.addEventListener("pointerup", e => release(e.pointerId));
+    button.addEventListener("pointercancel", cancel);
+    button.addEventListener("lostpointercapture", e => { if (heldBy === e.pointerId) cancel(); });
+    button.addEventListener("contextmenu", e => e.preventDefault());
+    button.addEventListener("keydown", e => {
+      if (e.key !== " " && e.key !== "Enter") return;
+      e.preventDefault(); if (!e.repeat) begin(e.key);
+    });
+    button.addEventListener("keyup", e => {
+      if (e.key !== " " && e.key !== "Enter") return;
+      e.preventDefault(); release(e.key); ignoreClick = false;
+    });
+    button.addEventListener("click", e => {
+      if (e.detail === 0 && heldBy === null && !ignoreClick) screen.press(key);
+      ignoreClick = false;
+    });
+    const abort = () => { cancel(); ignoreClick = false; };
+    button.addEventListener("blur", abort);
+    window.addEventListener("blur", abort);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) abort(); });
+  }
+  note.value = sample;
+  renderDraft(true);
+})();
+</script>
+</body></html>

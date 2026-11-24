@@ -90,3 +90,11 @@ body.has-project-index::before {
 .project-array .object-label{font-size:.82rem}.mast nav{flex-wrap:wrap;justify-content:flex-end;row-gap:4px}
 }
 @media(prefers-reduced-motion:reduce){.object-picture img{transition:none!important;transform:none!important}}
+
+.project-resources{display:flex;flex-wrap:wrap;gap:.5em 1em;margin:1.15em 0;font:500 .85rem/1.45 var(--folio-mono,monospace)}
+.project-resources a{display:inline-flex;gap:.55em;align-items:center;min-height:40px;color:inherit;text-decoration:underline;text-underline-offset:.22em}
+.project-resources a:hover,.project-resources a:focus-visible{text-decoration-thickness:2px}
+.project-intro .file-note{color:#4c6276;font-size:.92em}
+.work-plate video{display:block;width:100%;max-height:70vh;margin:auto}
+
+.archive-plate img{width:auto;height:auto;max-width:100%}

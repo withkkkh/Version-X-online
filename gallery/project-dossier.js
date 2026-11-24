@@ -5,26 +5,45 @@
 
   const tab = folder.querySelector('.file-tab');
   const title = folder.querySelector('h2');
-  const visual = folder.querySelector('.file-photo');
-  const plate = folder.querySelector('picture source');
-  const desktop = matchMedia(plate.media);
-  const caption = folder.querySelector('figcaption');
+  const gallery = folder.querySelector('.file-gallery');
   const copy = folder.querySelector('.file-copy');
   const more = folder.querySelector('.file-more');
   const close = folder.querySelector('.file-close');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let opener;
   let closingTimer;
-  let currentRecord;
+  const description = folder.querySelector('.file-description');
+  const resources = document.createElement('nav');
+  resources.className = 'file-actions';
+  resources.setAttribute('aria-label', '项目入口');
+  title.after(resources);
 
-  function describeImage() {
-    if (!currentRecord) return;
-    const data = currentRecord.dataset;
-    const showPlate = desktop.matches && data.plate;
-    visual.alt = showPlate ? data.plateAlt : data.alt;
-    caption.textContent = showPlate ? data.plateCaption : data.caption;
+  function showResources(content) {
+    const submitted = content.querySelector('.project-resources');
+    resources.replaceChildren(...(submitted ? Array.from(submitted.children) : []));
+    submitted?.remove();
+    resources.hidden = resources.childElementCount === 0;
   }
-  desktop.addEventListener('change', describeImage);
+
+  function showPlates(record, link, content) {
+    const plates = content.querySelector('template.file-plates');
+    if (plates) {
+      gallery.replaceChildren(plates.content.cloneNode(true));
+      gallery.classList.remove('file-object');
+      plates.remove();
+      return;
+    }
+    const data = record.dataset;
+    gallery.classList.toggle('file-object', !data.plate);
+    const figure = document.createElement('figure');
+    const image = document.createElement('img');
+    image.src = data.plate || link.querySelector('.entry-art').src;
+    image.alt = data.plateAlt || data.alt;
+    const caption = document.createElement('figcaption');
+    caption.textContent = data.plateCaption || data.caption;
+    figure.append(image, caption);
+    gallery.replaceChildren(figure);
+  }
 
   function dismiss() {
     if (!folder.open || folder.classList.contains('closing')) return;
@@ -40,23 +59,22 @@
     if (!record || !record.content) return;
     event.preventDefault();
     opener = link;
-    const art = link.querySelector('.object-picture img');
-    currentRecord = record;
-    if (record.dataset.plate) plate.srcset = record.dataset.plate;
-    else plate.removeAttribute('srcset');
-    visual.src = art.currentSrc || art.src;
-    describeImage();
+    const content = record.content.cloneNode(true);
+    showPlates(record, link, content);
+    showResources(content);
     tab.textContent = record.dataset.code;
     title.textContent = link.querySelector('.object-label').textContent;
-    copy.replaceChildren(record.content.cloneNode(true));
+    copy.replaceChildren(content);
     more.hidden = !record.hasAttribute('data-more');
     if (more.hidden) more.removeAttribute('href');
     else more.href = link.href;
     folder.classList.remove('closing');
     folder.showModal();
     document.documentElement.classList.add('file-is-open');
-    folder.querySelector('.file-scroll').scrollTop = 0;
-    folder.querySelector('.file-description').scrollTop = 0;
+    folder.querySelector('.file-sleeve').scrollTop = 0;
+    gallery.scrollTop = 0;
+    description.scrollTop = 0;
+    copy.scrollTop = 0;
     close.focus({preventScroll:true});
   });
   close.addEventListener('click', dismiss);
@@ -69,6 +87,7 @@
   });
   folder.addEventListener('close', () => {
     clearTimeout(closingTimer);
+    gallery.replaceChildren();
     folder.classList.remove('closing');
     document.documentElement.classList.remove('file-is-open');
     opener?.focus({preventScroll:true});

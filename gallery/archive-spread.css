@@ -1,0 +1,95 @@
+/* The open drawer leaves one quarter of the project index in view. */
+:root {
+  --archive-blue: #285275;
+  --archive-paper: #f2f4f6;
+  --archive-rule: #afc1cf;
+  --archive-pad: clamp(18px, 1.8vw, 34px);
+}
+.project-dossier .file-sheet, .spread-heading, .spread-text {
+  color: #fff;
+  background: var(--archive-blue);
+}
+.project-dossier .file-sheet { padding: var(--archive-pad); }
+.file-meta { flex: none; }
+.file-description { display: flex; flex-direction: column; overflow: hidden; }
+.file-description h2, .spread-heading h1 {
+  font: 500 clamp(28px, 2.7vw, 56px)/1.12 Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+.file-description h2 { flex: none; margin: 1em 0 .5em; }
+.file-actions, .spread-heading .project-resources {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 7px;
+  margin: 0 0 1rem; flex: none;
+}
+.file-actions[hidden] { display: none; }
+.file-actions a, .spread-heading .project-resources a {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 40px; padding: 3px 12px; box-sizing: border-box;
+  border: 1px solid #c3d6e3; border-radius: 22px;
+  color: #fff; text-decoration: none;
+  font: 500 .9rem/1.35 Inter, "Microsoft YaHei", sans-serif;
+}
+.file-actions a:is(:focus-visible,:hover), .spread-heading .project-resources a:is(:focus-visible,:hover) {
+  background: #fff; color: var(--archive-blue);
+}
+.file-copy { min-height: 0; overflow-y: auto; scrollbar-width: thin; font-size: 1rem; }
+.file-description:has(h2:only-child) { overflow-y: auto; }
+.file-gallery { padding: 0; background: var(--archive-paper); }
+.file-gallery figure, .spread-media figure { margin: 0; padding: 0; min-width: 0; border: 0; }
+.file-gallery :is(img,video), .spread-media :is(img,video) {
+  display: block; width: 100%; max-width: 100%; height: auto; max-height: 88dvh;
+  object-fit: contain; background: var(--archive-paper);
+}
+.file-gallery figcaption, .spread-media figcaption {
+  margin: 0; padding: 9px 16px 12px; border: 0; text-align: left;
+  color: #364f60; background: var(--archive-paper); font: 400 .8rem/1.5 var(--folio-mono, monospace);
+}
+.file-gallery figcaption::before { content: none; }
+.file-gallery figure + figure, .spread-media figure + figure { border-top: 1px solid #d2dce2; }
+.file-gallery.file-object, .spread-media.object-only { display: grid; align-content: center; }
+.file-gallery.file-object img, .spread-media.object-only img {
+  max-width: 68%; max-height: 48dvh; margin: 3rem auto; object-fit: contain;
+}
+.file-gallery.file-object figcaption, .spread-media.object-only figcaption { text-align: center; }
+.spread-page .project-article { max-width: 1420px; margin: 0 auto; padding: 0; }
+.spread-page .project-bar { background: #fff; }
+.spread-page .project-spread {
+  display: grid; grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+  align-items: start; min-height: 75svh; background: var(--archive-paper);
+}
+.spread-info {
+  position: sticky; top: 0; max-height: 100dvh; overflow: auto;
+  background: var(--archive-blue); min-height: min(75svh, 650px); scrollbar-width: thin;
+}
+.spread-heading { padding: var(--archive-pad) var(--archive-pad) 0; }
+.spread-heading h1 { margin: .85em 0 .5em; padding-bottom: .5em; border-bottom: 1px solid var(--archive-rule); }
+.spread-heading .project-kicker { font-size: .88rem; }
+.spread-text { padding: 0 var(--archive-pad) var(--archive-pad); display: flow-root; }
+.spread-text .project-intro .file-note { color: #e1ebf1; }
+.spread-media { min-width: 0; align-self: stretch; }
+.spread-page .series-nav { margin: 0; padding: 18px var(--archive-pad); background: #fff; }
+@media (max-width:760px) {
+  .file-sleeve, .spread-page .project-spread { display: flex; flex-direction: column; }
+  .file-sheet, .file-description, .spread-info, .spread-media, .file-gallery { display: contents; }
+  .file-sleeve, .project-spread { background: var(--archive-paper); }
+  .file-meta, .file-description h2, .file-actions, .file-copy, .file-more, .file-gallery figure,
+  .spread-heading, .spread-text, .spread-media figure { flex: none; }
+  .file-meta, .file-description h2, .file-actions, .file-copy, .file-more { color: #fff; background: var(--archive-blue); }
+  .file-meta { order: 0; padding: 12px 18px 0; }
+  .file-description h2 { order: 1; margin: 0; padding: 16px 18px; border: 0; }
+  .file-actions { order: 2; margin: 0; padding: 0 18px 16px; }
+  .file-gallery.file-object { display: contents; }
+  .file-gallery figure:first-child, .spread-media figure:first-child { order: 3; }
+  .file-copy, .spread-text { order: 4; padding: 18px; overflow: visible; }
+  .file-gallery figure, .spread-media figure { order: 5; }
+  .file-more:not([hidden]) { order: 6; margin: 12px 18px 22px; color: var(--archive-blue); }
+  .file-gallery figure:only-child { min-height: 0; }
+  .spread-heading { order: 1; padding: 18px; }
+  .spread-heading .project-resources { margin: 0; }
+  .spread-media.object-only { display: contents; }
+}
+@media (min-width:761px) and (max-height:550px) {
+  .file-description { overflow: auto; }
+  .file-copy { overflow: visible; flex: none; }
+}
