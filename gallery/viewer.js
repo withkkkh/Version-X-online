@@ -1,11 +1,11 @@
 import { installBackgroundComparison } from './background-comparison.js?v=7';
-import { installWalk } from './walk.js?v=tour4';
+import { installWalk } from './walk.js?v=tour5';
 import { installStillHotspots } from './still-hotspots.js?v=1';
 import { startModel } from './gallery-runtime.js?v=study2';
 import { installTeamHotspots } from './team-hotspots.js?v=tour1';
 const model=document.querySelector('#model');
 if(new URL(location.href).searchParams.get('look')!=='original'){
-  model.dataset.src='./assets/version-x-gallery-study.glb?v=inlay1';model.dataset.mobileSrc='./assets/gallery-mobile-study.bin?v=inlay1';
+  model.dataset.src='./assets/version-x-gallery-study.glb?v=wall2';model.dataset.mobileSrc='./assets/gallery-mobile-study.bin?v=wall2';
   model.setAttribute('exposure','.80');model.setAttribute('shadow-intensity','1');model.setAttribute('shadow-softness','.75');
 }
 customElements.whenDefined('model-viewer').then(()=>{
@@ -22,7 +22,7 @@ const views={
   'rack-hardware':{target:[7.57,1.33,0],orbit:[-82,67,5.8],fov:39,fitByFov:true},
   'rack-operations':{target:[-7.57,1.33,0],orbit:[82,67,5.8],fov:39,fitByFov:true},
   overview:{target:[0,-1.5,0],orbit:[24,58,34],fov:42},top:{target:[0,0,0],orbit:[0,3,40],fov:42},
-  sculpture:{target:[0,5.48,0],orbit:[0,.1,7],fov:32},facade:{target:[-6.32,.94,9.11],orbit:[12,85,6.5],fov:36},
+  sculpture:{target:[0,5.48,0],orbit:[0,.1,7],fov:32},facade:{target:[-6.32,.77,8.97],orbit:[12,85,6.5],fov:36},
 };
 function fittedView(view){
   const {width,height}=model.getBoundingClientRect();
@@ -47,7 +47,7 @@ function setView(name,immediate=false){
 }
 installTeamHotspots(model,stage,openMap);installStillHotspots(stage,model);
 const walk=installWalk(stage,model,setView,view=>applyCamera(view,true),view=>view.overview?fittedView(views.overview):fittedView({...view,tour:true}));
-installBackgroundComparison(stage,model,()=>walk.pause());
+installBackgroundComparison(stage,model,()=>walk.stop({reset:true}));
 function closeDirectory(restoreFocus=false){directory.open=false;if(restoreFocus)directory.querySelector('summary').focus({preventScroll:true});}
 presetButtons.forEach(b=>b.addEventListener('click',()=>{setView(b.dataset.view);if(directory.contains(b))closeDirectory(true);}));
 document.querySelector('#reset').addEventListener('click',()=>setView('overview',true));

@@ -65,16 +65,60 @@ export function finishGallery(g, values, accessor) {
     }
   }
 
+  // A wall-mounted bezel follows the south wall's outer rib envelope.
+  const wall = g.nodes.find(n => n.name.startsWith('长侧围墙') && n.rotation);
+  const wallBounds = g.accessors[g.meshes[wall.mesh].primitives[0].attributes.POSITION];
+  const wallFront = -wallBounds.min[2];
+  const poster = g.nodes.find(n => n.name.includes('原图直接落地'));
+  const surround = g.nodes.find(n => n.name.includes('无脚球接头'));
+  const posterFace = g.meshes[poster.mesh].primitives[0];
+  const limits = g.accessors[posterFace.attributes.POSITION];
+  const scale = (wallBounds.max[1] - .22) / (limits.max[1] - limits.min[1]);
+  const cx = -6.32, cy = wallBounds.max[1] / 2;
+  const halfW = (limits.max[0] - limits.min[0]) * scale / 2;
+  const halfH = (limits.max[1] - limits.min[1]) * scale / 2;
+  const front = wallFront + .009, rear = wallFront - .075, lip = .020;
+  poster.name = 'VERSION X | 玻璃立面展签';
+  poster.scale = [scale,scale,1];
+  poster.translation = [cx - scale*(limits.min[0]+limits.max[0])/2,
+    cy - scale*(limits.min[1]+limits.max[1])/2,front-limits.min[2]];
+  const rectangle = (w,h,z) => [[cx-w,cy-h,z],[cx+w,cy-h,z],[cx+w,cy+h,z],[cx-w,cy+h,z]];
+  const aperture = rectangle(halfW,halfH,front);
+  const rim = rectangle(halfW+lip,halfH+lip,front);
+  const back = rectangle(halfW+lip,halfH+lip,rear);
+  const vp=[],vn=[];
+  function quad(a,b,c,d,normal) {
+    for(const v of [a,b,c,a,c,d]) {vp.push(...v);vn.push(...normal);}
+  }
+  const outward=[[0,-1,0],[1,0,0],[0,1,0],[-1,0,0]];
+  for(let i=0;i<4;i++) {
+    const j=(i+1)%4;
+    quad(rim[i],rim[j],aperture[j],aperture[i],[0,0,1]);
+    quad(back[i],back[j],rim[j],rim[i],outward[i]);
+  }
+  const framePrimitive=g.meshes[surround.mesh].primitives[0];
+  framePrimitive.attributes=attributes(vp,vn);
+  delete framePrimitive.indices;
+  g.meshes[surround.mesh].primitives=[framePrimitive];
+  surround.name='玻璃立面｜嵌墙金属包边';
+
   // Build a solid fluted core. The original two logo outlines and the silver
   // crown share one plane and boundary edges, even in the straight-down view.
   const sculpture = g.nodes.find(n => n.name === '04 中央互动雕塑');
   const mark = g.nodes.find(n => n.name === 'X-Lab | Floating mark');
-  const height = 5.48, radius = .91, segments = 72;
+  const height = 5.48, segments = 96;
   mark.name = 'X-Lab | Crown inlay';
   mark.translation = [0,height,0]; mark.scale = [1,1,1];
   const holes = [];
   for (const child of mark.children) {
     const p = g.meshes[g.nodes[child].mesh].primitives[0];
+    const enamel = g.materials[p.material];
+    const blue = enamel.name.includes('雾蓝');
+    enamel.pbrMetallicRoughness = {
+      baseColorFactor:blue ? [.018,.105,.25,1] : [.018,.30,.34,1],
+      metallicFactor:.08,roughnessFactor:.54
+    };
+    delete enamel.extensions;
     const src = values(p.attributes.POSITION), indices = values(p.indices);
     const top = g.accessors[p.attributes.POSITION].max[1];
     const points = [], pointIds = new Map(), boundary = new Map(), pos = [], norm = [];
@@ -100,10 +144,13 @@ export function finishGallery(g, values, accessor) {
     holes.push(loop); delete p.indices; p.attributes=attributes(pos,norm);
   }
   const mat=g.materials.length;
-  g.materials.push({name:'Sculpture | satin silver',pbrMetallicRoughness:{baseColorFactor:[.62,.72,.79,1],metallicFactor:.52,roughnessFactor:.42}});
-  const profile=[[.23,.47,.06],[.45,.45,.06],[1.4,.36,.09],[2.8,.34,.10],[3.9,.40,.11],[4.7,.55,.09],[5.15,.74,.05],[5.42,.92,0],[height,radius,0]];
+  g.materials.push({name:'Sculpture | satin silver',pbrMetallicRoughness:{baseColorFactor:[.79,.87,.91,1],metallicFactor:.23,roughnessFactor:.49}});
+  // A narrow waist leaves daylight between the original folded blades.
+  // Across the top, four shallow lobes follow the diagonal arms of the mark.
+  const profile=[[.23,.23,.025],[1.2,.15,.03],[3.6,.115,.025],[4.45,.15,.035],
+    [4.96,.23,.05],[5.23,.39,.075],[5.40,.62,.11],[5.46,.715,.145],[height,.71,.145]];
   const rings=profile.map(([y,r,flute])=>Array.from({length:segments},(_,i)=>{
-    const a=2*Math.PI*i/segments, rr=r+flute*Math.cos(4*a-.65*y);
+    const a=2*Math.PI*i/segments, rr=r-flute*Math.cos(4*a);
     return [rr*Math.cos(a),y,rr*Math.sin(a)];
   }));
   const pos=[],norm=[];

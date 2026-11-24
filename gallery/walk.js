@@ -1,4 +1,4 @@
-import { TOUR_SCENES, sceneFrame, isTeamSwitch } from './tour-timeline.js?v=3';
+import { TOUR_SCENES, sceneFrame, isTeamSwitch } from './tour-timeline.js?v=4';
 import { installSceneSlide } from './scene-slide.js?v=2';
 
 export function installWalk(stage, model, setView, applyTourCamera, fitTourCamera) {
@@ -7,7 +7,6 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
   const caption = player.querySelector('#tour-caption');
   const number = player.querySelector('.tour-count');
   const progress = player.querySelector('.tour-progress span');
-  const toggle = player.querySelector('#tour-pause');
   const exit = player.querySelector('#tour-exit');
   const replay = stage.querySelector('#tour-replay');
   const slide = installSceneSlide(model);
@@ -23,8 +22,6 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
   function changeState(value) {
     state = value;
     player.dataset.state = value;
-    toggle.disabled = value === 'waiting';
-    toggle.textContent = value === 'paused' ? '继续播放' : '暂停';
   }
   function clearHighlight() {
     stage.querySelectorAll('[data-tour-highlight]').forEach(el => el.removeAttribute('data-tour-highlight'));
@@ -120,21 +117,20 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
     draw(clock());
   }).observe(model);
   model.addEventListener('load', () => { if (state === 'waiting') showScene(0); });
-  toggle.addEventListener('click', () => {
-    if (state === 'playing') pause();
-    else if (state === 'paused' && !document.hidden) {
+  exit.addEventListener('click', () => stop({reset:true,restoreFocus:true}));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) pause();
+    else if (state === 'paused') {
       began = performance.now();
       changeState('playing');
       frame = requestAnimationFrame(tick);
     }
   });
-  exit.addEventListener('click', () => stop({reset:true,restoreFocus:true}));
-  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && active()) {
       event.preventDefault();
       stop({reset:true,restoreFocus:true});
     }
   });
-  return {start,stop,pause,get active(){return active();}};
+  return {start,stop,get active(){return active();}};
 }
