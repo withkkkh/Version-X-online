@@ -19,3 +19,7 @@
 /* Preserve the room photograph's complete window/wall composition in B. */
 .exhibit.vi-environment[data-environment="studio"] .stage:not(.entering) .screen{background:var(--paper) url('./assets/gallery-studio-skybox.png') center center/cover no-repeat}
 .vi-environment[data-environment="studio"] .tour-slide-frame{background:transparent}
+.vi-graphic-background{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.vi-graphic-background[hidden]{display:none}
+.vi-environment #model{position:relative;z-index:1}
+.vi-environment .tour-slide-frame{background:transparent}

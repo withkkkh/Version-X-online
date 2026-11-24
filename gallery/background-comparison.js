@@ -1,15 +1,16 @@
+import { installViDirectionalBackground } from './vi-directional-background.js?v=1';
 export function installBackgroundComparison(stage,model,pauseTour){
+  const graphic=installViDirectionalBackground(model.parentElement,model);
   const versions={
-    vi:{label:'A · VI 冰蓝',src:'./assets/gallery-vi-skybox-source.png'},
-    studio:{label:'B · 空间贴图',src:'./assets/gallery-studio-skybox.png'},
+    vi:{label:'A · VI 动态版'},
+    studio:{label:'B · 空间贴图'},
   };
   const group=document.createElement('section');group.className='environment-comparison';group.setAttribute('aria-label','背景版本对比');
   const label=document.createElement('span');label.textContent='背景对比';group.append(label);
   const buttons=new Map();
   function select(key,updateUrl=true){
-    const version=versions[key];
     if(updateUrl)pauseTour();
-    if(key==='studio')model.removeAttribute('skybox-image');else model.setAttribute('skybox-image',version.src);model.setAttribute('skybox-height','0m');document.body.dataset.environment=key;
+    model.removeAttribute('skybox-image');model.setAttribute('skybox-height','0m');graphic.setVisible(key==='vi');document.body.dataset.environment=key;
     for(const [value,button]of buttons)button.setAttribute('aria-pressed',String(value===key));
     if(updateUrl){const url=new URL(location.href);url.searchParams.set('background',key);history.replaceState(history.state,'',url);}
   }

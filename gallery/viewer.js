@@ -1,4 +1,4 @@
-import { installBackgroundComparison } from './background-comparison.js?v=1';
+import { installBackgroundComparison } from './background-comparison.js?v=3';
 import { installWalk } from './walk.js?v=tour3';
 import { installStillHotspots } from './still-hotspots.js?v=1';
 import { startModel } from './gallery-runtime.js?v=study1';
