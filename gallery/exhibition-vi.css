@@ -154,7 +154,7 @@ body[data-team] .mast, .project-page .project-bar,.knowledge-page .mast {
   background:linear-gradient(180deg,#f2f7fbe6,#f6f9fb99);
   border-bottom:1px solid #d3dfe880;
 }
-body[data-team] .mast nav a:first-child,.project-bar a,.knowledge-page .knowledge-back {
+.project-bar a {
   display:inline-flex;align-items:center;justify-content:center;min-height:34px;
   width:max-content;max-width:100%;margin-block:0;padding:5px 13px;
   border:1px solid #c6d7e3;border-top-color:#f9fcff;border-radius:999px;
@@ -176,13 +176,12 @@ body.has-project-index {background-color:#f5f8fb}
 .project-page .series-nav a {color:#305674}
 .knowledge-page .map-tools button,.knowledge-page .map-navigator button {border-radius:999px}
 @media(hover:hover) {
-  body[data-team] .mast nav a:first-child:hover,.project-bar a:hover,.knowledge-page .knowledge-back:hover {
+  .project-bar a:hover {
     color:#173553;background:#edf5fa;border-color:#9eb7c9
   }
 }
 @media(max-width:680px){
-  body[data-team] .mast nav {gap:4px 9px}
-  body[data-team] .mast nav a:first-child,.project-bar a,.knowledge-page .knowledge-back {min-height:38px;padding-inline:10px}
+  .project-bar a {min-height:38px;padding-inline:10px}
   body[data-team] .mast .brand .exhibition-wordmark {width:76px}
 }
 
@@ -202,18 +201,6 @@ body.has-project-index {background-color:#f5f8fb}
   }
   body[data-team] .mast .brand {flex:none}
   body[data-team] .mast .brand .exhibition-wordmark {width:clamp(53px,15vw,72px)}
-  :is(body[data-team],.knowledge-page) .mast nav {
-    display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:0;min-width:0;
-    border:1px solid var(--story-hairline);border-radius:6px;background:#f8fbfd;
-  }
-  :is(body[data-team],.knowledge-page) .mast nav a,:is(body[data-team],.knowledge-page) .mast nav a:first-child {
-    position:static;transform:none;display:flex;align-items:center;justify-content:center;
-    min-height:44px;width:auto;max-width:none;margin:0;padding:0 clamp(4px,1.6vw,12px);
-    border:0;border-radius:0;box-shadow:none;background:transparent;color:var(--exhibition-ink);
-    font:500 12px/1.2 var(--story-type);letter-spacing:0;text-decoration:none;white-space:nowrap;
-  }
-  :is(body[data-team],.knowledge-page) .mast nav a+a {border-left:1px solid var(--story-hairline)}
-  :is(body[data-team],.knowledge-page) .mast nav a:active {background:#e1ebf2}
   body[data-team] .nav-team {display:none}
   body[data-team] .pin {
     min-width:min(108px,32%);max-width:35%;padding:7px 10px;gap:4px;
@@ -230,9 +217,6 @@ body.has-project-index {background-color:#f5f8fb}
   body[data-team] .note p.follow {font-size:13px}
 }
 
-.knowledge-page .map-teams {display:flex;align-items:center;gap:clamp(12px,2vw,32px);font:500 .86rem/1.35 system-ui,sans-serif;letter-spacing:0}
-.knowledge-page .map-teams [aria-current] {text-decoration:underline;text-underline-offset:.35em;color:#214767}
-.knowledge-page .map-teams a:focus-visible {outline:2px solid #446c9d;outline-offset:2px}
 @media(min-width:1001px){
   .knowledge-page .map-mast-label {margin-right:auto}
 }
@@ -240,6 +224,33 @@ body.has-project-index {background-color:#f5f8fb}
   .knowledge-page .mast {justify-content:space-between;gap:6px;padding:6px clamp(6px,2vw,16px);min-height:58px}
   .knowledge-page .mast .brand {display:none}
   .knowledge-page .mast .exhibition-wordmark {width:clamp(48px,15vw,72px);display:block}
-  .knowledge-page .mast nav.map-teams {grid-template-columns:max-content repeat(4,minmax(0,1fr));gap:0}
-  .knowledge-page .map-teams a[aria-current] {background:#e1ebf2;text-decoration:none}
+}
+
+/* One control for moving between exhibits, maps and positions in the index. */
+:is(body[data-team],.knowledge-page) .mast nav {
+  display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap;
+  gap:6px; margin-left:auto;
+}
+:is(body[data-team],.knowledge-page) a.exhibit-nav-link {
+  box-sizing:border-box; position:static; display:flex; align-items:center; justify-content:center; gap:0;
+  width:max-content; min-height:44px; padding:0 14px; border:1px solid #b9cad7; border-radius:999px;
+  background:var(--exhibition-glass); box-shadow:inset 0 1px 0 #fff; color:var(--exhibition-ink);
+  font:500 14px/1.2 system-ui,"PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing:0; text-decoration:none; white-space:nowrap;
+}
+:is(body[data-team],.knowledge-page) a.exhibit-nav-link:is(:active,[aria-current="page"]) {
+  background:#dee9f1; border-color:#8da6ba;
+}
+@media(hover:hover){
+  :is(body[data-team],.knowledge-page) a.exhibit-nav-link:hover {background:#e7eff5;border-color:#829db2}
+}
+:is(body[data-team],.knowledge-page) a.exhibit-nav-link:focus-visible {outline:2px solid #446c9d;outline-offset:2px}
+body[data-team] .nav-mark.up {transform:rotate(-45deg);margin:3px .55em 0 0}
+@media(max-width:680px){
+  :is(body[data-team],.knowledge-page) .mast nav {gap:4px}
+  :is(body[data-team],.knowledge-page) a.exhibit-nav-link {padding-inline:clamp(5px,1.8vw,10px);font-size:12px}
+}
+@media(max-width:360px){
+  .knowledge-page .mast nav {gap:3px}
+  .knowledge-page .mast a.exhibit-nav-link {padding-inline:4px}
 }

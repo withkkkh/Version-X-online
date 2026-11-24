@@ -33,7 +33,7 @@ body.has-project-index::before {
   margin:.78rem 0 0; font:500 clamp(.72rem,.81vw,1rem)/1.2 "Cascadia Mono",Consolas,monospace;
   color:#171819; text-transform:uppercase; letter-spacing:0;
 }
-.folio-toplink{font:500 .85rem var(--mono);text-decoration:underline;text-underline-offset:4px}
+
 .project-array {
   display:grid; grid-template-columns:repeat(24,minmax(0,1fr)); align-items:start;
   max-width:1880px; margin:0 auto; padding:0 clamp(18px,3.8vw,72px) 28px;
@@ -62,7 +62,7 @@ body.has-project-index::before {
 .object-label{margin:.6rem .2rem 0;text-align:center;font:500 clamp(.79rem,.97vw,.94rem)/1.45 "Cascadia Mono","Microsoft YaHei","PingFang SC",monospace;overflow-wrap:anywhere;max-width:25ch}
 .object-link:focus-visible .object-label,.object-link:hover .object-label{text-decoration:underline;text-underline-offset:4px}
 @media(hover:hover){.object-link:hover img{transform:translateY(-6px) rotate(calc(var(--angle) * -1)) scale(1.06);filter:drop-shadow(0 12px 6px #203b4f25)}.object-link:hover .swap{opacity:1}.object-link:hover .has-swap{opacity:0}}
-.index-end{display:block;width:max-content;margin:1rem auto 0;color:#445366;font:500 .82rem var(--folio-mono);text-decoration:underline;text-underline-offset:.35em}
+.index-end{margin:1rem auto 0}
 .project-page{margin:0;min-height:100svh;background:linear-gradient(90deg,#e8ecef 1px,transparent 1px) center/25% 100%,#fcfdfd}
 .project-page *{box-sizing:border-box}.project-page a{color:inherit}
 .project-bar{display:flex;justify-content:space-between;align-items:center;padding:18px clamp(18px,4vw,70px);border-bottom:1px solid var(--folio-line);font:500 .85rem/1.6 var(--folio-mono)}
@@ -87,6 +87,6 @@ body.has-project-index::before {
 .folio-head h2 {font-size:clamp(2.5rem,9vw,3.75rem)}
 .object-id {left:100%}
 .project-hero{grid-template-columns:1fr;gap:24px;margin-bottom:28px}.project-hero figure{order:0}.project-hero figure img{height:210px}
-.project-array .object-label{font-size:.82rem}.folio-toplink{font-size:.79rem}.mast nav{flex-wrap:wrap;justify-content:flex-end;row-gap:4px}
+.project-array .object-label{font-size:.82rem}.mast nav{flex-wrap:wrap;justify-content:flex-end;row-gap:4px}
 }
 @media(prefers-reduced-motion:reduce){.object-picture img{transition:none!important;transform:none!important}}

@@ -2,7 +2,7 @@ const camera = (target, orbit, fov = 44) => ({ target, orbit, fov });
 export const OVERVIEW = {...camera([0,-1.5,0],[24,58,34],42),overview:true};
 // Every arrival is followed by a still reading interval. Timing stays internal.
 export const TOUR_SCENES = [
-  { title:'VERSION X · 未完之境', text:'', keys:[], move:.8, hold:1.6, camera:{...camera([-6.32,.77,8.97],[4,88,3.6],36),fitByFov:true,frameWidth:3.5} },
+  { title:'VERSION X · 未完之境', text:'', keys:[], move:.8, hold:1.6, camera:{...camera([-6.32,.88,8.97],[4,88,3.6],36),fitByFov:true,frameWidth:4.15} },
   { title:'四种路径，一个创造现场', text:'软件、硬件、设计与运营，围绕中央雕塑展开。', keys:[], move:2.8, hold:1.8, camera:OVERVIEW },
   { title:'软件 · 把想法运行起来', text:'从真实需求出发，探索代码如何成为可用的作品。', keys:['zone-software'], move:2, hold:3.2, camera:{...camera([0,1.55,6.0],[180,88,3.8]),fitByFov:true,frameWidth:6.4} },
   { title:'硬件 · 让构想动起来', text:'从结构到电路，让一个想法在反复调试中成形。', keys:['zone-hardware'], move:.75, hold:3.2, camera:{...camera([7.2,1.55,0],[270,88,3.8]),fitByFov:true,frameWidth:6.4} },

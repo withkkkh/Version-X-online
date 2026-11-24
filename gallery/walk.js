@@ -1,4 +1,4 @@
-import { TOUR_SCENES, sceneFrame, isTeamSwitch } from './tour-timeline.js?v=4';
+import { TOUR_SCENES, sceneFrame, isTeamSwitch } from './tour-timeline.js?v=5';
 import { installSceneSlide } from './scene-slide.js?v=2';
 
 export function installWalk(stage, model, setView, applyTourCamera, fitTourCamera) {

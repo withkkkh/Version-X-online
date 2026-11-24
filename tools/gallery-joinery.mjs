@@ -75,7 +75,11 @@ export function finishGallery(g, values, accessor) {
   const bounds = frameParts.map(p => g.accessors[p.attributes.POSITION]);
   const bottom = Math.min(...bounds.map(b => b.min[1]));
   const top = Math.max(...bounds.map(b => b.max[1]));
-  const scale = (wallBounds.max[1] - .015) / (top - bottom);
+  const scale = (wallBounds.max[1] + .24) / (top - bottom);
+  const frameLeft = Math.min(...bounds.map(b => b.min[0]));
+  const frameRight = Math.max(...bounds.map(b => b.max[0]));
+  const middle = (frameLeft + frameRight) / 2;
+  const wing = (3.64 / scale - (frameRight - frameLeft)) / 2;
   const print = g.accessors[g.meshes[poster.mesh].primitives[0].attributes.POSITION];
   const printCenter = (print.min[0] + print.max[0]) / 2 * poster.scale[0] + poster.translation[0];
   const printFront = print.min[2] * poster.scale[2] + poster.translation[2];
@@ -87,6 +91,10 @@ export function finishGallery(g, values, accessor) {
   poster.translation = poster.translation.map((v,k) => v * scale + offset[k]);
   surround.name = '玻璃立面｜落地铝管与球形角接头';
   frameParts.forEach((part,i) => {
+    // Widen the horizontal span without stretching the round joints or the artwork.
+    const positions = values(part.attributes.POSITION);
+    for (let k = 0; k < positions.length; k += 3) positions[k] += positions[k] < middle ? -wing : wing;
+    Object.assign(part.attributes, attributes(positions, values(part.attributes.NORMAL)));
     const material = structuredClone(g.materials[part.material]);
     material.name = i === 0 ? '落地框｜缎面铝管' : '落地框｜抛光铝接头';
     material.pbrMetallicRoughness = {
@@ -95,7 +103,33 @@ export function finishGallery(g, values, accessor) {
     };
     part.material = g.materials.length;
     g.materials.push(material);
+    delete part.extensions;
   });
+
+  // Two glazed sidelights share the outer rails. Slim glazing beads capture
+  // the edges of the original print while keeping its lettering proportional.
+  const glass = g.materials.push({name:'玻璃立面｜侧翼夹胶玻璃',alphaMode:'BLEND',doubleSided:true,
+    pbrMetallicRoughness:{baseColorFactor:[.56,.75,.86,.31],roughnessFactor:.15,metallicFactor:.12}}) - 1;
+  const y0 = bottom + .035, y1 = top - .043;
+  const z = printFront + .014;
+  const printHalf = (print.max[0] - print.min[0]) * poster.scale[0] / scale / 2;
+  for (const side of [-1,1]) {
+    const inner = printCenter + side * printHalf;
+    const outer = side < 0 ? frameLeft - wing + .043 : frameRight + wing - .043;
+    const l = Math.min(inner,outer), r = Math.max(inner,outer);
+    const panel = [l,y0,z,r,y0,z,r,y1,z,l,y0,z,r,y1,z,l,y1,z];
+    const facing = [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1];
+    frameParts.push({attributes:attributes(panel,facing),material:glass});
+    const bead = [], normals = [];
+    for (let j=0;j<12;j++) {
+      const angle=j*Math.PI/6, next=(j+1)*Math.PI/6;
+      for (const [a,y] of [[angle,y0],[angle,y1],[next,y1],[angle,y0],[next,y1],[next,y0]]) {
+        bead.push(inner+.014*Math.cos(a),y,z+.014*Math.sin(a));
+        normals.push(Math.cos(a),0,Math.sin(a));
+      }
+    }
+    frameParts.push({attributes:attributes(bead,normals),material:frameParts[0].material});
+  }
 
   // Build a solid fluted core. The original two logo outlines and the silver
   // crown share one plane and boundary edges, even in the straight-down view.
