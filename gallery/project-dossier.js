@@ -70,6 +70,11 @@
     else more.href = link.href;
     folder.classList.remove('closing');
     folder.showModal();
+    const leadFilm = gallery.querySelector('video[autoplay]');
+    if (leadFilm) {
+      leadFilm.muted = true;
+      leadFilm.play().catch(() => {});
+    }
     document.documentElement.classList.add('file-is-open');
     folder.querySelector('.file-sleeve').scrollTop = 0;
     gallery.scrollTop = 0;
@@ -87,6 +92,7 @@
   });
   folder.addEventListener('close', () => {
     clearTimeout(closingTimer);
+    gallery.querySelectorAll('video').forEach(film => film.pause());
     gallery.replaceChildren();
     folder.classList.remove('closing');
     document.documentElement.classList.remove('file-is-open');

@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>StepMate — 你的剧情式备考搭子</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* ===== Design System (Farm Pixel) ===== */
+@font-face { font-family:'CnPixel'; src:local('PingFang SC'),local('Microsoft YaHei'),local(sans-serif); }
+:root {
+  --grass: #5A8A4A;
+  --grass-dark: #3A5A3A;
+  --grass-light: #7ABF6A;
+  --soil: #6B4F3A;
+  --soil-dark: #4A3A2A;
+  --wood: #8B6F47;
+  --wood-light: #C4A87C;
+  --roof: #B84A3A;
+  --gold: #D4A843;
+  --gold-light: #F5E6B8;
+  --sky: #87CEEB;
+  --sky-top: #4A90D9;
+  --cream: #F5E8C8;
+  --cream-dark: #EDE0C0;
+  --text: #2C2C2C;
+  --text-light: #6B6B6B;
+  --text-muted: #9A9A8A;
+  --red: #D46A6A;
+  --red-bg: #F5E0E0;
+  --yellow: #D4A843;
+  --yellow-bg: #F5EDD0;
+  --gray: #B0B0A0;
+  --gray-bg: #EAEAE0;
+  --green: #5A8A4A;
+  --green-bg: #E0EDE0;
+  --card-bg: rgba(245,232,200,0.95);
+  --shadow: 3px 3px 0 rgba(0,0,0,0.15);
+  --pixel: 'Press Start 2P', cursive;
+  --cn: 'CnPixel', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --radius: 4px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  width:100%; height:100%; overflow:hidden;
+  font-family: var(--cn);
+  background: var(--grass-dark);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+/* ===== Pixel Border Utility ===== */
+.pixel-bd {
+  border: 3px solid var(--soil-dark);
+  box-shadow: inset -2px -2px 0 rgba(0,0,0,0.15), inset 2px 2px 0 rgba(255,255,255,0.12);
+}
+.pixel-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:16px 36px; border:3px solid var(--soil-dark);
+  font-family:var(--cn); font-size:15px; font-weight:600; cursor:pointer;
+  letter-spacing:0.5px;
+  transition:all 0.08s ease; text-decoration:none;
+  color:#fff; background:var(--grass);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+  image-rendering:pixelated;
+}
+.pixel-btn:hover { transform:translate(1px,1px); box-shadow:1px 1px 0 rgba(0,0,0,0.2); }
+.pixel-btn:active { transform:translate(3px,3px); box-shadow:none; }
+.pixel-btn-sm { padding:12px 24px; font-size:13px; }
+.pixel-btn-gold { background:var(--gold); }
+.pixel-btn-brown { background:var(--soil); }
+.pixel-btn-red { background:var(--red); }
+/* ===== Page System ===== */
+.page {
+  display:none;
+  width:100%; height:100%;
+  position:absolute; top:0; left:0;
+  overflow-y:auto; overflow-x:hidden;
+  background: var(--grass-dark);
+}
+.page.active { display:flex; flex-direction:column; }
+/* ===== Scrollbar ===== */
+.page::-webkit-scrollbar { width:4px; }
+.page::-webkit-scrollbar-thumb { background:var(--soil); border-radius:2px; }
+/* ===== Page 1: Home ===== */
+#page-home {
+  justify-content:center; align-items:center;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky) 40%, var(--grass) 40%, var(--grass-dark) 100%);
+  position:relative; overflow:hidden;
+}
+#page-home::before {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:30%;
+  background: linear-gradient(0deg, var(--soil) 0%, transparent 100%);
+  opacity:0.3;
+}
+.home-scene {
+  position:absolute; bottom:15%; left:0; right:0; height:40%;
+  display:flex; justify-content:center; align-items:flex-end;
+  gap:8px; z-index:1;
+}
+.home-scene .tree {
+  width:12px; height:60px; background:var(--soil);
+  position:relative; border-radius:2px;
+}
+.home-scene .tree::after {
+  content:''; position:absolute; top:-30px; left:-14px;
+  width:40px; height:40px; background:var(--grass);
+  border-radius:50%; border:2px solid var(--soil-dark);
+}
+.home-scene .fence {
+  width:4px; height:30px; background:var(--wood);
+  margin:0 6px; border-radius:1px;
+}
+.home-scene .wheat {
+  position:relative; width:20px; text-align:center;
+  font-size:18px; line-height:1; margin:0 2px;
+  animation: wheat-sway 2s ease-in-out infinite;
+}
+.home-scene .wheat:nth-child(2n) { animation-delay:0.5s; }
+.home-scene .wheat:nth-child(3n) { animation-delay:1s; }
+@keyframes wheat-sway {
+  0%,100% { transform:rotate(-3deg); }
+  50% { transform:rotate(3deg); }
+}
+.home-content {
+  position:relative; z-index:2;
+  text-align:center; padding:40px 20px 80px;
+}
+.home-logo {
+  font-family:var(--pixel); font-size:28px; color:#fff;
+  text-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+  margin-bottom:8px; letter-spacing:2px;
+}
+.home-sub {
+  font-family:var(--cn); font-size:15px; color:var(--gold-light);
+  margin-bottom:40px; opacity:0.9;
+}
+.home-char {
+  width:120px; height:auto; margin-bottom:24px;
+  image-rendering:pixelated;
+  filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.2));
+  animation: char-float 2s ease-in-out infinite;
+}
+@keyframes char-float {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-8px); }
+}
+.home-btns { display:flex; flex-direction:column; align-items:center; gap:12px; }
+.home-skip {
+  font-family:var(--cn); font-size:14px; color:var(--gold-light);
+  cursor:pointer; opacity:0.7; text-decoration:underline;
+  background:none; border:none;
+}
+.home-skip:hover { opacity:1; }
+/* ===== Page 2: Plan ===== */
+#page-plan {
+  background: linear-gradient(180deg, var(--cream) 0%, #f0e8d0 100%);
+}
+.page-header {
+  display:flex; align-items:center; gap:12px;
+  padding:16px 20px; background:var(--soil);
+  border-bottom:3px solid var(--soil-dark);
+  flex-shrink:0;
+}
+.page-header .back-btn {
+  font-family:var(--pixel); font-size:14px; color:#fff;
+  cursor:pointer; background:none; border:none; padding:4px 8px;
+}
+.page-header .title {
+  font-family:var(--pixel); font-size:13px; color:#fff;
+  flex:1; text-align:center; letter-spacing:1px;
+}
+.page-scroll { flex:1; overflow-y:auto; padding:20px 20px 80px; }
+.plan-form { max-width:420px; margin:0 auto; }
+.form-group { margin-bottom:16px; }
+.form-label {
+  display:block; font-family:var(--cn); font-size:13px; font-weight:600;
+  color:var(--text); margin-bottom:6px;
+}
+.form-input {
+  width:100%; padding:12px 14px;
+  border:3px solid var(--soil-dark); border-radius:var(--radius);
+  font-family:var(--cn); font-size:14px; color:var(--text);
+  background:var(--cream); outline:none;
+  box-shadow: inset 2px 2px 0 rgba(0,0,0,0.08);
+}
+.form-input:focus { border-color:var(--grass); }
+.upload-area {
+  border:3px dashed var(--wood-light); border-radius:var(--radius);
+  padding:24px; text-align:center; cursor:pointer;
+  background:rgba(255,255,255,0.4); transition:all 0.2s;
+  margin-bottom:16px;
+}
+.upload-area:hover { background:rgba(255,255,255,0.6); border-color:var(--grass); }
+.upload-area .icon { font-size:32px; margin-bottom:8px; }
+.upload-area .text { font-size:13px; color:var(--text-light); }
+.upload-area .hint { font-size:13px; color:var(--text-muted); margin-top:4px; }
+.plan-result { display:none; margin-top:20px; }
+.plan-result.show { display:block; }
+.plan-overview {
+  background:var(--card-bg); border:3px solid var(--soil-dark);
+  padding:16px; border-radius:var(--radius); margin-bottom:16px;
+}
+.plan-overview h3 { font-family:var(--pixel); font-size:13px; margin-bottom:10px; color:var(--soil); }
+.plan-stats {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px;
+}
+.plan-stat {
+  text-align:center; padding:8px; background:rgba(255,255,255,0.5);
+  border-radius:var(--radius);
+}
+.plan-stat .num { font-family:var(--pixel); font-size:15px; color:var(--grass); }
+.plan-stat .lbl { font-size:12px; color:var(--text-light); }
+.day-list { display:flex; flex-direction:column; gap:6px; }
+.day-item {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; background:rgba(255,255,255,0.5);
+  border:2px solid var(--cream-dark); border-radius:var(--radius);
+  cursor:pointer; transition:all 0.15s;
+}
+.day-item:hover { border-color:var(--grass); background:rgba(90,138,74,0.08); }
+.day-item .day-num {
+  font-family:var(--pixel); font-size:12px; color:var(--soil);
+  min-width:40px;
+}
+.day-item .day-info { flex:1; }
+.day-item .day-info .name { font-size:13px; font-weight:600; }
+.day-item .day-info .tasks { font-size:13px; color:var(--text-light); }
+.day-item .day-time { font-family:var(--pixel); font-size:12px; color:var(--text-muted); }
+/* ===== Page 3: Tasks ===== */
+#page-tasks {
+  background: linear-gradient(180deg, var(--cream) 0%, #f0e8d0 100%);
+}
+.task-summary {
+  text-align:center; padding:12px 20px;
+  background:var(--card-bg); border-bottom:2px solid var(--cream-dark);
+}
+.task-summary .day-title {
+  font-family:var(--pixel); font-size:13px; color:var(--soil); margin-bottom:4px;
+}
+.task-summary .total-time {
+  font-size:14px; color:var(--text-light);
+}
+.task-list { padding:12px 20px; display:flex; flex-direction:column; gap:8px; }
+.task-card {
+  display:flex; align-items:center; gap:12px;
+  padding:14px; border:3px solid var(--soil-dark);
+  border-radius:var(--radius); background:var(--card-bg);
+  cursor:pointer; transition:all 0.15s;
+  box-shadow: var(--shadow);
+}
+.task-card:hover { transform:translateX(4px); }
+.task-card .priority {
+  width:6px; height:40px; border-radius:2px; flex-shrink:0;
+}
+.task-card .priority.red { background:var(--red); }
+.task-card .priority.yellow { background:var(--yellow); }
+.task-card .priority.gray { background:var(--gray); }
+.task-card .info { flex:1; min-width:0; }
+.task-card .info .name { font-size:16px; font-weight:600; }
+.task-card .info .detail { font-size:14px; color:var(--text-light); margin-top:2px; }
+.task-card .info .tag {
+  display:inline-block; font-size:12px; padding:2px 8px;
+  border-radius:2px; margin-top:4px;
+}
+.task-card .info .tag.red { background:var(--red-bg); color:var(--red); }
+.task-card .info .tag.yellow { background:var(--yellow-bg); color:var(--soil); }
+.task-card .info .tag.gray { background:var(--gray-bg); color:var(--text-muted); }
+.task-card .time {
+  font-family:var(--pixel); font-size:12px; color:var(--text-light);
+  white-space:nowrap; flex-shrink:0;
+}
+.task-card .check {
+  width:22px; height:22px; border:3px solid var(--soil-dark);
+  border-radius:4px; flex-shrink:0; display:flex;
+  align-items:center; justify-content:center;
+  font-size:12px; color:var(--grass); background:var(--cream);
+  transition:all 0.15s;
+}
+.task-card.done { opacity:0.6; }
+.task-card.done .check { background:var(--grass); color:#fff; border-color:var(--grass); }
+/* ===== Page 4: Focus ===== */
+#page-focus {
+  background: linear-gradient(180deg, #2A3A2A 0%, #3A5A3A 50%, #4A6A3A 100%);
+  justify-content:center; align-items:center;
+  position:relative; overflow:hidden;
+}
+/* Farm background layer */
+.focus-bg {
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky) 30%, transparent 40%);
+  pointer-events:none;
+}
+.focus-ground {
+  position:absolute; bottom:0; left:0; right:0; height:35%;
+  background: var(--soil);
+  border-top: 4px solid var(--grass);
+}
+/* Farm buildings being built */
+.focus-build {
+  position:absolute; bottom:30%; left:50%; transform:translateX(-50%);
+  display:flex; gap:20px; z-index:1;
+}
+.focus-build .barn {
+  width:80px; height:60px; position:relative;
+  border:3px solid var(--soil-dark);
+  background: var(--wood); opacity:0.7;
+}
+.focus-build .barn .roof {
+  position:absolute; top:-20px; left:-10px;
+  width:100px; height:0; border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-bottom:25px solid var(--roof);
+}
+.focus-build .barn .wall {
+  position:absolute; bottom:0; left:0; right:0; height:0;
+  background: var(--wood-light);
+  transition:height 0.5s ease;
+}
+.focus-build .field {
+  width:60px; height:40px; border:3px solid var(--soil-dark);
+  background: var(--soil); position:relative; overflow:hidden;
+}
+.focus-build .field .crop {
+  position:absolute; bottom:0; left:0; right:0; height:0;
+  background: linear-gradient(0deg, var(--grass-light) 0%, var(--grass) 100%);
+  transition:height 0.5s ease;
+}
+/* Character running animation */
+.focus-char {
+  position:absolute; bottom:32%; z-index:2;
+  width:64px; height:auto; image-rendering:pixelated;
+  animation: char-run 3s linear infinite;
+}
+@keyframes char-run {
+  0% { left:10%; transform:scaleX(1); }
+  45% { left:80%; transform:scaleX(1); }
+  50% { left:80%; transform:scaleX(-1); }
+  95% { left:10%; transform:scaleX(-1); }
+  100% { left:10%; transform:scaleX(1); }
+}
+/* Timer overlay */
+.focus-overlay {
+  position:relative; z-index:3;
+  text-align:center; padding:20px;
+  background:rgba(0,0,0,0.5);
+  border:3px solid var(--cream);
+  border-radius:var(--radius);
+  max-width:360px; width:90%;
+}
+.focus-task-name {
+  font-family:var(--cn); font-size:20px; font-weight:700;
+  color:#fff; margin-bottom:16px; text-shadow:2px 2px 0 rgba(0,0,0,0.3);
+}
+.focus-timer {
+  font-family:var(--pixel); font-size:48px; color:var(--gold);
+  text-shadow:3px 3px 0 rgba(0,0,0,0.3);
+  margin-bottom:20px; letter-spacing:2px;
+}
+.focus-controls {
+  display:flex; justify-content:center; gap:12px; flex-wrap:wrap;
+}
+.focus-controls .pixel-btn { min-width:100px; }
+/* ===== Page 5: Archive ===== */
+#page-archive {
+  background: linear-gradient(180deg, var(--cream) 0%, #f0e8d0 100%);
+}
+.archive-stats {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;
+  padding:16px 20px;
+}
+.archive-stat {
+  text-align:center; padding:14px 8px;
+  background:var(--card-bg); border:3px solid var(--soil-dark);
+  border-radius:var(--radius); box-shadow:var(--shadow);
+}
+.archive-stat .num {
+  font-family:var(--pixel); font-size:17px; color:var(--grass);
+}
+.archive-stat .lbl { font-size:13px; color:var(--text-light); margin-top:4px; }
+.archive-record { padding:0 20px 20px; }
+.archive-record h3 {
+  font-family:var(--pixel); font-size:13px; color:var(--soil);
+  margin-bottom:10px; padding:8px 0; border-bottom:2px solid var(--cream-dark);
+}
+.record-item {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-bottom:1px solid var(--cream-dark);
+}
+.record-item .date { font-size:13px; color:var(--text-light); min-width:56px; }
+.record-item .name { flex:1; font-size:14px; }
+.record-item .status {
+  font-size:12px; padding:2px 8px; border-radius:2px;
+}
+.record-item .status.done { background:var(--green-bg); color:var(--grass); }
+.record-item .status.miss { background:var(--red-bg); color:var(--red); }
+/* ===== Page 6: My Farm ===== */
+#page-farm {
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky) 35%, var(--grass) 35%, var(--grass-dark) 100%);
+  position:relative; overflow:hidden;
+}
+.farm-soil {
+  position:absolute; bottom:0; left:0; right:0; height:25%;
+  background: var(--soil);
+  border-top: 4px solid var(--grass);
+}
+.farm-wheat {
+  position:absolute; bottom:22%; left:0; right:0; z-index:1;
+  display:flex; justify-content:space-around; padding:0 10px;
+  pointer-events:none;
+  font-size:20px; opacity:0.7;
+  animation: wheat-sway 2.5s ease-in-out infinite;
+}
+.farm-wheat span:nth-child(2n) { animation-delay:0.6s; }
+.farm-wheat span:nth-child(3n) { animation-delay:1.2s; }
+.farm-content {
+  position:relative; z-index:1;
+  flex:1; overflow-y:auto; padding:20px;
+}
+.farm-header {
+  text-align:center; padding:12px; margin-bottom:8px;
+  background:rgba(0,0,0,0.3); border-radius:var(--radius);
+  border:2px solid var(--gold);
+}
+.farm-header .lvl {
+  font-family:var(--pixel); font-size:13px; color:var(--gold);
+}
+.farm-header .progress {
+  margin-top:8px; height:12px; background:rgba(0,0,0,0.3);
+  border:2px solid var(--gold); border-radius:6px; overflow:hidden;
+}
+.farm-header .progress .bar {
+  height:100%; background:var(--grass-light);
+  transition:width 0.5s ease; border-radius:4px;
+}
+.farm-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  max-width:400px; margin:0 auto;
+}
+.farm-plot {
+  aspect-ratio:1; padding:12px; text-align:center;
+  background:rgba(245,232,200,0.9);
+  border:3px solid var(--soil-dark);
+  border-radius:var(--radius); box-shadow:var(--shadow);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.farm-plot .icon { font-size:36px; margin-bottom:6px; }
+.farm-plot .name { font-size:14px; font-weight:600; }
+.farm-plot .status {
+  font-size:12px; margin-top:4px; padding:2px 8px; border-radius:2px;
+}
+.farm-plot .status.locked { background:var(--gray-bg); color:var(--text-muted); }
+.farm-plot .status.unlocked { background:var(--green-bg); color:var(--grass); }
+.farm-plot .status.building { background:var(--yellow-bg); color:var(--soil); }
+/* ===== Story Dialog Modal ===== */
+.modal-overlay {
+  display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.7); z-index:100;
+  justify-content:center; align-items:center;
+  backdrop-filter:blur(2px);
+}
+.modal-overlay.show { display:flex; }
+.modal-box {
+  width:90%; max-width:360px; padding:24px;
+  background:var(--cream); border:4px solid var(--soil-dark);
+  border-radius:var(--radius); box-shadow:4px 4px 0 rgba(0,0,0,0.3);
+  text-align:center; position:relative;
+}
+.modal-char {
+  width:80px; height:auto; margin-bottom:12px;
+  image-rendering:pixelated;
+}
+.modal-dialog {
+  font-size:17px; line-height:1.8; color:var(--text);
+  margin-bottom:16px; padding:16px; background:rgba(255,255,255,0.5);
+  border-radius:var(--radius); border:1px solid var(--cream-dark);
+}
+.modal-dialog .speaker {
+  font-family:var(--cn); font-size:14px; font-weight:600; color:var(--soil);
+  margin-bottom:8px;
+}
+.modal-reward {
+  font-family:var(--pixel); font-size:12px; color:var(--gold);
+  margin-bottom:16px; padding:10px; background:var(--gold-light);
+  border-radius:var(--radius);
+}
+/* ===== Loading ===== */
+.loading {
+  display:inline-block; width:16px; height:16px;
+  border:3px solid var(--cream-dark); border-top-color:var(--grass);
+  border-radius:50%; animation:spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+/* ===== Bottom Tab Bar ===== */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:50;
+  height:68px; background:var(--soil-dark);
+  border-top:3px solid var(--soil);
+  display:flex; align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.bottom-nav .tab {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:2px;
+  cursor:pointer; transition:all 0.15s;
+  border:none; background:none; padding:4px 0;
+  color:var(--text-muted); opacity:0.6;
+  position:relative;
+}
+.bottom-nav .tab .tab-icon { font-size:20px; line-height:1; }
+.bottom-nav .tab .tab-label {
+  font-family:var(--cn); font-size:13px; font-weight:500;
+}
+.bottom-nav .tab.active {
+  opacity:1; color:var(--gold-light);
+}
+.bottom-nav .tab.active::before {
+  content:''; position:absolute; top:-3px; left:20%; right:20%;
+  height:3px; background:var(--gold); border-radius:0 0 2px 2px;
+}
+.bottom-nav .tab:hover { opacity:0.9; color:var(--gold-light); }
+/* Hide nav on focus page */
+#page-focus.active ~ .bottom-nav,
+body:has(#page-focus.active) .bottom-nav {
+  display:none;
+}
+/* Page padding for bottom nav */
+.page:not(#page-focus) .page-scroll {
+  padding-bottom:88px;
+}
+.page:not(#page-focus) .farm-content {
+  padding-bottom:88px;
+}
+/* ===== Responsive ===== */
+@media (max-width:400px) {
+  .home-logo { font-size:24px; }
+  .focus-timer { font-size:40px; }
+  .archive-stats { grid-template-columns:1fr 1fr; }
+  .bottom-nav .tab .tab-label { font-size:12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== Page 1: 首页 ==================== -->
+<div id="page-home" class="page active">
+  <div class="home-scene">
+    <div class="wheat">🌾</div><div class="tree"></div><div class="wheat">🌾</div>
+    <div class="fence"></div><div class="wheat">🌾</div><div class="tree"></div>
+    <div class="wheat">🌾</div><div class="fence"></div><div class="wheat">🌾</div><div class="tree"></div>
+    <div class="wheat">🌾</div><div class="fence"></div><div class="wheat">🌾</div>
+  </div>
+  <div class="home-content">
+    <img class="home-char" src="character.webp" alt="StepMate">
+    <div class="home-logo">STEPMATE</div>
+    <div class="home-sub">🌾 你的剧情式备考搭子</div>
+    <div class="home-btns">
+      <button class="pixel-btn" onclick="showPage('page-plan')">▶ 开始农忙</button>
+      <button class="home-skip" onclick="skipToTasks()">跳过剧情，直接开始 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Page 2: 计划生成 ==================== -->
+<div id="page-plan" class="page">
+  <div class="page-header">
+    <button class="back-btn" onclick="showPage('page-home')">◀</button>
+    <div class="title">📋 复习计划</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="page-scroll">
+    <div class="plan-form">
+      <div class="form-group">
+        <label class="form-label">学习目标</label>
+        <input class="form-input" id="examName" value="微积分（上）期末，12天后考试，需要系统复习" placeholder="如：微积分期末，12天后考试">
+      </div>
+      <div class="form-group">
+        <label class="form-label">考试日期</label>
+        <input class="form-input" id="examDate" type="date" value="2026-07-23">
+      </div>
+      <div class="form-group">
+        <label class="form-label">每天可用时间</label>
+        <input class="form-input" id="dailyTime" value="2小时" placeholder="如：2小时">
+      </div>
+      <div class="upload-area" onclick="alert('📎 功能展示：上传教材PDF/真题/笔记\nAI将自动识别章节结构、重点考点、薄弱环节')">
+        <div class="icon">📁</div>
+        <div class="text">上传复习资料（可选）</div>
+        <div class="hint">支持 PDF · 教材 · 真题 · 笔记</div>
+      </div>
+      <button class="pixel-btn" style="width:100%;" onclick="generatePlan()">🌱 AI 生成复习计划</button>
+
+      <div class="plan-result" id="planResult">
+        <div class="plan-overview">
+          <h3>📊 计划概览</h3>
+          <div class="plan-stats">
+            <div class="plan-stat"><div class="num">12</div><div class="lbl">总天数</div></div>
+            <div class="plan-stat"><div class="num">27h</div><div class="lbl">总时长</div></div>
+            <div class="plan-stat"><div class="num">5</div><div class="lbl">重点章节</div></div>
+          </div>
+          <p style="font-size:14px;color:var(--text-light);margin-bottom:10px;">
+            AI根据教材+真题分析，已识别 <strong style="color:var(--red);">3个薄弱环节</strong>、<strong style="color:var(--gold);">5个高频考点</strong>
+          </p>
+        </div>
+        <div class="day-list" id="dayList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Page 3: 今日任务 ==================== -->
+<div id="page-tasks" class="page">
+  <div class="page-header">
+    <button class="back-btn" onclick="showPage('page-plan')">◀</button>
+    <div class="title">🌾 今日农活</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="task-summary" id="taskSummary">
+    <div class="day-title">📅 Day 1 / 12</div>
+    <div class="total-time">预计今日总用时 <strong>2h15min</strong></div>
+  </div>
+  <div class="page-scroll" style="flex:1;overflow-y:auto;">
+    <div class="task-list" id="taskList"></div>
+  </div>
+</div>
+
+<!-- ==================== Page 4: 专注模式 ==================== -->
+<div id="page-focus" class="page">
+  <div class="focus-bg"></div>
+  <div class="focus-ground"></div>
+  <div class="focus-build">
+    <div class="barn">
+      <div class="roof"></div>
+      <div class="wall" id="barnWall" style="height:10%"></div>
+    </div>
+    <div class="field">
+      <div class="crop" id="fieldCrop" style="height:15%"></div>
+    </div>
+  </div>
+  <img class="focus-char" src="character-work.webp" alt="working">
+  <div class="focus-overlay">
+    <div class="focus-task-name" id="focusTaskName">极限定义与运算法则</div>
+    <div class="focus-timer" id="focusTimer">25:00</div>
+    <div style="font-size:13px;color:var(--gold-light);margin-bottom:12px;" id="focusDetail">教材 P30-35 · 重点看ε-δ定义</div>
+    <div class="focus-controls">
+      <button class="pixel-btn pixel-btn-sm pixel-btn-gold" id="focusBtn" onclick="toggleTimer()">⏸ 暂停</button>
+      <button class="pixel-btn pixel-btn-sm pixel-btn-brown" onclick="resetTimer()">↺ 重置</button>
+      <button class="pixel-btn pixel-btn-sm pixel-btn-red" onclick="completeTask()">✓ 完成</button>
+    </div>
+  </div>
+  <button class="home-skip" style="position:absolute;top:70px;right:16px;z-index:5;color:var(--gold-light);font-size:13px;" onclick="showPage('page-tasks')">✕ 退出</button>
+</div>
+
+<!-- ==================== Page 5: 学习档案 ==================== -->
+<div id="page-archive" class="page">
+  <div class="page-header">
+    <button class="back-btn" onclick="showPage('page-tasks')">◀</button>
+    <div class="title">📚 学习档案</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="page-scroll">
+    <div class="archive-stats">
+      <div class="archive-stat"><div class="num" id="statDays">3</div><div class="lbl">学习天数</div></div>
+      <div class="archive-stat"><div class="num" id="statHours">5.5</div><div class="lbl">专注时长(h)</div></div>
+      <div class="archive-stat"><div class="num" id="statRate">72%</div><div class="lbl">完成率</div></div>
+    </div>
+    <div class="archive-record">
+      <h3>📖 学习记录</h3>
+      <div id="recordList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Page 6: 我的农场 ==================== -->
+<div id="page-farm" class="page">
+  <div class="farm-soil"></div>
+  <div class="farm-wheat">
+    <span>🌾</span><span>🌾</span><span>🌾</span><span>🌾</span><span>🌾</span>
+    <span>🌾</span><span>🌾</span><span>🌾</span><span>🌾</span><span>🌾</span>
+  </div>
+  <div class="page-header" style="position:relative;z-index:2;background:rgba(74,58,42,0.9);">
+    <button class="back-btn" onclick="showPage('page-tasks')">◀</button>
+    <div class="title">🏡 我的农场</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="farm-content">
+    <div class="farm-header">
+      <div class="lvl">🌾 农场等级 Lv. <span id="farmLevel">2</span></div>
+      <div class="progress"><div class="bar" id="farmProgress" style="width:40%"></div></div>
+    </div>
+    <div class="farm-grid" id="farmGrid"></div>
+  </div>
+</div>
+
+<!-- ==================== Story Dialog Modal ==================== -->
+<div class="modal-overlay" id="storyModal">
+  <div class="modal-box">
+    <img class="modal-char" src="character.webp" alt="StepMate">
+    <div class="modal-dialog">
+      <div class="speaker">🧑‍🌾 小农 · StepMate</div>
+      <div id="storyText">太棒了！你在专注复习的时候，我已经把小麦地都耕好了！🌾</div>
+    </div>
+    <div class="modal-reward" id="rewardText">+50 工分 · 农田进度 +1</div>
+    <button class="pixel-btn pixel-btn-sm" onclick="closeStory()">继续复习 →</button>
+  </div>
+</div>
+
+<!-- ==================== Bottom Navigation ==================== -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="tab active" data-page="page-home" onclick="showPage('page-home')">
+    <span class="tab-icon">🏠</span>
+    <span class="tab-label">首页</span>
+  </button>
+  <button class="tab" data-page="page-plan" onclick="showPage('page-plan')">
+    <span class="tab-icon">📋</span>
+    <span class="tab-label">计划</span>
+  </button>
+  <button class="tab" data-page="page-tasks" onclick="showPage('page-tasks')">
+    <span class="tab-icon">🌾</span>
+    <span class="tab-label">任务</span>
+  </button>
+  <button class="tab" data-page="page-archive" onclick="showPage('page-archive')">
+    <span class="tab-icon">📚</span>
+    <span class="tab-label">档案</span>
+  </button>
+  <button class="tab" data-page="page-farm" onclick="showPage('page-farm')">
+    <span class="tab-icon">🏡</span>
+    <span class="tab-label">农场</span>
+  </button>
+</div>
+
+<script>
+/* ===== Data ===== */
+const STORY_LINES = [
+  "太棒了！你在专注复习的时候，我已经把小麦地都耕好了！🌾",
+  "不错哦！你学完一个章节，我也搭好了鸡舍的屋顶！🐔",
+  "继续加油！你每完成一个任务，农场就多一分生机！🌱",
+  "哇，你已经坚持了这么久！我在田里种下了新的种子！🌻",
+  "你专注的样子真帅！我趁你学习的时候又建了一排栅栏！",
+  "真厉害！你攻克了难点，我也把水渠修好了！💧",
+  "照这个进度下去，等考试结束，我们的农场就丰收了！🎉",
+  "你负责学习，我负责种田——最佳搭档！🤝",
+  "新的一天！你复习的时候我去喂了小鸡，它们都长大了！🐤",
+  "你的专注力越来越强了！我也学会了新的农活技巧！✨"
+];
+const REWARDS = [
+  "+50 工分 · 小麦地 +1",
+  "+60 工分 · 鸡舍进度 +1",
+  "+40 工分 · 农田进度 +1",
+  "+70 工分 · 向日葵种子 +1",
+  "+45 工分 · 栅栏 +2",
+  "+55 工分 · 水渠进度 +1",
+  "+80 工分 · 丰收值 +10",
+  "+50 工分 · 友情值 +1",
+  "+65 工分 · 小鸡 +3",
+  "+75 工分 · 农活技能 +1"
+];
+
+const PLAN_DAYS = [
+  { name:"函数与极限", tasks:["极限定义与运算法则（复习）","两个重要极限（重点）","无穷小比较（你常出错）","习题 P45 1-10","错题回顾（昨日3道）"], time:"2h15min", focus:"教材 P30-35 · 重点看ε-δ定义" },
+  { name:"导数与微分", tasks:["导数定义与几何意义","基本求导公式（背默）","高阶导数","隐函数与参数方程求导","习题 P60 1-15"], time:"2h30min", focus:"教材 P50-58 · 背默求导公式表" },
+  { name:"微分中值定理", tasks:["罗尔定理（重点）","拉格朗日中值定理（高频）","柯西中值定理","泰勒公式初步","习题 P78 1-8"], time:"2h20min", focus:"教材 P72-78 · 重点关注中值定理条件" },
+  { name:"不定积分", tasks:["不定积分基本公式","换元积分法（重点）","分部积分法","有理函数积分","习题 P100 1-20"], time:"2h40min", focus:"教材 P90-100 · 公式表必须背熟" },
+  { name:"定积分", tasks:["定积分定义与性质","牛顿-莱布尼茨公式","定积分换元与分部","反常积分","习题 P120 1-12"], time:"2h30min", focus:"教材 P108-118 · 理解NL公式的推导" },
+  { name:"定积分应用", tasks:["平面图形面积","旋转体体积","弧长与曲率","物理应用（压力/功）","习题 P140 1-10"], time:"2h20min", focus:"教材 P128-138 · 面积/体积公式要记牢" },
+  { name:"微分方程（上）", tasks:["可分离变量方程","齐次方程","一阶线性微分方程","习题 P160 1-15"], time:"2h00min", focus:"教材 P150-158 · 一阶线性公式必须掌握" },
+  { name:"微分方程（下）", tasks:["二阶常系数齐次","二阶常系数非齐次","欧拉方程","习题 P175 1-12"], time:"2h30min", focus:"教材 P165-173 · 特征方程法要熟练" },
+  { name:"向量与空间几何", tasks:["向量运算","平面与直线方程","曲面与曲线","习题 P200 1-10"], time:"1h50min", focus:"教材 P185-198 · 记忆各种方程的标准形式" },
+  { name:"多元函数微分", tasks:["偏导数与全微分","复合函数求导","隐函数定理","方向导数与梯度","习题 P225 1-12"], time:"2h30min", focus:"教材 P210-222 · 偏导链式法则是重点" },
+  { name:"重积分", tasks:["二重积分计算","极坐标变换","三重积分","习题 P250 1-12"], time:"2h20min", focus:"教材 P235-248 · 注意积分限的确定" },
+  { name:"全真模拟+冲刺", tasks:["2025年真题模拟（限时）","高频错题重练","重点公式速记","考前心态调整"], time:"3h00min", focus:"模拟卷 · 限时2小时完成，然后对答案" }
+];
+
+const TASK_DETAILS = {
+  "极限定义与运算法则（复习）": { detail:"教材 P30-35 · 重点看ε-δ定义和四则运算法则，预计25分钟", priority:"yellow" },
+  "两个重要极限（重点）": { detail:"教材 P36-40 · 熟记lim sinx/x=1和lim(1+1/x)^x=e，注意变形题型", priority:"red" },
+  "无穷小比较（你常出错）": { detail:"教材 P41-43 · 重点区分同阶、高阶、等价无穷小，你上次做题这里错了3次", priority:"red" },
+  "习题 P45 1-10": { detail:"教材课后习题1-10，先做奇数题，再对答案订正", priority:"yellow" },
+  "错题回顾（昨日3道）": { detail:"回顾昨日3道错题，重新做一遍，确保理解", priority:"gray" },
+  "导数定义与几何意义": { detail:"教材 P50-53 · 理解导数的极限定义，以及切线/法线方程", priority:"yellow" },
+  "基本求导公式（背默）": { detail:"背默16个基本求导公式，建议默写3遍", priority:"red" },
+  "高阶导数": { detail:"教材 P56-58 · 掌握莱布尼茨公式，重点练习二阶导数", priority:"yellow" },
+  "隐函数与参数方程求导": { detail:"教材 P58-60 · 隐函数直接求导法，参数方程dy/dx=(dy/dt)/(dx/dt)", priority:"yellow" },
+  "习题 P60 1-15": { detail:"课后习题，先做前10题基础题，再做5题提高题", priority:"gray" },
+  "罗尔定理（重点）": { detail:"教材 P72-75 · 罗尔定理的三个条件必须烂熟于心", priority:"red" },
+  "拉格朗日中值定理（高频）": { detail:"教材 P75-77 · 近3年真题出现5次，注意构造辅助函数", priority:"red" },
+  "柯西中值定理": { detail:"教材 P77-78 · 理解柯西中值定理是拉格朗日的推广", priority:"yellow" },
+  "泰勒公式初步": { detail:"教材 P78-80 · 记住麦克劳林公式的前几项", priority:"yellow" },
+  "习题 P78 1-8": { detail:"课后习题，重点做第4、6、8题", priority:"gray" },
+  "不定积分基本公式": { detail:"教材 P90-93 · 背20个基本积分公式，这是基础中的基础", priority:"red" },
+  "换元积分法（重点）": { detail:"教材 P94-97 · 第一类换元（凑微分）和第二类换元（三角代换）", priority:"red" },
+  "分部积分法": { detail:"教材 P97-99 · 反对幂指三顺序，重点练习", priority:"yellow" },
+  "有理函数积分": { detail:"教材 P99-100 · 部分分式分解法，了解即可", priority:"gray" },
+  "习题 P100 1-20": { detail:"课后习题，重点关注换元和分部积分题", priority:"yellow" },
+  "定积分定义与性质": { detail:"教材 P108-112 · 理解定积分的极限定义，熟记性质", priority:"yellow" },
+  "牛顿-莱布尼茨公式": { detail:"教材 P112-115 · NL公式是定积分核心，必须熟练掌握", priority:"red" },
+  "定积分换元与分部": { detail:"教材 P115-118 · 换元要注意换限，分部注意u和v的选择", priority:"red" },
+  "反常积分": { detail:"教材 P118-120 · 区分无穷限和瑕积分，掌握收敛判别法", priority:"yellow" },
+  "习题 P120 1-12": { detail:"课后习题，重点做反常积分部分", priority:"gray" },
+  "平面图形面积": { detail:"教材 P128-132 · 直角坐标和极坐标下的面积公式", priority:"red" },
+  "旋转体体积": { detail:"教材 P132-135 · 圆盘法和壳层法，近3年真题必考", priority:"red" },
+  "弧长与曲率": { detail:"教材 P135-138 · 弧长公式记忆，曲率了解即可", priority:"gray" },
+  "物理应用（压力/功）": { detail:"教材 P138-140 · 了解即可，非重点", priority:"gray" },
+  "习题 P140 1-10": { detail:"课后习题，重点做面积和体积题", priority:"yellow" },
+  "可分离变量方程": { detail:"教材 P150-153 · 分离变量两边积分，最基础类型", priority:"yellow" },
+  "齐次方程": { detail:"教材 P153-155 · 令u=y/x化为可分离变量", priority:"yellow" },
+  "一阶线性微分方程": { detail:"教材 P155-158 · 通解公式 y=e^{-∫Pdx}[∫Qe^{∫Pdx}dx+C]", priority:"red" },
+  "习题 P160 1-15": { detail:"课后习题，一阶线性方程重点做3道", priority:"yellow" },
+  "二阶常系数齐次": { detail:"教材 P165-168 · 特征方程 r²+pr+q=0，根据根的类型写通解", priority:"red" },
+  "二阶常系数非齐次": { detail:"教材 P168-172 · 待定系数法，注意特解形式", priority:"red" },
+  "欧拉方程": { detail:"教材 P172-173 · 了解即可，非重点", priority:"gray" },
+  "习题 P175 1-12": { detail:"课后习题，重点做齐次和非齐次方程", priority:"yellow" },
+  "向量运算": { detail:"教材 P185-189 · 点积、叉积、混合积，熟记运算律", priority:"yellow" },
+  "平面与直线方程": { detail:"教材 P189-194 · 点法式、截距式、参数式，重点记忆", priority:"red" },
+  "曲面与曲线": { detail:"教材 P194-198 · 了解常见曲面方程即可", priority:"gray" },
+  "习题 P200 1-10": { detail:"课后习题，直线与平面方程重点做", priority:"gray" },
+  "偏导数与全微分": { detail:"教材 P210-215 · 偏导定义和计算，全微分公式 dz=z_xdx+z_ydy", priority:"red" },
+  "复合函数求导": { detail:"教材 P215-218 · 链式法则，树形图辅助理解", priority:"red" },
+  "隐函数定理": { detail:"教材 P218-220 · 隐函数求导公式，记忆即可", priority:"yellow" },
+  "方向导数与梯度": { detail:"教材 P220-222 · 方向导数=梯度·方向向量，重点理解", priority:"yellow" },
+  "习题 P225 1-12": { detail:"课后习题，偏导和隐函数重点做", priority:"yellow" },
+  "二重积分计算": { detail:"教材 P235-242 · 直角坐标下X型Y型积分区域，重点练习", priority:"red" },
+  "极坐标变换": { detail:"教材 P242-246 · 被积函数含x²+y²时用极坐标，dσ=rdrdθ", priority:"red" },
+  "三重积分": { detail:"教材 P246-248 · 了解即可，非重点", priority:"gray" },
+  "习题 P250 1-12": { detail:"课后习题，二重积分重点做6道", priority:"yellow" },
+  "2025年真题模拟（限时）": { detail:"下载2025年真题，限时2小时完成，模拟真实考试环境", priority:"red" },
+  "高频错题重练": { detail:"回顾之前所有标记的错题，重新做一遍", priority:"red" },
+  "重点公式速记": { detail:"整理一张A4纸的公式表，考前快速浏览", priority:"yellow" },
+  "考前心态调整": { detail:"放松心情，保证睡眠，准备好考试用品", priority:"gray" }
+};
+
+/* ===== State ===== */
+let currentDay = 1;
+let completedTasks = [];
+let timerInterval = null;
+let timerSeconds = 25 * 60;
+let timerRunning = false;
+let currentTask = null;
+let storyIndex = 0;
+let totalFocused = 0;
+let farmLevel = 1;
+let farmProgress = 0;
+
+/* ===== Navigation ===== */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  // Update bottom nav active tab
+  document.querySelectorAll('.bottom-nav .tab').forEach(t => t.classList.remove('active'));
+  const activeTab = document.querySelector(`.bottom-nav .tab[data-page="${id}"]`);
+  if (activeTab) activeTab.classList.add('active');
+
+  // Show/hide nav on focus page
+  const nav = document.getElementById('bottomNav');
+  if (id === 'page-focus') {
+    nav.style.display = 'none';
+  } else {
+    nav.style.display = 'flex';
+  }
+
+  // Render page content
+  if (id === 'page-tasks') renderTasks();
+  if (id === 'page-archive') renderArchive();
+  if (id === 'page-farm') renderFarm();
+}
+
+function skipToTasks() {
+  currentDay = 1;
+  showPage('page-tasks');
+}
+
+/* ===== Plan Generation ===== */
+function generatePlan() {
+  const result = document.getElementById('planResult');
+  const btn = result.previousElementSibling;
+  const loadingMessages = [
+    '📖 正在理解学习目标...',
+    '🔍 正在分析知识结构...',
+    '📊 正在识别重点章节...',
+    '⚡ 正在评估薄弱环节...',
+    '📝 正在生成复习计划...'
+  ];
+  let msgIdx = 0;
+  btn.innerHTML = `<span class="loading"></span> ${loadingMessages[0]}`;
+  btn.disabled = true;
+
+  const loadingInterval = setInterval(() => {
+    msgIdx++;
+    if (msgIdx < loadingMessages.length) {
+      btn.innerHTML = `<span class="loading"></span> ${loadingMessages[msgIdx]}`;
+    }
+  }, 800);
+
+  setTimeout(() => {
+    clearInterval(loadingInterval);
+    btn.innerHTML = '🌱 AI 生成复习计划';
+    btn.disabled = false;
+    result.classList.add('show');
+
+    const list = document.getElementById('dayList');
+    list.innerHTML = '';
+    PLAN_DAYS.forEach((d, i) => {
+      const div = document.createElement('div');
+      div.className = 'day-item';
+      const dayNum = i + 1;
+      const isCurrent = dayNum === 1;
+      div.innerHTML = `
+        <div class="day-num">Day ${dayNum}</div>
+        <div class="day-info">
+          <div class="name">${d.name}</div>
+          <div class="tasks">${d.tasks.length} 个任务</div>
+        </div>
+        <div class="day-time">${d.time}</div>
+      `;
+      div.onclick = () => {
+        currentDay = dayNum;
+        showPage('page-tasks');
+      };
+      if (isCurrent) div.style.borderColor = 'var(--grass)';
+      list.appendChild(div);
+    });
+    // Scroll to result
+    setTimeout(() => result.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+  }, 1500);
+}
+
+/* ===== Tasks ===== */
+function renderTasks() {
+  const summary = document.getElementById('taskSummary');
+  const day = PLAN_DAYS[currentDay - 1];
+  summary.innerHTML = `
+    <div class="day-title">📅 Day ${currentDay} / 12 — ${day.name}</div>
+    <div class="total-time">预计今日总用时 <strong>${day.time}</strong></div>
+  `;
+
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+  day.tasks.forEach((name, i) => {
+    const detail = TASK_DETAILS[name] || { detail:'', priority:'yellow' };
+    const isDone = completedTasks.includes(name);
+    const card = document.createElement('div');
+    card.className = 'task-card' + (isDone ? ' done' : '');
+    card.innerHTML = `
+      <div class="priority ${detail.priority}"></div>
+      <div class="info">
+        <div class="name">${name}</div>
+        <div class="detail">${detail.detail}</div>
+        <span class="tag ${detail.priority}">${detail.priority === 'red' ? '🔴 重点' : detail.priority === 'yellow' ? '🟡 掌握' : '⚪ 巩固'}</span>
+      </div>
+      <div class="time">${getTimeForTask(name)}</div>
+      <div class="check">${isDone ? '✓' : ''}</div>
+    `;
+    card.onclick = () => {
+      if (isDone) return;
+      currentTask = { name, detail: detail.detail, day: currentDay };
+      startFocus();
+    };
+    list.appendChild(card);
+  });
+}
+
+function getTimeForTask(name) {
+  const times = {
+    "极限定义与运算法则（复习）": "25min",
+    "两个重要极限（重点）": "30min",
+    "无穷小比较（你常出错）": "20min",
+    "习题 P45 1-10": "40min",
+    "错题回顾（昨日3道）": "20min"
+  };
+  // Default estimates
+  if (times[name]) return times[name];
+  if (name.includes("习题") || name.includes("真题")) return "35min";
+  if (name.includes("背默")) return "20min";
+  if (name.includes("速记")) return "15min";
+  if (name.includes("心态")) return "10min";
+  return "25min";
+}
+
+/* ===== Focus Mode ===== */
+function startFocus() {
+  document.getElementById('focusTaskName').textContent = currentTask.name;
+  document.getElementById('focusDetail').textContent = currentTask.detail || '专注学习，StepMate 正在为你建设农场...';
+  resetTimer();
+  showPage('page-focus');
+  // Reset building animation
+  document.getElementById('barnWall').style.height = '10%';
+  document.getElementById('fieldCrop').style.height = '15%';
+}
+
+function toggleTimer() {
+  const btn = document.getElementById('focusBtn');
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    btn.innerHTML = '▶ 继续';
+    document.querySelector('.focus-char').style.animationPlayState = 'paused';
+  } else {
+    timerInterval = setInterval(tickTimer, 1000);
+    timerRunning = true;
+    btn.innerHTML = '⏸ 暂停';
+    document.querySelector('.focus-char').style.animationPlayState = 'running';
+  }
+}
+
+function tickTimer() {
+  if (timerSeconds <= 0) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('focusBtn').innerHTML = '▶ 继续';
+    completeTask();
+    return;
+  }
+  timerSeconds--;
+  updateTimerDisplay();
+  // Update building animation based on progress
+  const progress = 1 - (timerSeconds / (25 * 60));
+  const wallH = Math.min(10 + progress * 80, 90);
+  const cropH = Math.min(15 + progress * 75, 90);
+  document.getElementById('barnWall').style.height = wallH + '%';
+  document.getElementById('fieldCrop').style.height = cropH + '%';
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds / 60);
+  const s = timerSeconds % 60;
+  document.getElementById('focusTimer').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function resetTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerRunning = false;
+  timerSeconds = 25 * 60;
+  updateTimerDisplay();
+  document.getElementById('focusBtn').innerHTML = '▶ 开始';
+  document.querySelector('.focus-char').style.animationPlayState = 'paused';
+}
+
+function completeTask() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerRunning = false;
+
+  if (currentTask && !completedTasks.includes(currentTask.name)) {
+    completedTasks.push(currentTask.name);
+    totalFocused += 25;
+
+    // Update farm progress
+    farmProgress = Math.min(100, farmProgress + 8);
+    farmLevel = Math.floor(farmProgress / 20) + 1;
+
+    // Show story dialog
+    const story = STORY_LINES[storyIndex % STORY_LINES.length];
+    const reward = REWARDS[storyIndex % REWARDS.length];
+    storyIndex++;
+    showStory(story, reward);
+  } else {
+    showPage('page-tasks');
+  }
+}
+
+/* ===== Story Dialog ===== */
+function showStory(text, reward) {
+  document.getElementById('storyText').textContent = text;
+  document.getElementById('rewardText').textContent = reward;
+  document.getElementById('storyModal').classList.add('show');
+}
+
+function closeStory() {
+  document.getElementById('storyModal').classList.remove('show');
+  showPage('page-tasks');
+}
+
+/* ===== Archive ===== */
+function renderArchive() {
+  const total = PLAN_DAYS.reduce((sum, d) => sum + d.tasks.length, 0);
+  const rate = total > 0 ? Math.round(completedTasks.length / total * 100) : 0;
+  document.getElementById('statDays').textContent = Math.min(currentDay, 12);
+  document.getElementById('statHours').textContent = (totalFocused / 60).toFixed(1);
+  document.getElementById('statRate').textContent = rate + '%';
+
+  const list = document.getElementById('recordList');
+  list.innerHTML = '';
+  // Show last 10 completed tasks
+  const recent = [...completedTasks].reverse().slice(0, 10);
+  if (recent.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-light);font-size:13px;">还没有完成记录，开始学习吧！🌱</div>';
+    return;
+  }
+  recent.forEach(name => {
+    const div = document.createElement('div');
+    div.className = 'record-item';
+    div.innerHTML = `
+      <div class="date">Day ${currentDay}</div>
+      <div class="name">${name}</div>
+      <div class="status done">✓ 已完成</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+/* ===== Farm ===== */
+function renderFarm() {
+  document.getElementById('farmLevel').textContent = farmLevel;
+  document.getElementById('farmProgress').style.width = farmProgress + '%';
+
+  const plots = [
+    { icon:'🌾', name:'小麦田', status: farmProgress >= 20 ? 'unlocked' : 'building', s:'已耕种' },
+    { icon:'🐔', name:'鸡舍', status: farmProgress >= 40 ? 'unlocked' : 'building', s:'建设中' },
+    { icon:'🥕', name:'菜园', status: farmProgress >= 55 ? 'unlocked' : 'locked', s:'已解锁' },
+    { icon:'🐄', name:'奶牛棚', status: farmProgress >= 70 ? 'unlocked' : 'locked', s:'已解锁' },
+    { icon:'🌻', name:'花田', status: farmProgress >= 85 ? 'unlocked' : 'locked', s:'已解锁' },
+    { icon:'🏠', name:'农舍升级', status: farmProgress >= 100 ? 'unlocked' : 'locked', s:'已解锁' }
+  ];
+
+  const grid = document.getElementById('farmGrid');
+  grid.innerHTML = '';
+  plots.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'farm-plot';
+    const isUnlocked = p.status === 'unlocked' || (p.status === 'building' && farmProgress >= 20);
+    const statusText = p.status === 'unlocked' ? '✅ ' + p.s
+      : farmProgress >= 20 ? '🔨 建设中' : '🔒 未解锁';
+    div.innerHTML = `
+      <div class="icon">${p.icon}</div>
+      <div class="name">${p.name}</div>
+      <div class="status ${isUnlocked ? 'unlocked' : 'locked'}">${statusText}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+/* ===== Init ===== */
+// Render initial tasks on first load
+renderTasks();
+renderFarm();
+</script>
+</body>
+</html>
