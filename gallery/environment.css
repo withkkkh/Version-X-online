@@ -6,3 +6,16 @@
 .vi-environment .toolbar{color:#223e61}
 .vi-environment .tour-slide-frame{background:var(--paper)}
 @media(max-width:760px){.vi-environment .screen{mask-image:linear-gradient(transparent,#000 50px,#000 calc(100% - 65px),transparent)}}
+/* Local art-direction comparison; neither choice changes camera or lighting. */
+.environment-comparison{position:absolute;z-index:4;top:138px;left:5vw;display:flex;align-items:center;gap:7px;padding:5px 7px;background:#f7fafde8;border:1px solid #fff9;border-radius:10px;box-shadow:0 3px 16px #233e5b10}
+.environment-comparison>span{font-size:14px;padding-inline:5px;color:#50647b}
+.exhibit .environment-comparison button{font:inherit;font-size:14px;min-height:40px;border:0;border-radius:6px;padding:8px 12px;color:#294363;background:transparent}
+.exhibit .environment-comparison button[aria-pressed="true"]{background:#294c6c;color:#fff}
+.exhibit .environment-comparison button:hover{background:#d5e2ed;color:#193950}
+.exhibit .environment-comparison button[aria-pressed="true"]:hover{background:#193950;color:#fff}
+.exhibit.vi-environment[data-environment="studio"]{--paper:#e3e3e0}
+.vi-environment[data-environment="studio"] .mast{background:linear-gradient(#f0f0ed,#e3e3e0)}
+@media(max-width:760px){.environment-comparison{top:164px;left:20px;right:20px;flex-wrap:wrap;width:fit-content;max-width:calc(100% - 40px);gap:4px}.environment-comparison>span{font-size:13px}.exhibit .environment-comparison button{padding-inline:9px}}
+/* Preserve the room photograph's complete window/wall composition in B. */
+.exhibit.vi-environment[data-environment="studio"] .stage:not(.entering) .screen{background:var(--paper) url('./assets/gallery-studio-skybox.png') center center/cover no-repeat}
+.vi-environment[data-environment="studio"] .tour-slide-frame{background:transparent}

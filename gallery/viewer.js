@@ -1,3 +1,4 @@
+import { installBackgroundComparison } from './background-comparison.js?v=1';
 import { installWalk } from './walk.js?v=tour3';
 import { installStillHotspots } from './still-hotspots.js?v=1';
 import { startModel } from './gallery-runtime.js?v=study1';
@@ -46,6 +47,7 @@ function setView(name,immediate=false){
 }
 installTeamHotspots(model,stage,openMap);installStillHotspots(stage,model);
 const walk=installWalk(stage,model,setView,view=>{model.setAttribute('max-field-of-view','110deg');applyCamera(view,true);presetButtons.forEach(b=>b.setAttribute('aria-pressed','false'));},view=>view.overview?fittedView(views.overview):fittedView({...view,tour:true}));
+installBackgroundComparison(stage,model,()=>walk.pause());
 function closeDirectory(restoreFocus=false){directory.open=false;if(restoreFocus)directory.querySelector('summary').focus({preventScroll:true});}
 presetButtons.forEach(b=>b.addEventListener('click',()=>{setView(b.dataset.view);if(directory.contains(b))closeDirectory(true);}));
 document.querySelector('#reset').addEventListener('click',()=>setView('overview',true));

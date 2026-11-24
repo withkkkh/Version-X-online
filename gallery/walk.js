@@ -102,5 +102,5 @@ export function installWalk(stage,model,setView,applyTourCamera,fitTourCamera) {
   model.addEventListener('focusin',event=>{if(event.target.closest('.team-hotspot'))pause();});
   model.addEventListener('keydown',event=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','+','-'].includes(event.key))takeControl();},true);
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&active()){event.preventDefault();stop({reset:true,restoreFocus:true});}});
-  return {start,stop,get active(){return active();}};
+  return {start,stop,pause,get active(){return active();}};
 }
