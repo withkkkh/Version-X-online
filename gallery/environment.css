@@ -23,3 +23,4 @@
 .vi-graphic-background[hidden]{display:none}
 .vi-environment #model{position:relative;z-index:1}
 .vi-environment .tour-slide-frame{background:transparent}
+.vi-environment .presets button,.vi-environment .expand{color:#16304b;text-shadow:0 1px 3px #ffffffb0}

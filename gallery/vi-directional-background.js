@@ -22,17 +22,23 @@ export function installViDirectionalBackground(screen,model){
       vec2 ndc=(gl_FragCoord.xy/resolution)*2.-1.;
       vec3 ray=normalize(-outward+rightward*ndc.x*lens.x+upward*ndc.y*lens.y);
       vec2 uv=vec2(atan(ray.x,ray.z)/(2.*PI)+.5,acos(clamp(ray.y,-1.,1.))/PI);
-      float drift=.5+.5*sin(uv.x*4.*PI+.65*sin(uv.y*2.*PI));
-      float light=pow(.5+.5*cos(uv.x*2.*PI-1.7),3.)*(.65+.35*sin(uv.y*PI));
-      vec3 color=mix(vec3(.61,.75,.85),vec3(.81,.88,.93),.2+drift*.56);
-      color=mix(color,vec3(.93,.96,.98),light*.43);
+      float azimuth=uv.x*2.*PI;
+      float drift=.5+.5*sin(azimuth*2.+.65*sin(uv.y*2.*PI));
+      float silver=.5+.5*cos(azimuth+.6+.45*sin(uv.y*2.*PI));
+      vec3 cobalt=vec3(.28,.49,.71),ice=vec3(.77,.88,.96);
+      vec3 color=mix(cobalt,ice,pow(silver,.8));
+      // Fixed silver softboxes in the virtual world sweep through the view as
+      // the camera turns; this changes light and color rather than just dots.
+      float ribbon=pow(.5+.5*cos(azimuth*2.+.8*sin(uv.y*2.*PI)),18.);
+      float frost=pow(.5+.5*sin(azimuth*3.-uv.y*3.4),8.);
+      color=mix(color,vec3(.98,.995,1.),ribbon*.62+frost*.17);
       // Glass planes have defined edges, while their light remains soft.
       vec2 pane=fract(uv*vec2(4.,2.)+vec2(.1,.2))-.5;
       float edge=max(abs(pane.x)-.35,abs(pane.y)-.31);
       float aa=max(fwidth(edge),.0004);
       float fill=1.-smoothstep(-aa,aa,edge);
       float rim=1.-smoothstep(aa,aa*2.5,abs(edge));
-      color=mix(color,vec3(.96,.98,1.),fill*.055+rim*.11);
+      color=mix(color,vec3(.96,.98,1.),fill*.09+rim*.16);
       // World-space halftone: derivative antialiasing preserves crisp dots at
       // every zoom, including the longitude seam and the spherical poles.
       vec2 grid=uv*vec2(360.,180.);
@@ -43,7 +49,8 @@ export function installViDirectionalBackground(screen,model){
       float smoothing=clamp(length(fwidth(grid))*.52,.008,.4);
       float dot=1.-smoothstep(-smoothing,smoothing,distance);
       float density=(.055+wave*.10)*(.45+.55*drift);
-      color=mix(color,vec3(.34,.56,.72),dot*density);
+      vec3 ink=mix(vec3(.81,.92,1.),vec3(.27,.49,.68),silver);
+      color=mix(color,ink,dot*density);
       color+=(hash(gl_FragCoord.xy)-.5)*.012;
       pixel=vec4(color,1.);
     }`;
