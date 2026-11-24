@@ -6,6 +6,8 @@
   const tab = folder.querySelector('.file-tab');
   const title = folder.querySelector('h2');
   const visual = folder.querySelector('.file-photo');
+  const plate = folder.querySelector('picture source');
+  const desktop = matchMedia(plate.media);
   const caption = folder.querySelector('figcaption');
   const copy = folder.querySelector('.file-copy');
   const more = folder.querySelector('.file-more');
@@ -13,6 +15,16 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let opener;
   let closingTimer;
+  let currentRecord;
+
+  function describeImage() {
+    if (!currentRecord) return;
+    const data = currentRecord.dataset;
+    const showPlate = desktop.matches && data.plate;
+    visual.alt = showPlate ? data.plateAlt : data.alt;
+    caption.textContent = showPlate ? data.plateCaption : data.caption;
+  }
+  desktop.addEventListener('change', describeImage);
 
   function dismiss() {
     if (!folder.open || folder.classList.contains('closing')) return;
@@ -29,9 +41,11 @@
     event.preventDefault();
     opener = link;
     const art = link.querySelector('.object-picture img');
+    currentRecord = record;
+    if (record.dataset.plate) plate.srcset = record.dataset.plate;
+    else plate.removeAttribute('srcset');
     visual.src = art.currentSrc || art.src;
-    visual.alt = record.dataset.alt;
-    caption.textContent = record.dataset.caption;
+    describeImage();
     tab.textContent = record.dataset.code;
     title.textContent = link.querySelector('.object-label').textContent;
     copy.replaceChildren(record.content.cloneNode(true));
@@ -42,6 +56,7 @@
     folder.showModal();
     document.documentElement.classList.add('file-is-open');
     folder.querySelector('.file-scroll').scrollTop = 0;
+    folder.querySelector('.file-description').scrollTop = 0;
     close.focus({preventScroll:true});
   });
   close.addEventListener('click', dismiss);

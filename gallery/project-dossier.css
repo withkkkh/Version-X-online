@@ -72,3 +72,56 @@ html.file-is-open { overflow:hidden }
 @media(prefers-reduced-motion:reduce){.project-dossier .file-sleeve,.project-dossier::backdrop{animation:none!important}}
 /* The exhibition's simulated cursor is behind a native modal in the top layer. */
 html.file-is-open.has-moving-pointer .project-dossier,html.file-is-open.has-moving-pointer .project-dossier *{cursor:var(--exhibition-cursor,auto)!important}
+
+/* Desktop reads as a three-part spread: index, description and artwork. */
+@media (min-width:761px) {
+  .project-dossier {width:75vw;overflow:clip}
+  .project-dossier::backdrop {background:rgb(225 233 240 / .18);backdrop-filter:blur(5px)}
+  .file-sleeve {
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);
+    grid-template-rows:auto minmax(0,1fr) auto;isolation:isolate;
+    margin:0;padding:clamp(24px,3.3vh,42px) 0;height:100%;filter:none;
+    animation:spread-arrive 1.35s cubic-bezier(.76,0,.19,1) both;
+  }
+  .file-sleeve::before {
+    content:"";position:absolute;inset:0;z-index:-1;
+    background:linear-gradient(to right,#293f63 0 33.333%,#f5f7f9 33.333% 100%);
+    clip-path:polygon(28px 0,100% 0,100% 100%,0 100%,0 38px);
+  }
+  .file-housing,.file-scroll {display:contents}
+  .file-tab,.file-description,.file-pocket {grid-column:1;margin-inline:clamp(18px,2vw,36px)}
+  .file-tab {
+    position:static;grid-row:1;display:block;height:auto;min-height:44px;
+    max-width:none;border-bottom:1px solid #9daec1;background:none;clip-path:none;
+    padding:10px 44px 12px 0;color:#dfe8f2;letter-spacing:.04em;font-size:clamp(10px,.9vw,15px)
+  }
+  .file-close {top:clamp(24px,3.3vh,42px);right:calc(66.6667% + clamp(18px,2vw,36px));width:36px;height:36px;background:#e5ebf1;color:#293f63;border-radius:0}
+  .file-description {grid-row:2;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#7e96b3 transparent}
+  .file-scroll h2 {margin:clamp(20px,3.3vh,40px) 0;color:#f5f8fb;font-size:clamp(30px,3.35vw,66px);line-height:1.08;letter-spacing:-.045em}
+  .file-copy {border:0;padding:0;color:#e4ecf4;font-size:clamp(14px,1vw,18px);line-height:1.8}
+  .file-pocket {grid-row:3;display:block;min-height:0;margin-block:16px 0;padding:0;border-radius:0}
+  .file-pocket::before,.file-pocket::after,.file-figure::before,.file-figure::after {display:none}
+  .file-more:not([hidden]) {display:flex;justify-content:space-between;width:100%;padding:9px 0 0;border-top:1px solid #9daec1}
+  .file-figure {
+    grid-area:1 / 2 / -1 / 3;align-self:stretch;min-width:0;min-height:0;margin:0;padding:0 clamp(20px,2.1vw,44px);
+    display:grid;grid-template-rows:minmax(0,1fr) auto;
+  }
+  .file-figure picture {display:grid;min-height:0}
+  .file-photo {width:100%;height:100%;min-height:0;object-fit:contain;padding:clamp(12px,1.6vw,32px)}
+  .file-figure figcaption {padding:12px 0 0;border-top:1px solid #bac7d2;font-size:clamp(11px,.8vw,14px)}
+  .project-dossier.closing .file-sleeve {animation:spread-leave .32s ease-in both}
+}
+@media (min-width:761px) and (max-width:1100px) {
+  .project-dossier {width:94vw}
+  .file-sleeve {grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
+  .file-sleeve::before {background:linear-gradient(to right,#293f63 0 40%,#f5f7f9 40% 100%)}
+  .file-close {right:calc(60% + clamp(18px,2vw,36px))}
+}
+@keyframes spread-arrive {from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes spread-leave {to{transform:translateX(100%)}}
+@media(max-width:760px) {
+  .file-scroll {display:flex;flex-direction:column}
+  .file-description {display:contents}
+  .file-figure {order:1}
+  .file-copy {order:2}
+}

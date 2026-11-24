@@ -71,3 +71,7 @@
   .exhibit .walk-panel {bottom:max(104px,calc(88px + env(safe-area-inset-bottom)))}
   .exhibit .directory-panel {max-height:65svh;overflow-y:auto}
 }
+
+/* The gallery surface owns pinch gestures; reading views keep browser zoom. */
+.gallery-ready:not(.opening-active):not(:has(.gallery-map[open])) {touch-action:pan-x pan-y}
+.gallery-ready .screen,.gallery-ready model-viewer,.gallery-ready model-viewer .team-hotspot {touch-action:none}

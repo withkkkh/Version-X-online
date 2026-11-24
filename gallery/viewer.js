@@ -16,6 +16,14 @@ const chrome=[document.querySelector('.mast'),document.querySelector('main')];
 const status=document.querySelector('#status'),loading=document.querySelector('#model-loading'),screen=document.querySelector('.screen'),expand=document.querySelector('#expand');
 const presetButtons=[...document.querySelectorAll('[data-view]')],directory=stage.querySelector('.directory');
 let phase='opening',introductionFromGallery=false;
+// Cancel browser magnification without suppressing the viewer's pointer events.
+function containGalleryPinch(event) {
+  if (phase !== 'gallery' || document.querySelector('.gallery-map[open]')) return;
+  if (!event.touches || event.touches.length > 1) event.preventDefault();
+}
+for (const type of ['touchmove', 'gesturestart', 'gesturechange']) {
+  document.addEventListener(type, containGalleryPinch, {capture:true, passive:false});
+}
 const views={
   'rack-design':{target:[0,1.33,-6.36],orbit:[9,60,5.5],fov:39,fitByFov:true},
   'rack-software':{target:[0,1.33,6.36],orbit:[188,60,5.5],fov:39,fitByFov:true},
