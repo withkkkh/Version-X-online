@@ -222,7 +222,6 @@ body.has-project-index {background-color:#f5f8fb}
 }
 @media(max-width:1000px){
   .knowledge-page .mast {justify-content:space-between;gap:6px;padding:6px clamp(6px,2vw,16px);min-height:58px}
-  .knowledge-page .mast .brand {display:none}
   .knowledge-page .mast .exhibition-wordmark {width:clamp(48px,15vw,72px);display:block}
 }
 

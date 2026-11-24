@@ -5,7 +5,7 @@ import { startModel } from './gallery-runtime.js?v=study2';
 import { installTeamHotspots } from './team-hotspots.js?v=tour1';
 const model=document.querySelector('#model');
 if(new URL(location.href).searchParams.get('look')!=='original'){
-  model.dataset.src='./assets/version-x-gallery-study.glb?v=frame4';model.dataset.mobileSrc='./assets/gallery-mobile-study.bin?v=frame4';
+  model.dataset.src='./assets/version-x-gallery-study.glb?v=rack5';model.dataset.mobileSrc='./assets/gallery-mobile-study.bin?v=rack5';
   model.setAttribute('exposure','.80');model.setAttribute('shadow-intensity','1');model.setAttribute('shadow-softness','.75');
 }
 customElements.whenDefined('model-viewer').then(()=>{

@@ -8,6 +8,8 @@
   background: #f4f7fa;
   display: flex;
   flex-direction: column;
+  min-height:100vh;
+  min-height:100dvh;
 }
 .knowledge-page .mast {
   background: #f9fbfd;
@@ -31,15 +33,15 @@
 .map-heading {
   padding: clamp(13px, 2vw, 24px) max(4.4vw, 20px) clamp(13px, 2vw, 24px);
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
   gap: 1.25rem;
   background: #f9fbfd;
 }
 .map-title-row { display: flex; align-items: center; gap: clamp(10px, 1.5vw, 20px); }
-.map-emblem { display: flex; flex: 0 0 clamp(24px, 3.2vw, 43px); color: #224f75; }
-.map-emblem svg { width: 100%; stroke: currentColor; stroke-width: 1.4; fill: none; }
-.map-emblem .squares { fill: currentColor; stroke: none; }
+.map-emblem { flex:none; width:clamp(32px,3.8vw,52px); height:auto; }
+.map-teams { display:flex; align-items:center; gap:6px; }
+.knowledge-page .map-heading .map-teams a { min-width:48px; }
 .knowledge-page .map-title-row h1 {
   font-size: clamp(23px, 3.5vw, 46px);
   font-weight: 620;
@@ -51,7 +53,7 @@
   flex: 1;
   display: grid;
   grid-template-rows: auto minmax(420px, 1fr) auto;
-  min-height: max(520px, calc(100svh - 198px));
+  min-height:0;
   border-block: 1px solid #cad9e6;
   background: #e4edf5;
 }
@@ -101,15 +103,17 @@
 .map-viewport:focus-visible { outline: 2px solid var(--map-blue); outline-offset: -2px; }
 .map-viewport::-webkit-scrollbar { display: none; }
 .map-viewport.is-dragging, .map-viewport.is-dragging * { cursor: grabbing; }
-.map-space { position: relative; min-width: 100%; min-height: 100%; overflow: hidden; }
+.map-space { position: relative; min-width: 100%; min-height: 100%; overflow: hidden;
+  background-image: linear-gradient(#7899b41c 1px, transparent 1px), linear-gradient(90deg, #7899b41c 1px, transparent 1px),
+    linear-gradient(#7899b411 1px, transparent 1px), linear-gradient(90deg, #7899b411 1px, transparent 1px);
+  background-size: var(--grid-major,96px) var(--grid-major,96px), var(--grid-major,96px) var(--grid-major,96px), var(--grid-minor,24px) var(--grid-minor,24px), var(--grid-minor,24px) var(--grid-minor,24px);
+  background-position:var(--grid-origin,0px) 0;
+}
 .map-art {
   position: absolute;
   top: 0;
   left: 0;
   transform-origin: top left;
-  background-image: linear-gradient(#7899b41c 1px, transparent 1px), linear-gradient(90deg, #7899b41c 1px, transparent 1px),
-    linear-gradient(#7899b411 1px, transparent 1px), linear-gradient(90deg, #7899b411 1px, transparent 1px);
-  background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px;
   user-select: none;
 }
 .map-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
@@ -293,7 +297,11 @@
 @media (max-width: 650px) {
   .knowledge-page .mast, .map-heading, .map-bar, .map-navigator { padding-inline: 14px; }
   .map-heading { display: grid; gap: 8px; padding-block: 12px 6px; }
-  .map-shell { grid-template-rows: auto minmax(350px, 1fr) auto; min-height: max(440px, calc(100svh - 187px)); }
+  .map-shell { grid-template-rows:auto minmax(min(52svh,320px),1fr) auto; }
+  .map-heading .map-teams { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; }
+  .knowledge-page .map-heading .map-teams a { width:100%; min-width:0; }
+  .map-title-row { gap:8px; }
+  .map-heading { grid-template-columns:minmax(0,1fr); }
   .map-bar { gap: 4px; }
   .map-bar p { font-size: .68rem; }
   .map-tools { gap: 0; }

@@ -237,6 +237,9 @@ function applyZoom(nextZoom, origin) {
   artLeft = narrow.matches ? Math.max(0, halfWidth - anchorCenter) : 0;
   const rightInset = narrow.matches ? Math.max(0, halfWidth - (model.width * zoom - anchorCenter)) : 0;
   art.style.left = artLeft + 'px';
+  space.style.setProperty('--grid-origin', artLeft + 'px');
+  space.style.setProperty('--grid-major', 96 * zoom + 'px');
+  space.style.setProperty('--grid-minor', 24 * zoom + 'px');
   space.style.width = Math.ceil(artLeft + model.width * zoom + rightInset) + 'px';
   space.style.height = Math.ceil(model.height * zoom) + 'px';
   viewport.scrollTo({ left: artLeft + center[0] * zoom - viewport.clientWidth / 2, top: center[1] * zoom - viewport.clientHeight / 2, behavior: 'instant' });

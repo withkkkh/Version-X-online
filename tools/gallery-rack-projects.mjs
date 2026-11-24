@@ -46,6 +46,6 @@ export function curateRacks(g, append) {
   design.translation[0] += shift;
   design.mesh = makeStand('design','bubbles',printTexture('bubbles-label.png'));
   design.name = 'design | bubbles';
-  operations.mesh = makeStand('operations','mixue',printTexture('mixue-label.png'),printTexture('mixue-screen.jpg'));
-  operations.name = 'operations | mixue';
+  operations.mesh = makeStand('operations','stepmate',printTexture('stepmate-label.png'),printTexture('stepmate-screen.jpg'));
+  operations.name = 'operations | stepmate';
 }
