@@ -62,6 +62,13 @@
     Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));parent.append(el);return el;
   }
   const compact = matchMedia('(max-width:1000px)');
+  const signature = document.querySelector('.signature');
+  const emblem = canvas.parentElement;
+  function placeMotion() {
+    (compact.matches ? signature : emblem).append(motion);
+  }
+  placeMotion();
+  compact.addEventListener('change', placeMotion);
   const pinGroup = document.createElement('div');
   pinGroup.className = 'mobile-pins';
   pinGroup.setAttribute('role','group');

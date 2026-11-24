@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import zlib from 'node:zlib';
 import { Matrix4, Vector3, Quaternion } from '../three.module.min.js';
 
+import { finishGallery } from './gallery-joinery.mjs';
+
 const assets = new URL('../gallery/assets/', import.meta.url);
 const resolution = 768;
 const width = 22, depth = 18.195;
@@ -62,6 +64,7 @@ function build(input,output) {
     if(name==='展板和薄托板｜雾灰')p.baseColorFactor=[.28,.34,.42,1];
     if(name==='不锈钢光轴｜细磨砂'){p.baseColorFactor=[.20,.28,.36,1];p.roughnessFactor=.36;}
   }
+  finishGallery(g,values,accessor);
   const lightMaterial=g.materials.length;
   g.materials.push({name:'Study | discreet blue rail light',pbrMetallicRoughness:{baseColorFactor:[.06,.24,.49,1],metallicFactor:.4,roughnessFactor:.4},emissiveFactor:[.018,.09,.22]});
   for(const n of g.nodes)if(n.name==='不锈钢光轴横梁'&&n.translation?.[1]>2){const m=structuredClone(g.meshes[n.mesh]);for(const p of m.primitives){p.material=lightMaterial;delete p.extensions;}n.mesh=g.meshes.length;g.meshes.push(m);}

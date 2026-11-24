@@ -184,3 +184,54 @@ body.has-project-index {background-color:#f5f8fb}
   body[data-team] .mast nav a:first-child,.project-bar a,.knowledge-page .knowledge-back {min-height:38px;padding-inline:10px}
   body[data-team] .mast .brand .exhibition-wordmark {width:76px}
 }
+
+/* Direction marks use strokes so phone keyboards cannot substitute emoji. */
+body[data-team] .nav-mark {
+  display:inline-block;width:.48em;height:.48em;flex:none;
+  border-top:1.4px solid currentColor;border-right:1.4px solid currentColor;
+  vertical-align:.15em;margin-left:.5em;
+}
+body[data-team] .nav-mark.back {transform:rotate(-135deg);margin:0 .5em 0 0}
+body[data-team] .nav-mark.down {transform:rotate(135deg)}
+@media(max-width:1000px){
+  body[data-team] {--story-hairline:#beced9;--story-type:system-ui,"PingFang SC","Microsoft YaHei",sans-serif}
+  body[data-team] .mast {
+    height:auto;min-height:58px;max-width:640px;margin-inline:auto;
+    gap:10px;padding:6px clamp(10px,3vw,20px);align-items:center;
+  }
+  body[data-team] .mast .brand {flex:none}
+  body[data-team] .mast .brand .exhibition-wordmark {width:clamp(53px,15vw,72px)}
+  body[data-team] .mast nav {
+    display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:0;min-width:0;
+    border:1px solid var(--story-hairline);border-radius:6px;background:#f8fbfd;
+  }
+  body[data-team] .mast nav a,body[data-team] .mast nav a:first-child {
+    position:static;transform:none;display:flex;align-items:center;justify-content:center;
+    min-height:44px;width:auto;max-width:none;margin:0;padding:0 clamp(4px,1.6vw,12px);
+    border:0;border-radius:0;box-shadow:none;background:transparent;color:var(--exhibition-ink);
+    font:500 12px/1.2 var(--story-type);letter-spacing:0;text-decoration:none;white-space:nowrap;
+  }
+  body[data-team] .mast nav a+a {border-left:1px solid var(--story-hairline)}
+  body[data-team] .mast nav a:active {background:#e1ebf2}
+  body[data-team] .nav-team {display:none}
+  body[data-team] .signature {padding-right:50px}
+  body[data-team] .signature .motion {
+    inset:auto 0 0 auto;transform:none;width:44px;height:44px;padding:0;display:grid;place-items:center;
+    font-size:0;border:1px solid var(--story-hairline);border-radius:50%;background:#f8fbfd;color:#405a71;
+  }
+  body[data-team] .signature .motion::before {content:"";width:5px;height:10px;border-inline:2px solid currentColor}
+  body[data-team] .motion-paused .signature .motion::before {width:0;height:0;border:0;border-left:8px solid currentColor;border-block:5px solid transparent;margin-left:2px}
+  body[data-team] .pin {
+    min-width:min(108px,32%);max-width:35%;padding:7px 10px;gap:4px;
+    border:1px solid var(--story-hairline);border-radius:5px;background:#f8fbfd;
+    color:var(--exhibition-ink);font:550 clamp(13px,3.4vw,15px)/1.2 var(--story-type);
+  }
+  body[data-team] .pin .ordinal {color:#516b7d;font:500 10px/1 var(--mono);letter-spacing:.08em}
+  body[data-team] .pin[aria-pressed=true] {background:#e1ebf2;border-color:#728ea3;color:#173952}
+  body[data-team] .note {margin:0;border:0;border-top:1px solid var(--story-hairline);border-bottom:1px solid var(--story-hairline);background:transparent;padding:15px 2px}
+  body[data-team] .note::before,body[data-team] .note::after {display:none}
+  body[data-team] .note h2 {font:600 17px/1.35 var(--story-type);gap:8px}
+  body[data-team] .note h2 .ordinal,body[data-team] .note h2 small {font:500 10px/1.3 var(--mono)}
+  body[data-team] .note p {font:400 15px/1.7 var(--story-type)}
+  body[data-team] .note p.follow {font-size:13px}
+}

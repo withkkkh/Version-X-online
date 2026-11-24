@@ -26,6 +26,8 @@ export async function startModel(model) {
     getModelSource(fullSource, model.dataset.mobileSrc),
     import('./assets/model-viewer-4.4.0.min.js')
   ]);
+  // Preserve thin rails during camera motion, while leaving headroom on high-DPR phones.
+  customElements.get('model-viewer').minimumRenderScale = window.devicePixelRatio >= 2 ? .75 : 1;
   if (mobile) model.setAttribute('shadow-intensity', '0');
   if (source.startsWith('blob:')) {
     const release = () => URL.revokeObjectURL(source);
