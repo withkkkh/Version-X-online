@@ -1,4 +1,4 @@
-import { TOUR_SCENES, sceneFrame, isTeamSwitch } from './tour-timeline.js?v=5';
+import { TOUR_SCENES, sceneFrame, isTeamSwitch } from './tour-timeline.js?v=6';
 import { installSceneSlide } from './scene-slide.js?v=2';
 
 export function installWalk(stage, model, setView, applyTourCamera, fitTourCamera) {
@@ -8,7 +8,7 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
   const number = player.querySelector('.tour-count');
   const progress = player.querySelector('.tour-progress span');
   const exit = player.querySelector('#tour-exit');
-  const replay = stage.querySelector('#tour-replay');
+  const directoryEntry = stage.querySelector('.directory summary');
   const slide = installSceneSlide(model);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const defaultMinimum = model.getAttribute('min-camera-orbit');
@@ -40,7 +40,7 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
     model.removeAttribute('max-field-of-view');
     player.hidden = true;
     if (reset) setView('overview', true);
-    if (restoreFocus) replay.focus({preventScroll:true});
+    if (restoreFocus) directoryEntry.focus({preventScroll:true});
   }
   function draw(time) {
     const scene = TOUR_SCENES[index];

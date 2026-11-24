@@ -2,9 +2,9 @@ export function installStillHotspots(stage,model) {
   const hotspots=[...model.querySelectorAll('.team-hotspot')];
   const interactive=matchMedia('(max-width:680px), (pointer:coarse), (hover:none)');
 
-  // Coordinates in the 720 × 440 overview rendered by the exhibition camera.
-  const coordinates={'zone-design':[431,140],'zone-software':[272,273],'zone-hardware':[531,241],'zone-operations':[201,159],
-    'team-design':[343,191],'team-software':[323,217],'team-hardware':[392,191],'team-operations':[374,225]};
+  // Projected exhibit anchors in the overview’s 720 × 440 coordinate system.
+  const coordinates={'zone-design':[424,121],'zone-software':[296,273],'zone-hardware':[530,237],'zone-operations':[190,157],
+    'team-design':[345,200],'team-software':[328,220],'team-hardware':[392,211],'team-operations':[375,231]};
   const plane=document.createElement('div');
   plane.className='still-points';
   const inner=document.createElement('div');

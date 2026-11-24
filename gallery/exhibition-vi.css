@@ -96,7 +96,7 @@
 .exhibit .walk-count {letter-spacing:.07em;color:#426081}
 .exhibit .directory-panel {width:min(344px,calc(100vw - 36px));padding:12px 18px}
 .exhibit .directory summary,
-.exhibit :is(.walk-buttons button,.facade-actions button,.tour-skip,#tour-replay),
+.exhibit :is(.walk-buttons button,.facade-actions button,.tour-skip),
 .exhibit .tour-controls button,
 .exhibit .opening-address .address-actions :is(#start-walk,#skip-walk) {
   border:1px solid #c3d4e1;border-top-color:#fff;border-radius:999px;
@@ -252,4 +252,9 @@ body[data-team] .nav-mark.up {transform:rotate(-45deg);margin:3px .55em 0 0}
 @media(max-width:360px){
   .knowledge-page .mast nav {gap:3px}
   .knowledge-page .mast a.exhibit-nav-link {padding-inline:4px}
+}
+
+.opening .opening-credits {display:block;align-self:flex-end;margin-top:12px;color:#486079;font:400 10px/1.45 system-ui,sans-serif}
+@media(max-width:680px),(max-height:520px) and (pointer:coarse){
+  .opening .opening-credits {margin:9px auto 0;text-align:center;font-size:9px}
 }

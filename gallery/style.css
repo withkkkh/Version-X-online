@@ -207,7 +207,6 @@ body:has(.gallery-map[open]) {overflow:hidden}
 .gallery-still {position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;background:#f6f8fb}
 .model-loaded + .gallery-still {display:none}
 .status {z-index:1}
-#tour-replay[hidden]{display:none}
 @media(max-width:680px){
  .opening{height:100%;height:100dvh}
  .opening::before{inset:0;filter:none;background:linear-gradient(160deg,#577999,#20364f 80%)}

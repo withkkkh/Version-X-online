@@ -20,8 +20,10 @@
 .exhibit .stage button:hover{background:transparent;color:#174f7a}
 .exhibit .stage-foot{position:absolute;z-index:3;bottom:max(22px,env(safe-area-inset-bottom));left:5vw;right:5vw;gap:24px;padding:0;border:0;background:transparent;align-items:flex-end}
 .exhibit #visit-tip{max-width:35em;color:#667586;font-size:.875rem;line-height:1.8}
-.exhibit .visit-actions{gap:26px}
-.exhibit #reset{padding:8px 0;min-height:44px;font-size:.875rem}
+.exhibit .visit-actions{margin-inline-start:auto}
+.exhibit .view-tools{display:flex;align-items:center;gap:4px}
+.exhibit #reset{display:grid;place-items:center;width:44px;height:44px;padding:0;color:#4c6277;border-radius:50%}
+.exhibit #reset:focus-visible{outline:2px solid #315879;outline-offset:1px}
 .exhibit .directory summary{padding:10px 0;min-height:44px;border-radius:0;background:transparent;color:var(--ink);font-size:.9375rem}
 .exhibit .directory-panel{right:0;bottom:calc(100% + 14px)}
 
@@ -60,7 +62,7 @@
 
 .exhibit .stage-foot {flex-wrap:wrap;row-gap:5px}
 .web-credits {flex:0 0 100%;text-align:right;color:#526a7b}
-.web-credits small {font:400 12px/1.65 system-ui,sans-serif}
+.web-credits small {font:400 9px/1.35 system-ui,sans-serif}
 
 @media(max-width:760px),(max-height:520px) and (pointer:coarse){
   .exhibit .mast-label {display:none}

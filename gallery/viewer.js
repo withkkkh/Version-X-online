@@ -1,11 +1,11 @@
 import { installBackgroundComparison } from './background-comparison.js?v=7';
-import { installWalk } from './walk.js?v=tour6';
-import { installStillHotspots } from './still-hotspots.js?v=1';
+import { installWalk } from './walk.js?v=tour7';
+import { installStillHotspots } from './still-hotspots.js?v=2';
 import { startModel } from './gallery-runtime.js?v=study2';
 import { installTeamHotspots } from './team-hotspots.js?v=tour1';
 const model=document.querySelector('#model');
 if(new URL(location.href).searchParams.get('look')!=='original'){
-  model.dataset.src='./assets/version-x-gallery-study.glb?v=rack5';model.dataset.mobileSrc='./assets/gallery-mobile-study.bin?v=rack5';
+  model.dataset.src='./assets/version-x-gallery-study.glb?v=silver6';model.dataset.mobileSrc='./assets/gallery-mobile-study.bin?v=silver6';
   model.setAttribute('exposure','.80');model.setAttribute('shadow-intensity','1');model.setAttribute('shadow-softness','.75');
 }
 customElements.whenDefined('model-viewer').then(()=>{
@@ -76,13 +76,12 @@ function showIntroduction(){
 document.querySelector('#open-gallery').addEventListener('click',showIntroduction);
 document.querySelector('#read-introduction-again').addEventListener('click',showIntroduction);
 address.querySelector('#start-walk').addEventListener('click',()=>enterGallery(true));address.querySelector('#skip-walk').addEventListener('click',()=>enterGallery());
-document.querySelector('#tour-replay').addEventListener('click',()=>walk.start());
 let waitNotice,lastProgress=-1,viewerError=false;
-function onLoaded(){clearTimeout(waitNotice);viewerError=false;address.querySelector('#start-walk').disabled=false;document.querySelector('#tour-replay').disabled=false;loading.hidden=true;status.hidden=true;loading.classList.remove('has-error');screen.setAttribute('aria-busy','false');model.classList.add('model-loaded');if(!walk.active)setView('overview',true);}
+function onLoaded(){clearTimeout(waitNotice);viewerError=false;address.querySelector('#start-walk').disabled=false;loading.hidden=true;status.hidden=true;loading.classList.remove('has-error');screen.setAttribute('aria-busy','false');model.classList.add('model-loaded');if(!walk.active)setView('overview',true);}
 function showRetry(message){
   const retry=document.createElement('button');retry.type='button';retry.textContent='重新加载';retry.onclick=()=>{const url=new URL(location.href);url.searchParams.set('entry','return-from-map');location.assign(url);};status.replaceChildren(message,' ',retry);
 }
-function loadingError(){viewerError=true;address.querySelector('#start-walk').disabled=true;document.querySelector('#tour-replay').disabled=true;clearTimeout(waitNotice);walk.stop();model.classList.remove('model-loaded');loading.hidden=false;status.hidden=false;loading.classList.add('has-error');screen.setAttribute('aria-busy','false');showRetry('三维模型暂时无法显示，可从「展区目录」继续参观。');}
+function loadingError(){viewerError=true;address.querySelector('#start-walk').disabled=true;clearTimeout(waitNotice);walk.stop();model.classList.remove('model-loaded');loading.hidden=false;status.hidden=false;loading.classList.add('has-error');screen.setAttribute('aria-busy','false');showRetry('三维模型暂时无法显示，可从「展区目录」继续参观。');}
 model.addEventListener('load',onLoaded);model.addEventListener('error',loadingError);
 model.addEventListener('progress',e=>{if(model.loaded||viewerError)return;const p=Math.min(99,Math.floor(e.detail.totalProgress*10)*10);if(p!==lastProgress){lastProgress=p;status.textContent='三维展馆加载中 '+p+'% · 可先浏览展区目录';}});
 waitNotice=setTimeout(()=>{if(!model.loaded)showRetry('仍在准备三维展馆，可先从「展区目录」参观。');},18000);startModel(model).catch(loadingError);if(model.loaded)onLoaded();

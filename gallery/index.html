@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VERSION X · 未完之境</title>
 <meta name="description" content="从各个角度探索 VERSION X 三维展馆。">
-<link rel="stylesheet" href="./style.css?v=46">
-<link rel="stylesheet" href="./open-layout.css?v=3">
-<script type="module" src="./viewer.js?v=guided9"></script>
+<link rel="stylesheet" href="./style.css?v=47">
+<link rel="stylesheet" href="./open-layout.css?v=4">
+<script type="module" src="./viewer.js?v=guided10"></script>
 <noscript><style>.opening{display:none!important}body.opening-active{overflow:auto}</style></noscript>
 <script>
   const entryUrl = new URL(location.href);
@@ -19,7 +19,7 @@
   }
 </script>
 <link rel="stylesheet" href="./cursor.css?v=44"><script defer src="./cursor.js?v=44"></script>
-<link rel="stylesheet" href="./exhibition-vi.css?v=5">
+<link rel="stylesheet" href="./exhibition-vi.css?v=9">
 <link rel="stylesheet" href="./tour.css?v=6">
 <link rel="stylesheet" href="./environment.css?v=3">
 </head>
@@ -45,11 +45,12 @@
         <p class="opening-status" id="opening-status" role="status"></p>
       </div>
       </div>
+      <small class="opening-credits">网页制作 © 2026 蔡玮晨、彭诗瑄、欧阳月粼</small>
     </div>
   </div>
   <div class="facade-preview" hidden>
-    <img class="facade-wide" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-overview-clean.webp">
-    <img class="facade-close" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-facade.jpg?v=frame4">
+    <img class="facade-wide" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-overview-clean.webp?v=silver6">
+    <img class="facade-close" alt="" decoding="async" fetchpriority="low" src="./assets/gallery-facade.jpg?v=silver6">
     <section class="opening-address" hidden aria-labelledby="address-title">
       <div class="address-reader" tabindex="0" role="region" aria-labelledby="address-title">
         <header class="address-heading"><img class="address-metal" src="./assets/version-x-chrome-2.png" alt="" width="704" height="704"><h2 id="address-title" tabindex="-1">策展导言</h2><span lang="en">Exhibition Introduction</span></header>
@@ -93,7 +94,10 @@
 <button type="button" data-view="top" aria-pressed="false">俯视</button>
 <button type="button" data-view="facade" aria-pressed="false">玻璃立面</button>
 </div>
+<div class="view-tools">
+<button id="reset" type="button" aria-label="重置视角" title="重置视角"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5v5h5M4.5 9.5a8 8 0 1 1-.1 5"/></svg></button>
 <button id="expand" type="button" class="expand" aria-label="放大预览" aria-pressed="false"><span aria-hidden="true">⛶</span><span class="expand-text">放大</span></button>
+</div>
 </div>
 <div class="screen" aria-busy="true">
 <model-viewer id="model" data-src="./assets/version-x-gallery-v30.glb"
@@ -118,7 +122,7 @@
   <a class="team-hotspot zone-link" data-zone="hardware" slot="hotspot-zone-hardware" data-position="7.57m 2.4m 0m" href="./story-hardware.html" aria-label="进入硬件团队叙事页"><span class="team-hotspot-dot" aria-hidden="true"></span><span class="team-hotspot-label" aria-hidden="true">硬件展区 ↗</span></a>
   <a class="team-hotspot zone-link" data-zone="operations" slot="hotspot-zone-operations" data-position="-7.57m 2.4m 0m" href="./story-operations.html" aria-label="进入运营团队叙事页"><span class="team-hotspot-dot" aria-hidden="true"></span><span class="team-hotspot-label" aria-hidden="true">运营展区 ↗</span></a>
 </model-viewer>
-<img class="gallery-still" src="./assets/gallery-overview-clean.webp" alt="" fetchpriority="low">
+<img class="gallery-still" src="./assets/gallery-overview-clean.webp?v=silver6" alt="" fetchpriority="low">
 <div id="model-loading" class="model-loading">
   <div class="loading-marks" aria-hidden="true"><img src="./assets/version-x-chrome-1.png" alt="" width="704" height="704"><img src="./assets/version-x-chrome-2.png" alt="" width="704" height="704"><img src="./assets/version-x-chrome-3.png" alt="" width="704" height="704"></div>
   <div id="status" class="status" role="status">正在准备三维展馆，可先浏览下方「展区目录」。</div>
@@ -134,8 +138,6 @@
 <div class="stage-foot">
   <p id="visit-tip"><span class="mouse-tip">悬停预览，点击展区进入团队故事。中央四座蓝色节点展台通往知识图谱。</span><span class="touch-tip">轻点展区或展台的标记查看展签，再点一次进入。</span></p>
   <div class="visit-actions">
-    <button type="button" id="tour-replay">自动导览</button>
-    <button type="button" id="reset">重置视角 <span aria-hidden="true">↺</span></button>
     <details class="directory">
       <summary>展区目录</summary>
       <div class="directory-panel">

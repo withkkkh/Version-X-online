@@ -65,71 +65,59 @@ export function finishGallery(g, values, accessor) {
     }
   }
 
-  // Remount the original round extrusions and ball joints against the ribs.
-  // Transform both nodes about the same source frame so the print stays captured.
+  // Size the rebate from the actual print and seat the frame on the finished floor.
   const wall = g.nodes.find(n => n.name.startsWith('长侧围墙') && n.rotation);
   const wallBounds = g.accessors[g.meshes[wall.mesh].primitives[0].attributes.POSITION];
   const poster = g.nodes.find(n => n.name.includes('原图直接落地'));
-  const surround = g.nodes.find(n => n.name.includes('无脚球接头'));
-  const frameParts = g.meshes[surround.mesh].primitives;
-  const bounds = frameParts.map(p => g.accessors[p.attributes.POSITION]);
-  const bottom = Math.min(...bounds.map(b => b.min[1]));
-  const top = Math.max(...bounds.map(b => b.max[1]));
-  const scale = (wallBounds.max[1] + .24) / (top - bottom);
-  const frameLeft = Math.min(...bounds.map(b => b.min[0]));
-  const frameRight = Math.max(...bounds.map(b => b.max[0]));
-  const middle = (frameLeft + frameRight) / 2;
-  const wing = (3.64 / scale - (frameRight - frameLeft)) / 2;
+  const frame = g.nodes.find(n => n.name.includes('无脚球接头'));
   const print = g.accessors[g.meshes[poster.mesh].primitives[0].attributes.POSITION];
-  const printCenter = (print.min[0] + print.max[0]) / 2 * poster.scale[0] + poster.translation[0];
-  const printFront = print.min[2] * poster.scale[2] + poster.translation[2];
-  const offset = [-6.32 - scale * printCenter, -scale * bottom,
-    -wallBounds.min[2] + .003 - scale * printFront];
-  surround.scale = [scale,scale,scale];
-  surround.translation = offset;
-  poster.scale = poster.scale.map(v => v * scale);
-  poster.translation = poster.translation.map((v,k) => v * scale + offset[k]);
-  surround.name = '玻璃立面｜落地铝管与球形角接头';
-  frameParts.forEach((part,i) => {
-    // Widen the horizontal span without stretching the round joints or the artwork.
-    const positions = values(part.attributes.POSITION);
-    for (let k = 0; k < positions.length; k += 3) positions[k] += positions[k] < middle ? -wing : wing;
-    Object.assign(part.attributes, attributes(positions, values(part.attributes.NORMAL)));
-    const material = structuredClone(g.materials[part.material]);
-    material.name = i === 0 ? '落地框｜缎面铝管' : '落地框｜抛光铝接头';
-    material.pbrMetallicRoughness = {
-      baseColorFactor:i === 0 ? [.70,.76,.80,1] : [.83,.87,.90,1],
-      metallicFactor:.82, roughnessFactor:i === 0 ? .34 : .23
-    };
-    part.material = g.materials.length;
-    g.materials.push(material);
-    delete part.extensions;
-  });
+  const frameHeight = wallBounds.max[1] + .24, rim = .055, overlap = .006;
+  const printHeight = frameHeight - 2 * (rim - overlap);
+  const scale = printHeight / (print.max[1] - print.min[1]);
+  const printWidth = (print.max[0] - print.min[0]) * scale;
+  const width = printWidth + 2 * (rim - overlap);
+  const back = -wallBounds.min[2] + .003;
+  const cx = -6.32;
+  poster.scale = [scale,scale,1];
+  poster.translation = [cx - (print.max[0]+print.min[0])*scale/2,
+    rim-overlap-print.min[1]*scale, back+.032-print.min[2]];
+  frame.name = '玻璃立面｜落地银铝海报框';
 
-  // Two glazed sidelights share the outer rails. Slim glazing beads capture
-  // the edges of the original print while keeping its lettering proportional.
-  const glass = g.materials.push({name:'玻璃立面｜侧翼夹胶玻璃',alphaMode:'BLEND',doubleSided:true,
-    pbrMetallicRoughness:{baseColorFactor:[.56,.75,.86,.31],roughnessFactor:.15,metallicFactor:.12}}) - 1;
-  const y0 = bottom + .035, y1 = top - .043;
-  const z = printFront + .014;
-  const printHalf = (print.max[0] - print.min[0]) * poster.scale[0] / scale / 2;
-  for (const side of [-1,1]) {
-    const inner = printCenter + side * printHalf;
-    const outer = side < 0 ? frameLeft - wing + .043 : frameRight + wing - .043;
-    const l = Math.min(inner,outer), r = Math.max(inner,outer);
-    const panel = [l,y0,z,r,y0,z,r,y1,z,l,y0,z,r,y1,z,l,y1,z];
-    const facing = [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1];
-    frameParts.push({attributes:attributes(panel,facing),material:glass});
-    const bead = [], normals = [];
-    for (let j=0;j<12;j++) {
-      const angle=j*Math.PI/6, next=(j+1)*Math.PI/6;
-      for (const [a,y] of [[angle,y0],[angle,y1],[next,y1],[angle,y0],[next,y1],[next,y0]]) {
-        bead.push(inner+.014*Math.cos(a),y,z+.014*Math.sin(a));
-        normals.push(Math.cos(a),0,Math.sin(a));
+  function aluminium(name, grey, roughness) {
+    return g.materials.push({name, pbrMetallicRoughness:{
+      baseColorFactor:[grey,grey,grey,1], metallicFactor:.96, roughnessFactor:roughness
+    }})-1;
+  }
+  const silver = aluminium('外框｜缎面银铝',.66,.25);
+  const bevel = aluminium('外框｜抛光银色倒角',.89,.15);
+  const recess = aluminium('外框｜铝型材凹槽',.34,.34);
+  // Each adjacent pair in the extrusion section forms a continuous mitered band.
+  // The outer bevel catches light and the recessed groove stays legible head-on.
+  const section = [[0,0], [0,.038], [.009,.052], [.014,.055],
+    [.018,.050], [.039,.050], [.048,.041], [rim,.039], [rim,.031], [rim,0], [0,0]];
+  const finishes = [silver,bevel,silver,recess,silver,bevel,recess,recess,recess,silver];
+  function ring([inset,depth]) {
+    const left=cx-width/2+inset, right=cx+width/2-inset;
+    return [[left,inset,back+depth],[right,inset,back+depth],
+      [right,frameHeight-inset,back+depth],[left,frameHeight-inset,back+depth]];
+  }
+  const bands = new Map();
+  section.slice(1).forEach((edge,i) => {
+    const material=finishes[i], outer=ring(section[i]), inner=ring(edge);
+    if (!bands.has(material)) bands.set(material,{positions:[],normals:[]});
+    const {positions,normals}=bands.get(material);
+    for (let k=0;k<4;k++) {
+      const j=(k+1)%4, a=outer[k], b=outer[j], c=inner[j], d=inner[k];
+      const u=b.map((v,k)=>v-a[k]), v=d.map((v,k)=>v-a[k]);
+      const n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
+      const length=Math.hypot(...n);
+      for (const corner of [a,b,c,a,c,d]) {
+        positions.push(...corner); normals.push(...n.map(value=>value/length));
       }
     }
-    frameParts.push({attributes:attributes(bead,normals),material:frameParts[0].material});
-  }
+  });
+  g.meshes[frame.mesh].primitives = Array.from(bands,([material,{positions,normals}]) =>
+    ({material,attributes:attributes(positions,normals)}));
 
   // Build a solid fluted core. The original two logo outlines and the silver
   // crown share one plane and boundary edges, even in the straight-down view.
