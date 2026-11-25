@@ -1,73 +1,61 @@
-/* The drawer belongs to the index. The linked article is a full-width reading view. */
-:root {
-  --dossier-ink: #172932;
-  --dossier-muted: #516671;
-  --dossier-rule: #bed0d8;
-  --dossier-pad: clamp(20px, 2.4vw, 44px);
+.project-dossier {
+  --file-accent:#324e68;
+  --file-ink:#162934;
+  --file-gutter:clamp(18px,1.65vw,34px);
+  font-family:Inter,"PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--file-ink);
 }
-.project-dossier { color:var(--dossier-ink); box-shadow:-15px 0 70px #17354822 }
-.project-dossier::backdrop {background:#25384528;backdrop-filter:blur(4px)}
-.project-dossier .file-sheet {
-  position:relative;isolation:isolate;clip-path:none;padding:var(--dossier-pad);
-  color:var(--dossier-ink);border-right:1px solid #b9cdd7;
-  background:linear-gradient(155deg,#f4fbff 0%,#e6f3fa 42%,#d5e8f4 78%,#edf5f8 100%);
-}
-.file-sheet::before {content:"";position:absolute;inset:auto 0 0;height:32%;z-index:-1;opacity:.2;pointer-events:none;background:url('./assets/map-liquid-x.webp') no-repeat 110% 100%/auto 110%;mask-image:linear-gradient(transparent,#000 28%)}
-.file-meta {border-bottom:1px solid var(--dossier-rule);padding-bottom:12px}
-.file-tab,.project-kicker {color:var(--dossier-muted);letter-spacing:.08em}
-.file-close {border:1px solid #a6bac4;border-radius:50%;background:linear-gradient(140deg,#fff,#deedf3 45%,#bfd2dc 64%,#f8fbfc);color:var(--dossier-ink)}
-.file-description h2,.spread-heading h1 {letter-spacing:-.055em;line-height:1.12;text-wrap:balance;overflow-wrap:anywhere;font-family:Inter,"Microsoft YaHei",sans-serif}
-.file-description h2 {font-size:clamp(1.8rem,2.7vw,3.6rem);border:0;margin:1em 0 .6em;padding:0}
-.file-copy,.file-copy .file-note,.spread-text .file-note {color:#324953}
-.file-actions,.project-resources {display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 22px}
-.file-actions[hidden] {display:none}
-.file-actions a,.project-resources a,.file-more:not([hidden]) {display:inline-flex;align-items:center;min-height:38px;box-sizing:border-box;padding:6px 12px;border-radius:22px;border:1px solid #afc2cc;background:#f9fdffb8;color:var(--dossier-ink);font:500 .83rem/1.4 Inter,"Microsoft YaHei",sans-serif;text-decoration:none}
-.file-actions a::after,.project-resources a::after {content:"↗";margin-left:6px}
-.file-actions a:hover,.project-resources a:hover,.file-more:hover {background:white;border-color:#526d7e}
-.file-more:not([hidden]) {background:#f6fbff;margin-top:12px;gap:12px}
-.file-more::after {content:"→"}
-.file-actions .file-more:not([hidden]) {margin:0;gap:0;align-self:auto;background:#f9fdffb8}
-.file-gallery,.spread-media {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;align-items:start;gap:clamp(16px,2.4vw,40px);padding:var(--dossier-pad);background:#f8fafb}
-.file-gallery figure,.spread-media figure {min-width:0;max-width:100%;width:100%;margin:0;border:0;padding:0;text-align:left}
-.file-gallery figure:only-child,.spread-media figure:only-child {display:block;min-height:0;grid-column:1/-1;max-width:46rem;justify-self:center}
-.file-gallery figure:first-child,.spread-media figure:first-child,.film {grid-column:1/-1}
-.file-gallery figure:first-child:not(.film),.spread-media figure:first-child:not(.film) {width:min(100%,46rem);justify-self:center}
-.file-gallery :is(img,video),.spread-media :is(img,video) {display:block;width:100%;height:auto;object-fit:contain;max-height:52svh;border-radius:3px;background:transparent}
-.file-gallery video,.spread-media video {max-height:68svh;background:#141c20}
-.file-gallery figcaption,.spread-media figcaption {display:flex;gap:.6em;color:#526770;border:0;margin:8px 0 0;padding:0;font:400 .76rem/1.5 var(--folio-mono,monospace);letter-spacing:.02em}
+.project-dossier::backdrop {background:#ecf2f54d;backdrop-filter:blur(5px)}
+.file-sleeve {gap:1px;background:#e4eaec}
+.file-sheet {background:var(--file-accent);color:white;padding:var(--file-gutter);padding-bottom:0;clip-path:polygon(22px 0,100% 0,100% 100%,0 100%,0 24px)}
+.file-tab,.file-gallery figcaption,.file-contents span {font-family:var(--mono,monospace);font-variant-numeric:tabular-nums}
+.file-meta {flex:none}
+.file-tab {font-size:.85rem}
+.file-close {display:grid;place-items:center;height:32px;width:32px;color:var(--file-accent);background:#f7fbff;border:0;border-radius:0;line-height:1}
+.file-description {scrollbar-width:thin;scrollbar-color:#ffffff66 transparent;padding-bottom:2rem}
+.file-description h2 {font-weight:480;line-height:1.09;letter-spacing:-.04em;font-size:clamp(1.9rem,2.55vw,3.45rem);border-color:#ffffff63;padding:0 0 .55em;margin:clamp(26px,5vh,64px) 0 .55em;text-wrap:pretty}
+.file-copy {color:white;font-size:clamp(.85rem,.92vw,1.05rem);line-height:1.7}
+.file-copy p {margin:0 0 .75em}
+.file-copy .project-resources {display:flex;flex-wrap:wrap;gap:7px;margin:1.1rem 0}
+.file-copy .project-resources a {border:1px solid #ffffff80;border-radius:99px;color:inherit;text-decoration:none;font-size:.76rem;padding:4px 10px}
+.file-copy .project-resources a:hover,.file-copy .project-resources a:focus-visible {background:white;color:var(--file-accent)}
+.file-contents {margin-top:clamp(22px,4vh,54px)}
+.file-contents button {display:flex;align-items:center;justify-content:space-between;gap:1rem;text-align:left;width:100%;min-height:47px;padding:.7em 0;background:none;border:0;border-top:1px solid #ffffff70;color:white;font:inherit;font-size:clamp(.95rem,1.15vw,1.4rem)}
+.file-contents span {border:1px solid #ffffff80;min-width:1.9em;text-align:center;font-size:.69em;padding:.12em .2em}
+.file-contents button[aria-current] span,.file-contents button:hover span {background:white;color:var(--file-accent)}
+.file-contents button:focus-visible {outline:2px solid white;outline-offset:-2px}
+.project-dossier .file-gallery {display:block;background:#fff;padding:0;overflow-x:hidden}
+.file-gallery .archive-section {margin:0;padding:0;outline:none}
+.file-gallery .archive-section:focus-visible {outline:2px solid var(--file-accent);outline-offset:-2px}
+.project-dossier .file-gallery figure {display:block;min-height:0;width:100%;max-width:none;margin:0;padding:0;position:relative}
+.project-dossier .file-gallery :is(img,video) {width:100%;height:auto;max-height:none;display:block}
+.project-dossier .file-gallery video {max-height:92dvh;background:#101a21}
+.file-gallery .slide-image-link {display:block}
+.file-gallery figcaption {display:none}
+.file-gallery .with-caption figcaption {display:block;border:0;margin:0;padding:10px var(--file-gutter) 14px;font-size:.77rem;color:#485860}
 .file-gallery figcaption::before {content:none}
-.file-gallery.file-object figure img,.spread-media.object-only img {height:clamp(170px,33vh,330px);margin:18px auto}
-.file-gallery.file-slides,.spread-media.slide-deck {grid-template-columns:minmax(0,1fr)}
-.file-gallery.file-slides figure,.spread-media.slide-deck figure {width:100%;max-width:none;grid-column:1/-1;justify-self:stretch}
-.file-gallery.file-slides figure:first-child,.spread-media.slide-deck figure:first-child {width:100%}
-.file-gallery.file-slides img,.spread-media.slide-deck img {width:100%;height:auto;max-height:none}
-.slide-image-link {display:block;outline-offset:5px}
-.slide-image-link:focus-visible {outline:2px solid #476e93}
-.spread-page {background:#fafcfc;color:var(--dossier-ink)}
-.spread-page .project-bar {background:#fafcfc;border-color:var(--dossier-rule)}
-.spread-page .project-article {max-width:1240px;padding:0 clamp(20px,6vw,88px) 38px;margin:auto}
-.spread-page .project-spread,.spread-info {display:block;position:static;max-height:none}
-.spread-info {padding:clamp(44px,7vw,108px) 0 clamp(20px,4vw,56px)}
-.spread-heading h1 {max-width:22ch;font-size:clamp(34px,5.1vw,78px);font-weight:520;margin:.28em 0 .4em}
-.spread-text .project-intro {margin:0;max-width:65ch;color:#34474f}
-.jump-reading {display:inline-block;margin:.3rem 0 .8rem;color:var(--dossier-muted);text-underline-offset:4px;font-size:.9rem}
-.spread-media {padding:clamp(20px,4vw,54px) 0;background:transparent;border-top:1px solid var(--dossier-rule)}
-.spread-media .film {width:min(100%,62rem);justify-self:center}
-.project-reading {border-top:1px solid var(--dossier-rule);padding-block:24px 42px}
-.project-reading h2 {font-weight:550;margin:0 0 20px}
-.project-reading details {border-bottom:1px solid var(--dossier-rule);padding:15px 0}
-.project-reading summary {font-weight:550;cursor:pointer}
-.project-reading .reading-body {max-width:70ch;line-height:1.85;overflow-wrap:anywhere}
-.project-reading h4 {margin:1.5em 0 .5em}
-.project-reading p {margin:.5em 0}
+.file-gallery .chapter-copy,.file-gallery .archive-text {padding:clamp(22px,3.4vw,60px);overflow-wrap:anywhere}
+.file-gallery .chapter-copy h3,.file-gallery .archive-text h3 {font-size:clamp(1.25rem,2vw,2rem);font-weight:500;letter-spacing:-.035em;margin:0 0 .6em}
+.file-gallery :is(.chapter-copy,.archive-text) p {font-size:.98rem;line-height:1.8;max-width:66ch;margin:.5em 0}
+.file-gallery .archive-text details {border-top:1px solid #ccd4da;padding:.85em 0;font-size:.95rem;line-height:1.7}
+.file-gallery summary {cursor:pointer}
+.file-gallery .archive-text h4 {margin:1.3em 0 .3em}
+.file-gallery .object-plate img {height:clamp(220px,55vh,560px);object-fit:contain;padding:5%;box-sizing:border-box;background:#f0f3f5}
 @media(max-width:760px){
- .file-sheet::before{background-size:auto 155%;opacity:.12}
- .file-gallery,.spread-media{gap:16px 12px}
- .file-gallery{padding:18px}
- .file-description h2{margin:.55em 0}
- .file-actions{margin:.7em 0}
- .file-gallery figcaption,.spread-media figcaption{font-size:.72rem}
- .file-sleeve{background:#f8fafb}
- .file-gallery figure:only-child {min-height:0}
- .spread-info{padding-top:38px}
+ .project-dossier .file-sleeve {display:block;background:white}
+ .file-sheet {padding:calc(18px + env(safe-area-inset-top)) 22px 20px;clip-path:none}
+ .file-close {position:fixed;z-index:3;right:14px;top:calc(12px + env(safe-area-inset-top));width:42px;height:42px;color:#23384a;background:#f4f8fc;border:1px solid #b9cbda}
+ .file-sleeve {animation-duration:.45s}
+ .file-description {padding:0}
+ .file-description h2 {margin:20px 0 12px;padding-right:28px;font-size:clamp(29px,7.4vw,46px)}
+ .file-copy {font-size:.94rem}
+ .file-contents {margin-top:20px}
+ .file-contents button {font-size:.98rem;min-height:44px}
+ .project-dossier .file-gallery {overflow:visible}
 }
+.project-dossier[data-edition="campus-clock"] .file-tab,
+.project-dossier[data-edition="campus-clock"] .file-description h2 {color:#ffcd58;font-family:"Courier New",monospace;font-variant-numeric:tabular-nums}
+.project-dossier[data-edition="campus-clock"] .file-meta {border-top:3px solid #f0b83c;padding-top:12px}
+.project-dossier[data-edition="campus-clock"] .file-contents button[aria-current] span {background:#ffcf66;color:#392a1c}
+@media(max-width:760px){.file-sleeve{animation-fill-mode:backwards}}
+.file-description .file-contents {display:block}
