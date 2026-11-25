@@ -34,6 +34,7 @@
 
   function showPlates(record, link, content) {
     gallery.classList.toggle('file-editorial', record.dataset.layout === 'editorial');
+    gallery.classList.toggle('file-slides', record.dataset.layout === 'slides');
     const plates = content.querySelector('template.file-plates');
     if (plates) {
       gallery.replaceChildren(plates.content.cloneNode(true));

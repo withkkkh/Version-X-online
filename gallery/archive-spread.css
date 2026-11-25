@@ -37,6 +37,12 @@
 .file-gallery figcaption,.spread-media figcaption {display:flex;gap:.6em;color:#526770;border:0;margin:8px 0 0;padding:0;font:400 .76rem/1.5 var(--folio-mono,monospace);letter-spacing:.02em}
 .file-gallery figcaption::before {content:none}
 .file-gallery.file-object figure img,.spread-media.object-only img {height:clamp(170px,33vh,330px);margin:18px auto}
+.file-gallery.file-slides,.spread-media.slide-deck {grid-template-columns:minmax(0,1fr)}
+.file-gallery.file-slides figure,.spread-media.slide-deck figure {width:100%;max-width:none;grid-column:1/-1;justify-self:stretch}
+.file-gallery.file-slides figure:first-child,.spread-media.slide-deck figure:first-child {width:100%}
+.file-gallery.file-slides img,.spread-media.slide-deck img {width:100%;height:auto;max-height:none}
+.slide-image-link {display:block;outline-offset:5px}
+.slide-image-link:focus-visible {outline:2px solid #476e93}
 .spread-page {background:#fafcfc;color:var(--dossier-ink)}
 .spread-page .project-bar {background:#fafcfc;border-color:var(--dossier-rule)}
 .spread-page .project-article {max-width:1240px;padding:0 clamp(20px,6vw,88px) 38px;margin:auto}
