@@ -11,6 +11,51 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)');
   let opener, sections = [], buttons = [], frame, closing;
 
+  let videoObserver;
+  let activeVideo;
+  const finished = new WeakSet();
+
+  function setLoop(event) {
+    const video = event.target;
+    if (video instanceof HTMLVideoElement) {
+      video.loop = video.duration > 0 && video.duration < 10;
+    }
+  }
+  gallery.addEventListener('loadedmetadata', setLoop, true);
+  gallery.addEventListener('durationchange', setLoop, true);
+  gallery.addEventListener('ended', event => finished.add(event.target), true);
+
+  function stopVideos() {
+    videoObserver?.disconnect();
+    videoObserver = undefined;
+    activeVideo = undefined;
+    gallery.querySelectorAll('video').forEach(video => video.pause());
+  }
+  function observeVideos() {
+    stopVideos();
+    if (reduceMotion.matches || !dialog.open || !('IntersectionObserver' in window)) return;
+    const visibility = new Map();
+    const observer = new IntersectionObserver(entries => {
+      if (observer !== videoObserver || !dialog.open) return;
+      for (const entry of entries) visibility.set(entry.target, entry.intersectionRatio);
+      let candidate;
+      let largest = 0.24;
+      for (const [video, ratio] of visibility) {
+        if (ratio > largest) {
+          candidate = video;
+          largest = ratio;
+        }
+      }
+      if (candidate === activeVideo) return;
+      activeVideo?.pause();
+      activeVideo = candidate;
+      if (candidate && !finished.has(candidate)) candidate.play().catch(() => {});
+    }, {threshold:[0, .25, .4, .55, .7, .85, 1]});
+    videoObserver = observer;
+    gallery.querySelectorAll('video').forEach(video => observer.observe(video));
+  }
+  reduceMotion.addEventListener('change', observeVideos);
+
   function scrollArea() { return mobile.matches ? sleeve : gallery; }
   function highlight() {
     frame = 0;
@@ -51,6 +96,7 @@
     const record = link.parentElement.querySelector('template');
     if (!record) return;
     clearTimeout(closing);
+    stopVideos();
     dialog.classList.remove('closing');
     opener = link;
     const content = document.importNode(record.content,true);
@@ -80,13 +126,12 @@
     sleeve.scrollTop = gallery.scrollTop = description.scrollTop = 0;
     close.focus({preventScroll:true});
     highlight();
-    const video = gallery.querySelector('video');
-    if (video && !reduceMotion.matches) { video.muted = true; video.play().catch(() => {}); }
+    observeVideos();
   }
   function dismiss() {
     if (!dialog.open || dialog.classList.contains('closing')) return;
     dialog.classList.add('closing');
-    gallery.querySelectorAll('video').forEach(video => video.pause());
+    stopVideos();
     closing = setTimeout(() => dialog.close(),reduceMotion.matches ? 0 : 280);
   }
   function syncLocation() {
@@ -122,6 +167,7 @@
   dialog.addEventListener('close',() => {
     if (dialog.open) return;
     clearTimeout(closing);
+    stopVideos();
     gallery.replaceChildren();
     dialog.classList.remove('closing');
     document.documentElement.classList.remove('file-is-open');

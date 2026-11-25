@@ -59,3 +59,54 @@
 .project-dossier[data-edition="campus-clock"] .file-contents button[aria-current] span {background:#ffcf66;color:#392a1c}
 @media(max-width:760px){.file-sleeve{animation-fill-mode:backwards}}
 .file-description .file-contents {display:block}
+
+@font-face {
+  font-family:"755 Morning Note";
+  src:url("./assets/type/755-morning-note.woff2") format("woff2");
+  font-weight:400;
+  font-display:swap;
+}
+@font-face {
+  font-family:"Press Start 2P";
+  src:url("./assets/type/press-start.ttf") format("truetype");
+  font-display:swap;
+}
+.project-dossier[data-edition="campus-clock"] :is(.file-tab,.file-description h2,.file-contents button,.file-contents span,.chapter-copy h3,figcaption) {
+  font-family:"755 Morning Note","Press Start 2P",monospace;
+  font-weight:400;
+  letter-spacing:0;
+}
+.project-dossier[data-edition="campus-clock"] .file-description h2 {
+  font-family:"Press Start 2P","755 Morning Note",monospace;
+  line-height:1.35;
+}
+.project-dossier[data-edition="stepmate"] .file-description h2 {
+  font:400 clamp(1.3rem,2vw,2.4rem)/1.45 "Press Start 2P",monospace;
+  letter-spacing:-.05em;
+}
+.project-dossier[data-edition="stepmate"] :is(.file-tab,.file-contents span) {
+  font-family:"Press Start 2P",monospace;
+}
+.project-dossier[data-edition="characteros"] .file-description h2 {
+  position:relative;
+  color:transparent;
+  line-height:1;
+}
+.project-dossier[data-edition="characteros"] .file-description h2::after {
+  content:"";
+  position:absolute;
+  inset:0 0 .5em;
+  background:#fff;
+  mask:url("./assets/index-objects/008.svg") left center / contain no-repeat;
+}
+
+/* Follow the title treatments in the teams' own presentation covers. */
+.project-dossier[data-edition="portfolio"] {--cover-type:"源流明朝","Source Han Serif SC","Songti SC",SimSun,serif}
+.project-dossier[data-edition="training-notes"] {--cover-type:STFangsong,FangSong,"Songti SC",serif}
+.project-dossier[data-edition="cloud-fly"] {--cover-type:"Source Han Sans SC","Noto Sans CJK SC","PingFang SC",sans-serif}
+.project-dossier[data-edition="abc-supply"] {--cover-type:STXihei,"PingFang SC","Microsoft YaHei",sans-serif}
+.project-dossier[data-edition="mobile-printer"] {--cover-type:Montserrat,"Source Han Sans SC","Microsoft YaHei",sans-serif}
+.project-dossier:is([data-edition="portfolio"],[data-edition="training-notes"],[data-edition="cloud-fly"],[data-edition="abc-supply"],[data-edition="mobile-printer"]) :is(.file-description h2,.chapter-copy h3,figcaption) {
+  font-family:var(--cover-type);
+}
+.project-dossier:is([data-edition="cloud-fly"],[data-edition="mobile-printer"]) .file-description h2 {font-weight:700}

@@ -41,12 +41,12 @@ body.has-project-index::before {
 }
 .project-array li {
   grid-area:var(--row) / var(--col) / auto / span 5; min-width:0;
-  padding-top:calc(var(--offset) * clamp(1px,.11vw,2px));
+  padding-top:calc(var(--offset) * clamp(.6px,.07vw,1.15px));
   --art-width:clamp(100px,12.5vw,225px); --art-height:clamp(90px,10.4vw,180px); --angle:0deg;
 }
 .object-link {
-  width:100%; max-width:16rem; min-width:44px; min-height:44px; margin:auto; padding:5px 4px;
-  display:flex; align-items:center; flex-direction:column; text-decoration:none!important; color:inherit; outline-offset:4px;
+  box-sizing:border-box; width:100%; max-width:16rem; min-width:44px; min-height:calc(var(--art-height) + 2.6rem); margin:auto; padding:5px 4px;
+  display:flex; justify-content:center; align-items:center; flex-direction:column; text-decoration:none!important; color:inherit; outline-offset:4px;
 }
 .object-picture {
   position:relative; display:block;
@@ -86,6 +86,7 @@ body.has-project-index::before {
 .folio-head {padding:44px 12px 32px}
 .folio-head h2 {font-size:clamp(2.5rem,9vw,3.75rem)}
 .object-id {left:100%}
+.object-picture {max-width:calc(100% - 2.5rem)}
 .project-hero{grid-template-columns:1fr;gap:24px;margin-bottom:28px}.project-hero figure{order:0}.project-hero figure img{height:210px}
 .project-array .object-label{font-size:.82rem}.mast nav{flex-wrap:wrap;justify-content:flex-end;row-gap:4px}
 }
