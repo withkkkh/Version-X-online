@@ -63,7 +63,7 @@ document.addEventListener('pointerdown',e=>{if(directory.open&&!directory.contai
 model.addEventListener('camera-change',e=>{if(phase==='gallery'&&e.detail.source==='user-interaction')presetButtons.forEach(b=>b.setAttribute('aria-pressed','false'));});
 function setExpanded(show){
   stage.classList.toggle('expanded',show);document.body.classList.toggle('with-expanded-stage',show);
-  expand.setAttribute('aria-pressed',String(show));expand.setAttribute('aria-label',show?'退出放大预览':'放大预览');expand.querySelector('.expand-text').textContent=show?'退出放大':'放大';
+  expand.setAttribute('aria-pressed',String(show));expand.setAttribute('aria-label',show?'退出全屏':'全屏');expand.querySelector('.expand-text').textContent=show?'退出全屏':'全屏';
 }
 expand.addEventListener('click',()=>setExpanded(!stage.classList.contains('expanded')));
 window.addEventListener('keydown',e=>{if(e.key!=='Escape'||e.defaultPrevented)return;if(directory.open)closeDirectory(true);else if(phase==='address'){if(introductionFromGallery)enterGallery();else showCover();}else if(stage.classList.contains('expanded'))setExpanded(false);});
