@@ -26,6 +26,7 @@
 .file-actions a:hover,.project-resources a:hover,.file-more:hover {background:white;border-color:#526d7e}
 .file-more:not([hidden]) {background:#f6fbff;margin-top:12px;gap:12px}
 .file-more::after {content:"→"}
+.file-actions .file-more:not([hidden]) {margin:0;gap:0;align-self:auto;background:#f9fdffb8}
 .file-gallery,.spread-media {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;align-items:start;gap:clamp(16px,2.4vw,40px);padding:var(--dossier-pad);background:#f8fafb}
 .file-gallery figure,.spread-media figure {min-width:0;max-width:100%;width:100%;margin:0;border:0;padding:0;text-align:left}
 .file-gallery figure:only-child,.spread-media figure:only-child {display:block;min-height:0;grid-column:1/-1;max-width:46rem;justify-self:center}

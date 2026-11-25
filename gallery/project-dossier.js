@@ -17,15 +17,23 @@
   resources.className = 'file-actions';
   resources.setAttribute('aria-label', '项目入口');
   title.after(resources);
+  more.remove();
 
-  function showResources(content) {
+  function showResources(content, record, link) {
     const submitted = content.querySelector('.project-resources');
     resources.replaceChildren(...(submitted ? Array.from(submitted.children) : []));
     submitted?.remove();
+    more.hidden = !record.hasAttribute('data-more');
+    if (more.hidden) more.removeAttribute('href');
+    else {
+      more.href = link.href;
+      resources.append(more);
+    }
     resources.hidden = resources.childElementCount === 0;
   }
 
   function showPlates(record, link, content) {
+    gallery.classList.toggle('file-editorial', record.dataset.layout === 'editorial');
     const plates = content.querySelector('template.file-plates');
     if (plates) {
       gallery.replaceChildren(plates.content.cloneNode(true));
@@ -61,13 +69,10 @@
     opener = link;
     const content = record.content.cloneNode(true);
     showPlates(record, link, content);
-    showResources(content);
+    showResources(content, record, link);
     tab.textContent = record.dataset.code;
     title.textContent = link.querySelector('.object-label').textContent;
     copy.replaceChildren(content);
-    more.hidden = !record.hasAttribute('data-more');
-    if (more.hidden) more.removeAttribute('href');
-    else more.href = link.href;
     folder.classList.remove('closing');
     folder.showModal();
     const leadFilm = gallery.querySelector('video[autoplay]');
@@ -98,4 +103,10 @@
     document.documentElement.classList.remove('file-is-open');
     opener?.focus({preventScroll:true});
   });
+
+  // Older dossier URLs now open the same project drawer used by the index.
+  const requestedProject = new URL(location.href).searchParams.get('project');
+  if (/^vx-\d{3}$/.test(requestedProject || '')) {
+    archive.querySelector(`#object-${requestedProject} .object-link`)?.click();
+  }
 })();

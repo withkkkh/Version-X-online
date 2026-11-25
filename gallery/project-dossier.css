@@ -48,3 +48,21 @@ html.file-is-open.has-moving-pointer .project-dossier,html.file-is-open.has-movi
 html.file-is-open.has-moving-pointer .project-dossier :is(a,button){cursor:pointer!important}
 
 .file-gallery img{height:auto}
+
+/* The camp portfolio reads as image-and-text chapters within the right pane. */
+.project-dossier .file-gallery.file-editorial {display:block;scrollbar-gutter:stable}
+.file-editorial .file-chapter {margin:0 0 clamp(40px,6vh,72px)}
+.file-editorial .file-chapter header {margin-bottom:24px;max-width:44rem}
+.file-editorial .file-chapter-number {margin:0 0 12px;color:#647d8e;font:500 .73rem/1.5 var(--mono,monospace);letter-spacing:.1em}
+.file-editorial h3 {margin:0 0 16px;color:#243c58;font:500 clamp(24px,2.1vw,38px)/1.3 Inter,"Microsoft YaHei",sans-serif;letter-spacing:-.035em}
+.file-editorial .file-chapter header>p:last-child {margin:0;color:#405663;font:400 clamp(14px,1vw,17px)/1.9 Inter,"Microsoft YaHei",sans-serif}
+.project-dossier .file-editorial .file-chapter figure {display:block;min-height:0;width:100%;max-width:none;margin:0 0 28px}
+.project-dossier .file-editorial .file-chapter img {width:100%;height:auto;max-height:none}
+.file-editorial .file-chapter+.file-chapter {padding-top:28px;border-top:1px solid #c6d5dd}
+.file-editorial .file-chapter-grid {display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:start}
+.project-dossier .file-editorial .file-chapter-grid figure {grid-column:auto;justify-self:stretch}
+.file-editorial .file-source-note {margin:0;padding-top:20px;border-top:1px solid #c6d5dd;color:#647986;font:400 .76rem/1.8 Inter,"Microsoft YaHei",sans-serif}
+@media(max-width:760px){
+  .file-editorial .file-chapter-grid {grid-template-columns:1fr}
+  .project-dossier .file-editorial .file-chapter-grid figure:last-child {max-width:323px;justify-self:center}
+}
