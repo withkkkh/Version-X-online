@@ -1,5 +1,6 @@
-import { TOUR_SCENES, sceneFrame, isTeamSwitch } from './tour-timeline.js?v=6';
+import { TOUR_SCENES, sceneFrame, isTeamSwitch } from './tour-timeline.js?v=9';
 import { installSceneSlide } from './scene-slide.js?v=2';
+import { installTourMotion } from './tour-motion.js?v=2';
 
 export function installWalk(stage, model, setView, applyTourCamera, fitTourCamera) {
   const player = stage.querySelector('#tour-player');
@@ -10,6 +11,7 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
   const exit = player.querySelector('#tour-exit');
   const directoryEntry = stage.querySelector('.directory summary');
   const slide = installSceneSlide(model);
+  const motion = installTourMotion(model);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const defaultMinimum = model.getAttribute('min-camera-orbit');
   const locked = [model, stage.querySelector('.still-points'), stage.querySelector('.toolbar'),
@@ -30,6 +32,7 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
     if (!active()) return;
     cancelAnimationFrame(frame);
     slide.clear();
+    motion.clear();
     clearHighlight();
     changeState('idle');
     stage.classList.remove('tour-active');
@@ -51,6 +54,7 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
       cameraSettled = sliding || reduced.matches || p === 1;
     }
     if (sliding) slide.draw(p);
+    motion.sample(time);
     progress.style.transform = 'scaleX(' + Math.min(1, time / (scene.move + scene.hold)) + ')';
   }
   function tick() {
@@ -74,6 +78,7 @@ export function installWalk(stage, model, setView, applyTourCamera, fitTourCamer
     number.textContent = String(i + 1).padStart(2,'0') + ' / ' + String(TOUR_SCENES.length).padStart(2,'0');
     title.textContent = scene.title;
     caption.textContent = scene.text;
+    motion.show(scene);
     clearHighlight();
     for (const key of scene.keys) model.querySelector('[slot="hotspot-' + key + '"]')?.setAttribute('data-tour-highlight','');
     changeState(document.hidden || state === 'paused' ? 'paused' : 'playing');

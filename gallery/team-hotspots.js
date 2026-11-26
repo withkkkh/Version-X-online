@@ -140,6 +140,12 @@ export function installTeamHotspots(model, stage, openMap) {
   model.addEventListener('tour-start', () => {
     cancelAnimationFrame(hoverFrame);
     clear();
+    // A pending hover lift must not write into the tour's animation clock.
+    liftRevision++;
+    cancelAnimationFrame(liftFrame);
+    pose = undefined;
+    model.pause();
+    model.currentTime = 0;
   });
   const fingers = new Set();
 
