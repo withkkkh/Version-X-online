@@ -223,8 +223,8 @@ body:has(.gallery-map[open]) {overflow:hidden}
 .facade-actions {position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;color:#29405c;font-size:.85rem}
 .facade-actions button {border:1px solid #acbfd0;padding:9px 14px;background:#f6f9fc;color:#233b55;cursor:pointer}
 
-/* A translucent page over the glass facade, followed by a caption under the model. */
-.opening-address {position:absolute;inset:0;display:grid;place-items:center;overflow:auto;padding:clamp(24px,7vw,100px);background:rgba(255,255,255,.83);color:#172e46;animation:address-arrival 1.05s both}
+/* Show the introduction immediately when the visitor opens the exhibition. */
+.opening-address {position:absolute;inset:0;display:grid;place-items:center;overflow:auto;padding:clamp(24px,7vw,100px);background:rgba(255,255,255,.83);color:#172e46}
 .opening-address[hidden],.walk-panel[hidden],.reading-address .facade-actions {display:none}
 .opening-address>div {width:min(100%,34rem);margin:auto}
 .opening-address h2 {font-size:clamp(30px,4vw,55px);font-weight:540;letter-spacing:.09em;margin:0 0 .75em}
@@ -233,7 +233,6 @@ body:has(.gallery-map[open]) {overflow:hidden}
 .address-actions {margin-top:clamp(20px,4vh,38px)}
 .address-actions button,.walk-buttons button {min-height:44px;padding:8px 15px;color:#233d57;background:transparent;border:1px solid #8c9fb2;border-radius:2px}
 .address-actions #start-walk,.walk-buttons .walk-next {background:#244e77;color:white;border-color:#244e77}
-@keyframes address-arrival {0%,30%{opacity:0}100%{opacity:1}}
 .walk-panel {border-top:1px solid #c5d2dd;background:#fbfcfe;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px clamp(12px,2vw,28px)}
 .walk-panel h2 {display:inline;font-size:1.08rem;color:#213c57}
 .walk-count {margin-right:12px;font:12px Consolas,monospace;color:#536c85}
