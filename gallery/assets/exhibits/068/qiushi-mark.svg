@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1256 1256" fill="none">
+  <defs>
+    <linearGradient id="qiushi-outer" x1="145" y1="160" x2="1080" y2="1100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#79d9ff"/><stop offset=".48" stop-color="#94e8ff"/><stop offset=".75" stop-color="#70f4f4"/><stop offset="1" stop-color="#95e1ff"/>
+    </linearGradient>
+    <linearGradient id="qiushi-blue" x1="719" y1="310" x2="920" y2="975" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#309ff1"/><stop offset=".52" stop-color="#349df2"/><stop offset="1" stop-color="#64d9ff"/>
+    </linearGradient>
+    <linearGradient id="qiushi-cyan" x1="310" y1="590" x2="820" y2="1030" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#62e7f6"/><stop offset=".48" stop-color="#6cf6f3"/><stop offset="1" stop-color="#52edf1"/>
+    </linearGradient>
+    <linearGradient id="qiushi-core" x1="407" y1="402" x2="959" y2="816" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00bce7"/><stop offset=".42" stop-color="#00b3e8"/><stop offset="1" stop-color="#00d3e4"/>
+    </linearGradient>
+    <linearGradient id="qiushi-fine" x1="282" y1="459" x2="712" y2="228" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b9f1ff"/><stop offset=".6" stop-color="#b8e7ff"/><stop offset="1" stop-color="#9bdeff"/>
+    </linearGradient>
+  </defs>
+  
+  <g stroke="url(#qiushi-outer)" stroke-linecap="round">
+    <path d="M169.866 429.524A550 550 0 0 1 758.346 95.9" stroke-width="20"/>
+    <path d="M1015.454 373.495A430 430 0 0 1 915.958 998.156" stroke-width="18"/>
+    <path d="M149.042 790.678A550 550 0 0 0 738.354 1186.679" stroke-width="18"/>
+  </g>
+  <g>
+
+  <path d="M248 640A430 430 0 0 1 713.234 211.446" stroke="url(#qiushi-fine)" stroke-width="13" stroke-linecap="round"/>
+  
+</g>
+  <g>
+
+  <path d="M727.668 303.647A340 340 0 0 1 632.445 976.934" stroke="url(#qiushi-blue)" stroke-width="25" stroke-linecap="round"/>
+    <circle cx="880.716" cy="367.042" r="32" fill="#00d5e5" stroke="#31edee" stroke-width="1.5"/>
+</g>
+  <g>
+
+  <path d="M283.486 573.981A400 400 0 0 0 927.552 952.608" stroke="url(#qiushi-cyan)" stroke-width="28" stroke-linecap="round"/>
+    <circle cx="425.73" cy="950.419" r="29" fill="#008fef" stroke="#03c6f2" stroke-width="1.5"/>
+</g>
+  <g>
+
+  <path d="M360.583 761.845A340 340 0 0 1 683.934 300.052" stroke="#6be5fa" stroke-width="14" stroke-linecap="round"/>
+  <path d="M360.583 761.845A340 340 0 0 1 683.934 300.052" stroke="#c4f4ff" stroke-width="5" stroke-linecap="round"/>
+  
+</g>
+  <g>
+
+  <path d="M628.897 364.339A280 280 0 1 0 954.079 686.695" stroke="url(#qiushi-core)" stroke-width="42" stroke-linecap="round"/>
+
+
+  
+</g>
+  
+  <g stroke="#35dfff" stroke-width="1">
+    <path d="m976 172 19 19-19 19-19-19Z" fill="#008de9"/>
+    <path d="m930 225 20 20-20 20-20-20Z" fill="#19c9ef"/>
+    <path d="m978 231 21 21-21 21-21-21Z" fill="#00e3ee"/>
+    <path d="m1033 225 21 21-21 21-21-21Z" fill="#83ddfa"/>
+    <path d="m971 276 20 20-20 20-20-20Z" fill="#00d7e6"/>
+    <path d="m1015 273 19 19-19 19-19-19Z" fill="#87e4fa"/>
+  </g>
+  
+  <g stroke="#40d9fb" stroke-width="1">
+    <path d="m158 587 21 21-21 21-21-21Z" fill="#00d6e9"/>
+    <path d="m198 625 19 19-19 19-19-19Z" fill="#94e6fa"/>
+    <path d="m154 650 22 22-22 22-22-22Z" fill="#008ce8"/>
+    <path d="m239 664 22 22-22 22-22-22Z" fill="#99e7fb"/>
+    <path d="m154 697 22 22-22 22-22-22Z" fill="#008bf0"/>
+  </g>
+  
+  <g stroke="#37d8f3" stroke-width="1">
+    <path d="m961 1016 21 21-21 21-21-21Z" fill="#84e2f7"/>
+    <path d="m900 1056 20 20-20 20-20-20Z" fill="#8ce6fa"/>
+    <path d="m944 1081 20 20-20 20-20-20Z" fill="#00d1e7"/>
+    <path d="m861 1102 21 21-21 21-21-21Z" fill="#008deb"/>
+    <path d="m897 1116 22 22-22 22-22-22Z" fill="#00d3e6"/>
+  </g>
+</svg>
