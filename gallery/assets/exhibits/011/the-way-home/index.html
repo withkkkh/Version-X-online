@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#131715">
+  <title>回家的路上 · 梦核互动影游</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="game-flow.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <main id="game" class="game mode-cover">
+    <div id="atmosphere" class="atmosphere" aria-hidden="true"></div>
+    <div class="shade" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <section id="cover" class="cover" aria-labelledby="title">
+      <header class="cover-header"><a class="wordmark" href="./index.html">归途 <span>STUDIO OF MEMORY</span></a><span class="edition">一部可以选择的梦 <i></i></span></header>
+      <div class="cover-content">
+        <p class="eyebrow"><span class="small-line"></span> INTERACTIVE DREAM FILM / 001</p>
+        <h1 id="title">回家的<br><span>路上</span><em>。</em></h1>
+        <p class="english-title">THE WAY HOME</p>
+        <p class="cover-description">天快黑了，妈妈还在等你吃饭。<br>可是，这条路好像和记忆里不太一样。</p>
+        <div class="start-actions"><button id="start" class="primary">开始回家 <span aria-hidden="true">↗</span></button><button id="continue" class="resume" hidden>继续上次的路 <span aria-hidden="true">→</span></button></div>
+        <p class="cover-hint">戴上耳机，把选择交给直觉。</p>
+      </div>
+      <aside class="cover-note"><span>傍晚 / 某座熟悉的城市</span><div class="note-line"></div><p>有些地方，<br>你明明没有来过，<br>却记得回去的路。</p></aside>
+      <footer class="cover-footer"><span class="film-type">梦核 <b>·</b> 互动影游 <b>·</b> 约 1–2 分钟</span><span class="cover-route">游乐场 <i>—</i> 广场 <i>—</i> 雨街 <i>—</i> 家</span><span class="issue">10 个片段 / 一个终点</span></footer>
+    </section>
+
+    <section id="player" class="player" aria-label="互动影片" hidden>
+      <video id="film" playsinline preload="auto" aria-label="当前故事视频"></video>
+      <div class="film-vignette" aria-hidden="true"></div>
+      <header class="player-header"><button id="home" class="text-button" aria-label="保存进度并返回封面">← <span>回家的路上</span></button><div class="chapter"><span id="chapter-number">01 / 06</span><span id="chapter-title">游乐场</span></div><span id="play-state" class="play-state">沿途 · 记忆正在播放</span></header>
+      <div id="loading" class="loading" hidden><span class="spinner"></span><p>回忆正在慢慢浮现</p></div>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <div id="error" class="error-panel" role="alert" hidden><p class="eyebrow">这段记忆暂时走丢了</p><h2>视频没有顺利播放</h2><p id="error-message"></p><div><button id="retry" class="primary">再试一次 ↻</button><button id="error-home" class="text-button">返回封面</button></div></div>
+      <div id="caption" class="caption" aria-live="off"></div>
+      <section id="choices" class="choices" aria-label="选择接下来的行动" hidden><p id="choice-prompt" class="choice-prompt"></p><div id="choice-buttons" class="choice-buttons"></div><p id="choice-help" class="choice-help"></p></section>
+      <footer class="player-footer"><nav id="journey" class="journey" aria-label="回家进度"></nav><div class="controls"><button id="pause" class="icon-button" title="暂停 / 继续（空格）" aria-label="暂停"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button><button id="mute" class="icon-button" title="声音（M）" aria-label="关闭声音" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM17 8c3 2 3 6 0 8M20 5c5 4 5 10 0 14"/></svg></button><button id="captions" class="icon-button cc" title="字幕（C）" aria-label="关闭字幕" aria-pressed="true">字</button><button id="fullscreen" class="icon-button" title="全屏（F）" aria-label="进入全屏"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button></div></footer>
+    </section>
+
+    <section id="ending" class="ending" aria-labelledby="end-title" hidden>
+      <p class="eyebrow">THE WAY HOME / 终章</p><p class="end-prelude">门在身后，轻轻合上。</p><h2 id="end-title">到家了。</h2><p class="end-story">屋里传来一个熟悉的声音。<br><span>“回来了？饭还热着。”</span></p><p class="end-question">可是，我什么时候离开过？</p><div id="end-route" class="end-route"></div><div class="end-actions"><button id="restart" class="primary">再走一次 <span aria-hidden="true">↗</span></button><button id="end-home" class="text-button">回到封面</button></div><p class="end-credit">谢谢你，走完这段回家的路。</p>
+    </section>
+    <dialog id="restart-dialog"><p class="eyebrow">重新出发</p><h2>从游乐场再走一次？</h2><p>本次的脚步会被新的旅程替代。</p><div><button id="confirm-restart" class="primary">重新开始</button><button id="cancel-restart" class="text-button">留在这里</button></div></dialog>
+  </main>
+</body>
+</html>
